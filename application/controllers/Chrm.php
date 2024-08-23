@@ -937,7 +937,7 @@ class Chrm extends CI_Controller {
                     }
                 }
                 if ($data['timesheet_data'][0]['payroll_type'] == 'Sales Partner') {
-                    $data['sc']         = $this->Hrm_model->sc_info_count($this->input->post('templ_name'), $payperiod);
+                    $data['sc']         = $this->Hrm_model->sc_info_count($this->input->post('templ_name'), $payperiod , $decodedId);
                     $scValue            = $data['sc']['sc'][0]['sc'];
                     $total_gtotal_value = $data['sc']['total_gtotal'];
                     $scValue1           = $scValue / 100;
@@ -2292,7 +2292,7 @@ class Chrm extends CI_Controller {
                         }
                         if ($living_state_tax) {
                             $payperiod  = $data['timesheet_data'][0]['month'];
-                            $data['sc'] = $this->Hrm_model->sc_info_count($this->input->post('templ_name'), $payperiod);
+                            $data['sc'] = $this->Hrm_model->sc_info_count($this->input->post('templ_name'), $payperiod , $decodedId);
                             if (isset($data['sc']['sc'][0]['sc'])) {
                                 $scValue = $data['sc']['sc'][0]['sc'];
                             } else {
@@ -2829,7 +2829,7 @@ class Chrm extends CI_Controller {
                         }
                         if ($living_state_tax_employer) {
                             $payperiod  = $data['timesheet_data'][0]['month'];
-                            $data['sc'] = $this->Hrm_model->sc_info_count($this->input->post('templ_name'), $payperiod);
+                            $data['sc'] = $this->Hrm_model->sc_info_count($this->input->post('templ_name'), $payperiod , $decodedId);
                             if (isset($data['sc']['sc'][0]['sc'])) {
                                 $scValue = $data['sc']['sc'][0]['sc'];
                             } else {
@@ -2878,7 +2878,7 @@ class Chrm extends CI_Controller {
                         }
                         if ($local_tax) {
                             $payperiod  = $data['timesheet_data'][0]['month'];
-                            $data['sc'] = $this->Hrm_model->sc_info_count($this->input->post('templ_name'), $payperiod);
+                            $data['sc'] = $this->Hrm_model->sc_info_count($this->input->post('templ_name'), $payperiod , $decodedId);
                             if (isset($data['sc']['sc'][0]['sc'])) {
                                 $scValue = $data['sc']['sc'][0]['sc'];
                             } else {
@@ -2904,9 +2904,7 @@ class Chrm extends CI_Controller {
                                         ->where('tax_type', 'local_tax')
                                         ->get()->row();
                                     $split = explode('-', $k);
-                                    echo "<br/>";
-                                    echo "<br/>";
-                                    echo "SPLIT :";
+                                    
                                     $tx_n = str_replace("'", "", $split[1]);
                                     $code = '';
                                     if (isset($split[2])) {
@@ -2939,7 +2937,7 @@ class Chrm extends CI_Controller {
                         }
                         if ($local_tax_employerr) {
                             $payperiod  = $data['timesheet_data'][0]['month'];
-                            $data['sc'] = $this->Hrm_model->sc_info_count($this->input->post('templ_name'), $payperiod);
+                            $data['sc'] = $this->Hrm_model->sc_info_count($this->input->post('templ_name'), $payperiod , $decodedId);
                             if (isset($data['sc']['sc'][0]['sc'])) {
                                 $scValue = $data['sc']['sc'][0]['sc'];
                             } else {
@@ -2965,9 +2963,7 @@ class Chrm extends CI_Controller {
                                         ->where('tax_type', 'local_tax')
                                         ->get()->row();
                                     $split = explode('-', $k);
-                                    echo "<br/>";
-                                    echo "<br/>";
-                                    echo "SPLIT :";
+                                  
                                     $tx_n = str_replace("'", "", $split[1]);
                                     $code = '';
                                     if (isset($split[2])) {
@@ -3409,7 +3405,7 @@ class Chrm extends CI_Controller {
                     $payperiod                        = $data['timesheet_data'][0]['month'];
                     $get_date                         = explode('-', $payperiod);
                     $d1                               = $get_date[1];
-                    $data['sc']                       = $this->Hrm_model->sc_info_count($this->input->post('templ_name'), $payperiod);
+                    $data['sc']                       = $this->Hrm_model->sc_info_count($this->input->post('templ_name'), $payperiod , $decodedId);
                     $scValue                          = $data['sc']['sc'][0]['sc'];
                     $sc_totalAmount1                  = $data['sc']['total_gtotal'];
                     $sc_count                         = $data['sc']['count'];
@@ -3542,7 +3538,7 @@ class Chrm extends CI_Controller {
         $payperiod                         = $data['timesheet_data'][0]['month'];
         $get_date                          = explode('-', $payperiod);
         $d1                                = $get_date[1];
-        $data['sc']                        = $this->Hrm_model->sc_info_count($templ_name, $payperiod, $decodedId);
+        $data['sc']                        = $this->Hrm_model->sc_info_count($templ_name, $payperiod, $decodedId , $decodedId);
         $scValue                           = $data['sc']['sc'][0]['sc'];
         $sc_totalAmount1                   = $data['sc']['total_gtotal'];
         $sc_count                          = $data['sc']['count'];
@@ -5731,7 +5727,7 @@ AND t1.biweekly IS NULL;
             $selected_state    = $this->input->post('selected_city');
             $tx                = $this->input->post('city_tax_name');
             $city_update       = $this->Hrm_model->city_update($selected_state, $tx, $decodedId);
-            $cityassign_update = $this->Hrm_model->cityassign_update($decodedId);
+            $cityassign_update = $this->Hrm_model->cityassign_update();
             if ($city_update) {
                 $response['status'] = 'success';
                 $response['msg']    = 'City Name Assigned  successfully';
@@ -5782,7 +5778,7 @@ AND t1.biweekly IS NULL;
             $selected_state      = $this->input->post('selected_county');
             $tx                  = $this->input->post('county_tax_name');
             $county_update       = $this->Hrm_model->county_update($selected_state, $tx, $decodedId);
-            $countyassign_update = $this->Hrm_model->countyassign_update($decodedId);
+            $countyassign_update = $this->Hrm_model->countyassign_update();
             if ($county_update) {
                 $response['status'] = 'success';
                 $response['msg']    = 'County Name Assigned  successfully';
@@ -7136,7 +7132,7 @@ public function salespartner_update() {
         $this->load->model('Hrm_model');
         $employeeId  = $this->input->post('employeeId', TRUE);
         $reportrange = $this->input->post('reportrange', TRUE);
-        $data['sc']  = $this->Hrm_model->sc_info_count($employeeId, $reportrange);
+        $data['sc']  = $this->Hrm_model->sc_info_count($employeeId, $reportrange , $decodedId);
         echo json_encode($data['sc']);
     }
     //F940 -hr

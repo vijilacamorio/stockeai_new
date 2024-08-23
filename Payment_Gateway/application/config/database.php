@@ -1,18 +1,16 @@
-
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-// $activgite_group = 'default';
 $active_group = 'default';
 $query_builder = TRUE;
-$active_record = TRUE;//ci version 2.x
+$active_record = TRUE; 
 
 $db['default'] = array(
-    'dsn'   => '',
+    'dsn'      => '',
     'hostname' => 'localhost',
-      'username' => 'wwwstockeai_localtest',
-    'password' => 'amorio@2022',
-    'database' => 'wwwstockeai_localtest',
+    'username' => 'root',
+    'password' => '',
+    'database' => 'stockeai_new',
     'dbdriver' => 'mysqli',
     'dbprefix' => '',
     'pconnect' => FALSE,
@@ -24,11 +22,10 @@ $db['default'] = array(
     'swap_pre' => '',
     'encrypt'  => FALSE,
     'compress' => FALSE,
-    'autoinit' => TRUE,//ci version 2.x
+    'autoinit' => TRUE,
     'stricton' => FALSE,
     'failover' => array(),
     'save_queries' => TRUE
 );
- 
 
 ?>
