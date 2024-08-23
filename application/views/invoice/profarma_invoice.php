@@ -467,7 +467,7 @@
                <td style="border:none;text-align:right;font-weight:bold;"><?php echo display('Tax') ?> : 
                </td>
                <td style="width:12%">
-                  <input list="magic_tax" name="tx"  id="product_tax" class="form-control"   onchange="this.blur();" />
+                  <input list="magic_tax" name="tx" id="product_tax" class="form-control product_tax"   onchange="this.blur();" />
                   <datalist id="magic_tax">
                      <?php                                
                         foreach($profarma_data as $tx){?>
@@ -1092,7 +1092,37 @@ $this->load->view('include/bootstrap_model', $modaldata);
     });
 
 
-  
+   // Tax 
+   $('.product_tax').on('change', function (e) {
+      e.preventDefault();
+      var total=$('#Over_all_Total').val();
+      var tax= $('#product_tax').val();
+      var percent='';
+      var hypen='-';
+      if(tax.indexOf(hypen) != -1){
+         var field = tax.split('-');
+         var percent = field[1];
+      }else{
+         percent=tax;
+      }
+         
+      percent=percent.replace("%","");
+      var answer = (percent / 100) * parseFloat(total);
+      var final_g= $('#final_gtotal').val();
+      var amt=parseFloat(answer)+parseFloat(total);
+      var num = isNaN(parseFloat(amt)) ? 0 : parseFloat(amt);
+      var additional_cost =parseFloat($('#additional_cost').val()) || 0;
+      $('#gtotal').val((num+additional_cost).toFixed(2)); 
+      var paid_amount =parseFloat($('#amount_paid').val()) || 0;
+      var custo_amt=$('.custocurrency_rate').val(); 
+      var value=(num+additional_cost)*custo_amt;
+      var custo_final = isNaN(parseFloat(value)) ? 0 : parseFloat(value);
+      var balance_amount= (num+additional_cost)- paid_amount;
+      $('#tax_details').val(answer.toFixed(2) +" ( "+tax+" )");
+      $('#customer_gtotal').val(custo_final.toFixed(2));  
+      $('#balance').val(balance_amount.toFixed(2));
+      updateOverallTotals();
+   });
    
    
 
@@ -1120,7 +1150,14 @@ $this->load->view('include/bootstrap_model', $modaldata);
       else
        $("#tax").hide();
    }).trigger("change");
-
+   
+   $(document).ready(function() {
+      $('#paypls').on('click', function(e) {
+         $('#amount_to_pay').val($('#gtotal').val());
+            $('#payment_modal').modal('show');
+            e . preventDefault();
+      });
+   });
    
 
 </script>

@@ -317,21 +317,18 @@ public function insertPayment()
     $admin_comp_id = decodeBase64UrlParameter($this->input->post('admin_company_id'));
     $response = array();
     $data = array(
-        'payment_id'    => $this->input->post('payment_id', TRUE),
+        'payment_id'    => rand(),
         'payment_date'  => $this->input->post('payment_date', TRUE),
         'reference_no'  => $this->input->post('ref_no', TRUE),
         'bank_name'     => $this->input->post('bank', TRUE),
         'total_amt'     => $this->input->post('amount_to_pay', TRUE),
         'amt_paid'      => $this->input->post('paid_amount', TRUE),
         'balance'       => $this->input->post('balance_modal', TRUE),
-        'description'   => $this->input->post('details', TRUE),
         'mode'          => 'Stockeai Payment',
         'status'        => 'Paid',
         'create_by'     => $admin_comp_id,
     );
     $paymentid = $this->Customers->payments_entry($data);
-
-
     if ($paymentid) {
         $upload_success = true;
         if (!empty($_FILES['payment_attachement']['name'])) {
@@ -344,7 +341,7 @@ public function insertPayment()
                 $upload_error = $upload_data['error'];
             }
         }
-        $paymentData = $this->Customers->fetchpaymentdata($paymentid);
+        $paymentData = $this->Customers->fetchpaymentdata($paymentid, $admin_comp_id);
         if ($upload_success) {
             $response = array(
                 'status' => 'success',
@@ -814,6 +811,28 @@ public function uploadTablesalescsv()
         }
     }
 }
+
+// Performa Payment History - Madhu
+public function performapayment_history()
+{
+    $this->auth->check_admin_auth();
+    $payment_id=$this->input->post('paymentIds');
+    $customer_id=$this->input->post('customer_id');
+    $current_in_id=$this->input->post('current_in_id');
+    $overall_payment = $this->Invoices->get_cust_payment_overall_info($customer_id);
+    $get_cust_payment = $this->Invoices->get_cust_payment_info($customer_id,$current_in_id);
+    $payment_get = $this->Invoices->get_payment_info($payment_id);
+    $amt_paid = $this->db->select('sum(amt_paid) as amt_paid')->from('payment')->where('payment_id',$payment_id)->get()->row()->amt_paid;
+    $data=array(
+        'overall'  => $overall_payment,
+        'based_on_customer' => $get_cust_payment,
+        'payment_get'  =>$payment_get,
+        'amt_paid' =>  $amt_paid
+    );
+ 
+    echo json_encode($data);  
+}
+
 // Payment History - Madhu
 public function payment_history()
 {
@@ -822,13 +841,9 @@ public function payment_history()
     $customer_id=$this->input->post('customer_id');
     $current_in_id=$this->input->post('current_in_id');
     $overall_payment = $this->Invoices->get_cust_payment_overall_info($customer_id);
-  //  echo $this->db->last_query();
     $get_cust_payment = $this->Invoices->get_cust_payment_info($customer_id,$current_in_id);
-   // echo $this->db->last_query();
     $payment_get = $this->Invoices->get_payment_info($payment_id);
-   // echo $this->db->last_query();
     $amt_paid = $this->db->select('sum(amt_paid) as amt_paid')->from('payment')->where('payment_id',$payment_id)->get()->row()->amt_paid;
-//echo $this->db->last_query();
     $data=array(
         'overall'  => $overall_payment,
         'based_on_customer' => $get_cust_payment,
@@ -3078,6 +3093,7 @@ public function performer_ins()
             'modified_by' => $this->session->userdata('unique_id')
         ];
         $existing_invoice = $this->db->where('chalan_no', $this->input->post('chalan_no', TRUE))->get('profarma_invoice')->row_array();
+        // echo $this->db->last_query(); die();
      
         $existing_purchaseid = '';
         if (!empty($existing_invoice)) {

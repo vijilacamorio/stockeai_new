@@ -171,10 +171,10 @@
                         <h4><?php //echo "Create Invoice" ?></h4>
                      </div>
                      <div class="Column" style="float: right;">
-                        <form id="histroy" method="post" >
+                        <form id="histroy" method="post">
                            <input type="hidden" name="<?php echo $this->security->get_csrf_token_name();?>" value="<?php echo $this->security->get_csrf_hash();?>">
                            <input type="submit" id="payment_history" name="payment_history" class="btn btnclr" style="float:right;" value="<?php echo display('Payment History') ?>" style="float:right;margin-bottom:30px;"/>
-                           <input type="hidden" name="makepaymentId" id="makepaymentId" value="<?php echo $paymentid; ?>"/>
+                           <input type="hidden" name="paymentIds" id="paymentIds" value="<?php echo $paymentid; ?>"/>
                         </form>
                      </div>
                      <div class="Column" style="float: right;">
@@ -198,6 +198,7 @@
                               <input type="date" required tabindex="2" class="form-control datepicker" name="purchase_date" value="<?php echo $date; ?>" id="date"  style="border: 2px solid #d7d4d6;width:100%;"> 
 
                               <input type="hidden" name="admin_company_id" id="admin_company_id" value="<?php echo $_GET['id']; ?>">
+                              <input type="hidden" name="makepaymentId" id="makepaymentId" value="<?php echo $paymentid; ?>"/>
                            </div>
                         </div>
                      </div>
@@ -542,7 +543,7 @@
                                  </td>
                                 
                                  <td >
-                                    <input  type="text" class="total_price form-control" style="width:80px;"   value="<?php  echo $inv['total_amount'];  ?>"  id="total_<?php  echo $m.$n; ?>"     name="total_amt[]"/>
+                                    <input  type="text" class="total_price form-control" style="width:80px;"   value="<?php  echo $inv['sales_slab_amt'];  ?>"  id="total_<?php  echo $m.$n; ?>"     name="total_amt[]"/>
                                  </td>
                                  <td>
                                     <input type="checkbox" name="hold_product[]" class="form-control hold-product" id="hold_product" value="1" style="height: 12px !important" <?php echo $inv['hold_product'] == 0 ? 'checked' : ''; ?>>
@@ -670,14 +671,14 @@
                               <tr>
                                  <td class="cus" name="cus" style="width: 40px;"></td>
                                  <td>
-                                    <input type="text" readonly value="<?php echo $purchase_info[0]['bal_amt']; ?>" name="balance" required class="form-control balance_modal" style="width: 150px;" />                     
+                                    <input type="text" readonly value="<?php echo number_format($purchase_info[0]['bal_amt'], 2); ?>" name="balance" id="Balance" required class="form-control balance_modal" style="width: 150px;" />            
                                  </td>
                               </tr>
                            </table>
                         </td>
                      </tr>
                      <td colspan="21" style="text-align: end;">
-                        <input type="submit" value="<?php echo display('Make Payment') ?>"    class="btnclr btn btn-large" id="paypls"/>
+                        <input type="submit" value="<?php echo display('Make Payment') ?>" class="btnclr btn btn-large" id="paypls"/>
                      </td>
                      <tr>
                   </table>
@@ -954,7 +955,7 @@ $this->load->view('include/bootstrap_model', $modaldata);
       var amount_paid =$("#amount_paid").val();
       var bal= parseInt(v_g_t-amount_paid);
       console.log(bal);
-      $('#balance').val(bal);
+      $('#balance').val(bal.toFixed(2));
    
            calculate();
    });
@@ -1151,7 +1152,7 @@ $this->load->view('include/bootstrap_model', $modaldata);
          // else{
          //    $('#amount_paid').val("0.00"); 
          // }
-         $('#balance').val(bal);
+         $('#balance').val(bal.toFixed(2));
     }
    
    });
@@ -1250,7 +1251,7 @@ $this->load->view('include/bootstrap_model', $modaldata);
     $('#customer_gtotal').val(custo_final); 
      $('#tax_details').val(answer.toFixed(3) +" ( "+tax+" )");
    var bal_amt=custo_final-$('#amount_paid').val();
-   $('#balance').val(bal_amt);
+   $('#balance').val(bal_amt.toFixed(2));
    
    }
    
@@ -1619,7 +1620,7 @@ $this->load->view('include/bootstrap_model', $modaldata);
     var custo_final = isNaN(parseInt(value)) ? 0 : parseInt(value)
    $('#customer_gtotal').val(custo_final);
    var bal_amt=custo_final-$('#amount_paid').val();
-   $('#balance').val(bal_amt);
+   $('#balance').val(bal_amt.toFixed(2));
    
    
    
@@ -1643,7 +1644,7 @@ $this->load->view('include/bootstrap_model', $modaldata);
            success: function(result, statut) {
               
              $("#amount_paid").val(result[0]['amt_paid']);
-             $("#balance").val(result[0]['balance']);
+             $("#balance").val(parseFloat(result[0]['balance']).toFixed(2));
                console.log(result);
            }
        });
@@ -2151,10 +2152,8 @@ var id = netheight.slice(indexLastDot + 1);
    
     var payment=parseInt($('#payment_from_modal').val());
    var amount_to_pay=parseInt($('#amount_to_pay').val());
-   console.log(payment+"/"+amount_to_pay);
-   console.log(parseInt(amount_to_pay)-parseInt(payment));
    var value=parseInt(amount_to_pay)-parseInt(payment);
-   $('#balance_modal').val(value);
+   $('#balance_modal').val(parseFloat(value).toFixed(2));
    if (isNaN(value)) {
      $('#balance_modal').val("0");
       }
@@ -2690,7 +2689,7 @@ var id = netheight.slice(indexLastDot + 1);
    $('#paypls').on('click', function (e) {
       e.preventDefault();
       var Balance = $('.balance_modal').val();
-      $('#amount_to_pay').val(Balance);
+      $('#amount_to_pay').val(parseFloat(Balance).toFixed(2));
       $('#payment_modal').modal('show');
    });
    $('#insert_product').submit(function (event) {
@@ -2778,7 +2777,7 @@ var id = netheight.slice(indexLastDot + 1);
            console.log(data);
            var bal= $('#gtotal').val() - data.amt_paid;
            console.log(bal, "bal");
-          $('#balance').val(bal);
+          $('#balance').val(bal.toFixed(2));
           
           if(amtpd){
          $('#amount_paid').val(amtpd);
@@ -2815,7 +2814,7 @@ var id = netheight.slice(indexLastDot + 1);
       $.ajax({
           type:"POST",
           dataType:"json",
-          url:"<?php echo base_url(); ?>Cinvoice/payment_history",
+          url:"<?php echo base_url(); ?>Cinvoice/performapayment_history",
           data:$("#histroy").serialize(),
    
           success:function (data) {
@@ -2824,7 +2823,7 @@ var id = netheight.slice(indexLastDot + 1);
            var amtpd = data.amt_paid !== null ? data.amt_paid : 0;
            console.log(data.amt_paid, 'amt_paid');
            var bal= $('#gtotal').val() - data.amt_paid;
-           var total= "<table class='table table-striped table-bordered' id='paymentTable'><tr><td rowspan='2' style='vertical-align: middle;text-align-last: center;'><b>Grand Total :  <?php  echo $currency;  ?>"+$('#customer_gtotal').val()+"<b></td><td class='td' style='border-right: hidden;'><b>Total Amount Paid :<b></td><td><?php  echo $currency;  ?>"+amtpd+"</td></tr></tr><td class='td' style='border-right: hidden;'><b>Balance :<b></td><td><?php  echo $currency;  ?>"+bal +"</td></tr></table>"
+           var total= "<table class='table table-striped table-bordered' id='paymentTable'><tr><td rowspan='2' style='vertical-align: middle;text-align-last: center;'><b>Grand Total :  <?php  echo $currency;  ?>"+$('#gtotal').val()+"<b></td><td class='td' style='border-right: hidden;'><b>Total Amount Paid :<b></td><td><?php  echo $currency;  ?>"+amtpd+"</td></tr></tr><td class='td' style='border-right: hidden;'><b>Balance :<b></td><td><?php  echo $currency;  ?>"+bal +"</td></tr></table>"
            var table_header = "<table class='table table-striped table-bordered'><thead style='FONT-WEIGHT:BOLD;'><tr><td>S.NO</td><td>Payment Date</td><td>Reference.NO</td><td>Bank Name</td><td>Amount Paid</td><td>Balance</td><td>Details</td></tr></thead><tbody>";
             var table_footer = "</tbody></table>";
             var html ="";
