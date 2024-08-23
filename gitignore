@@ -1,0 +1,13 @@
+application/config/config.php
+application/config/database.php
+application/logs/*
+application/ci_sessions/*
+uploads/customer/*
+uploads/employeedetails/*
+uploads/oceanimport/*
+uploads/product/*
+uploads/profile/*
+uploads/purchase/*
+uploads/roadtransport/*
+uploads/serviceprovider/*
+uploads/supplier/*
