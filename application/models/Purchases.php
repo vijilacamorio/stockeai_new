@@ -23,224 +23,107 @@ public function add_payment_terms($postData){
         $query = $this->db->get();
         return $query->result_array();
     }
+//For Expense Index Page  - Surya
+public function getPaginatedPurchases($limit, $offset, $orderField, $orderDirection, $search, $Id, $date="") {
+    $this->db->select('a.id, a.purchase_id, a.chalan_no, a.supplier_id, a.total_amt, a.grand_total_amount, a.gtotal_preferred_currency, a.total_tax, a.paid_amount, a.balance, a.payment_id, a.purchase_date, a.payment_due_date, a.create_date, "Product Purchase" as source, b.supplier_name');
+    $this->db->from('product_purchase a');
+    $this->db->join('supplier_information b', 'a.supplier_id = b.supplier_id');
 
-
-    public function getPaginatedPurchases($limit, $offset, $orderField, $orderDirection, $search, $Id, $date="") {
-        // Fetch data from product_purchase
-        $this->db->select('id, purchase_id, chalan_no, supplier_id, total_amt, grand_total_amount, gtotal_preferred_currency, total_tax, paid_amount, balance, payment_id, total_discount, purchase_date, payment_due_date, remarks, message_invoice, etd, eta, shipping_line, container_no, bl_number, isf_filling, purchase_details, status, bank_id, packing_id, payment_type, create_by, image, ocr_attachment, payment_terms, Port_of_discharge, overall_gross, overall_net, g_weight, total_gross, total_net, total_weight, amount_pay_usd, due_amount_usd, account_category, sub_category, account_subcat, create_date, "product_purchase" as source');
-        $this->db->from('product_purchase');
-        if ($search != "") {
-            $this->db->group_start();
-            $this->db->like('chalan_no', $search);
-            $this->db->or_like('supplier_id', $search);
-            $this->db->or_like('total_amt', $search);
-            $this->db->or_like('grand_total_amount', $search);
-            $this->db->or_like('gtotal_preferred_currency', $search);
-            $this->db->or_like('total_tax', $search);
-            $this->db->or_like('paid_amount', $search);
-            $this->db->or_like('balance', $search);
-            $this->db->or_like('payment_id', $search);
-            $this->db->or_like('total_discount', $search);
-            $this->db->or_like('purchase_date', $search);
-            $this->db->or_like('payment_due_date', $search);
-            $this->db->or_like('remarks', $search);
-            $this->db->or_like('message_invoice', $search);
-            $this->db->or_like('etd', $search);
-            $this->db->or_like('eta', $search);
-            $this->db->or_like('shipping_line', $search);
-            $this->db->or_like('container_no', $search);
-            $this->db->or_like('bl_number', $search);
-            $this->db->or_like('isf_filling', $search);
-            $this->db->or_like('purchase_details', $search);
-            $this->db->or_like('status', $search);
-            $this->db->or_like('bank_id', $search);
-            $this->db->or_like('packing_id', $search);
-            $this->db->or_like('payment_type', $search);
-            $this->db->or_like('create_by', $search);
-            $this->db->or_like('image', $search);
-            $this->db->or_like('ocr_attachment', $search);
-            $this->db->or_like('payment_terms', $search);
-            $this->db->or_like('Port_of_discharge', $search);
-            $this->db->or_like('overall_gross', $search);
-            $this->db->or_like('overall_net', $search);
-            $this->db->or_like('g_weight', $search);
-            $this->db->or_like('total_gross', $search);
-            $this->db->or_like('total_net', $search);
-            $this->db->or_like('total_weight', $search);
-            $this->db->or_like('amount_pay_usd', $search);
-            $this->db->or_like('due_amount_usd', $search);
-            $this->db->or_like('account_category', $search);
-            $this->db->or_like('sub_category', $search);
-            $this->db->or_like('account_subcat', $search);
-            $this->db->or_like('create_date', $search);
-            $this->db->group_end();
+    if ($search != "") {
+        $this->db->group_start();
+        $this->db->like('a.chalan_no', $search);
+       $this->db->group_end();
+    }
+    if (!empty($date)) {
+        $dates = explode(' - ', $date);
+        if (count($dates) == 2) {
+            $start_date = date('Y-m-d', strtotime($dates[0]));
+            $end_date = date('Y-m-d', strtotime($dates[1]));
+            $this->db->where("a.create_date >=", $start_date);
+            $this->db->where("a.create_date <=", $end_date);
         }
-        if (!empty($date)) {
-            $dates = explode(' - ', $date);
-            if (count($dates) == 2) {
-                $start_date = date('Y-m-d', strtotime($dates[0]));
-                $end_date = date('Y-m-d', strtotime($dates[1]));
-                $this->db->where("purchase_date >=", $start_date);
-                $this->db->where("purchase_date <=", $end_date);
-            }
+    }
+    $this->db->where('a.create_by', $Id);
+
+    $query1 = $this->db->get_compiled_select(); 
+  $this->db->select('a.id, a.serviceprovider_id as purchase_id, a.bill_number as chalan_no, a.supplier_id, a.total, a.gtotals as grand_total_amount, a.gtotal_preferred_currency, a.tax_detail as total_tax, a.amount_paids as paid_amount, a.balances as balance, a.payment_id, a.bill_date as purchase_date, a.due_date as payment_due_date, a.create_date, "Service Provider" as source, b.supplier_name');
+    $this->db->from('service a');
+    $this->db->join('supplier_information b', 'a.supplier_id = b.supplier_id');
+
+    if ($search != "") {
+        $this->db->group_start();
+        $this->db->like('a.serviceprovider_id', $search);
+       $this->db->group_end();
+    }
+    if (!empty($date)) {
+        $dates = explode(' - ', $date);
+        if (count($dates) == 2) {
+            $start_date = date('Y-m-d', strtotime($dates[0]));
+            $end_date = date('Y-m-d', strtotime($dates[1]));
+            $this->db->where("a.create_date >=", $start_date);
+            $this->db->where("a.create_date <=", $end_date);
         }
-        $this->db->where('create_by', $Id);
+    }
+    $this->db->where('a.create_by', $Id);
 
-        $this->db->union_all();
+     $query2 = $this->db->get_compiled_select();
+  $combined_query = "($query1) UNION ALL ($query2) ORDER BY $orderField $orderDirection LIMIT $limit OFFSET $offset";
 
-        // Fetch data from service
-        $this->db->select('id, serviceprovider_id, sp_address, payment_terms, bill_number, bill_date, due_date, total, memo_details, create_by, status, service_provider_name, phone_num, acc_cat_name, acc_sub_name, acc_cat, tax_detail, gtotals, vendor_gtotals, amount_paids, balances, payment_id, ocr_attachment, create_date, "service" as source');
-        $this->db->from('service');
-        if ($search != "") {
-            $this->db->group_start();
-            $this->db->like('serviceprovider_id', $search);
-            $this->db->or_like('sp_address', $search);
-            $this->db->or_like('payment_terms', $search);
-            $this->db->or_like('bill_number', $search);
-            $this->db->or_like('bill_date', $search);
-            $this->db->or_like('due_date', $search);
-            $this->db->or_like('total', $search);
-            $this->db->or_like('memo_details', $search);
-            $this->db->or_like('create_by', $search);
-            $this->db->or_like('status', $search);
-            $this->db->or_like('service_provider_name', $search);
-            $this->db->or_like('phone_num', $search);
-            $this->db->or_like('acc_cat_name', $search);
-            $this->db->or_like('acc_sub_name', $search);
-            $this->db->or_like('acc_cat', $search);
-            $this->db->or_like('tax_detail', $search);
-            $this->db->or_like('gtotals', $search);
-            $this->db->or_like('vendor_gtotals', $search);
-            $this->db->or_like('amount_paids', $search);
-            $this->db->or_like('balances', $search);
-            $this->db->or_like('payment_id', $search);
-            $this->db->or_like('ocr_attachment', $search);
-            $this->db->or_like('create_date', $search);
-            $this->db->group_end();
-        }
-        if (!empty($date)) {
-            $dates = explode(' - ', $date);
-            if (count($dates) == 2) {
-                $start_date = date('Y-m-d', strtotime($dates[0]));
-                $end_date = date('Y-m-d', strtotime($dates[1]));
-                $this->db->where("create_date >=", $start_date);
-                $this->db->where("create_date <=", $end_date);
-            }
-        }
-        $this->db->where('create_by', $Id);
+    $query = $this->db->query($combined_query);
 
-        $this->db->order_by($orderField, $orderDirection);
-        $this->db->limit($limit, $offset);
-
-        $query = $this->db->get();
-        return $query->result_array();
+     if (!$query) {
+        $error = $this->db->error();
+        echo "Error Code: " . $error['code'];
+        echo "Error Message: " . $error['message'];
+        return [];
     }
 
-    public function getTotalPurchases($search, $Id, $date="") {
-        $this->db->select('id');
-        $this->db->from('product_purchase');
+     return $query->result_array();
+}
+
+//For Expense Index Page  - Surya
+public function getTotalPurchases($search, $Id, $date="") {
+    $this->db->select('id');
+    $this->db->from('product_purchase');
+    if ($search != "") {
         $this->db->group_start();
-        if ($search != "") {
-            $this->db->like('chalan_no', $search);
-            $this->db->or_like('supplier_id', $search);
-            $this->db->or_like('total_amt', $search);
-            $this->db->or_like('grand_total_amount', $search);
-            $this->db->or_like('gtotal_preferred_currency', $search);
-            $this->db->or_like('total_tax', $search);
-            $this->db->or_like('paid_amount', $search);
-            $this->db->or_like('balance', $search);
-            $this->db->or_like('payment_id', $search);
-            $this->db->or_like('total_discount', $search);
-            $this->db->or_like('purchase_date', $search);
-            $this->db->or_like('payment_due_date', $search);
-            $this->db->or_like('remarks', $search);
-            $this->db->or_like('message_invoice', $search);
-            $this->db->or_like('etd', $search);
-            $this->db->or_like('eta', $search);
-            $this->db->or_like('shipping_line', $search);
-            $this->db->or_like('container_no', $search);
-            $this->db->or_like('bl_number', $search);
-            $this->db->or_like('isf_filling', $search);
-            $this->db->or_like('purchase_details', $search);
-            $this->db->or_like('status', $search);
-            $this->db->or_like('bank_id', $search);
-            $this->db->or_like('packing_id', $search);
-            $this->db->or_like('payment_type', $search);
-            $this->db->or_like('create_by', $search);
-            $this->db->or_like('image', $search);
-            $this->db->or_like('ocr_attachment', $search);
-            $this->db->or_like('payment_terms', $search);
-            $this->db->or_like('Port_of_discharge', $search);
-            $this->db->or_like('overall_gross', $search);
-            $this->db->or_like('overall_net', $search);
-            $this->db->or_like('g_weight', $search);
-            $this->db->or_like('total_gross', $search);
-            $this->db->or_like('total_net', $search);
-            $this->db->or_like('total_weight', $search);
-            $this->db->or_like('amount_pay_usd', $search);
-            $this->db->or_like('due_amount_usd', $search);
-            $this->db->or_like('account_category', $search);
-            $this->db->or_like('sub_category', $search);
-            $this->db->or_like('account_subcat', $search);
-            $this->db->or_like('create_date', $search);
-        }
-        if (!empty($date)) {
-            $dates = explode(' - ', $date);
-            if (count($dates) == 2) {
-                $start_date = date('Y-m-d', strtotime($dates[0]));
-                $end_date = date('Y-m-d', strtotime($dates[1]));
-                $this->db->where("purchase_date >=", $start_date);
-                $this->db->where("purchase_date <=", $end_date);
-            }
-        }
-        $this->db->where('create_by', $Id);
+        $this->db->like('chalan_no', $search);
         $this->db->group_end();
-
-        $this->db->union_all();
-
-        $this->db->select('id');
-        $this->db->from('service');
-        $this->db->group_start();
-        if ($search != "") {
-            $this->db->like('serviceprovider_id', $search);
-            $this->db->or_like('sp_address', $search);
-            $this->db->or_like('payment_terms', $search);
-            $this->db->or_like('bill_number', $search);
-            $this->db->or_like('bill_date', $search);
-            $this->db->or_like('due_date', $search);
-            $this->db->or_like('total', $search);
-            $this->db->or_like('memo_details', $search);
-            $this->db->or_like('create_by', $search);
-            $this->db->or_like('status', $search);
-            $this->db->or_like('service_provider_name', $search);
-            $this->db->or_like('phone_num', $search);
-            $this->db->or_like('acc_cat_name', $search);
-            $this->db->or_like('acc_sub_name', $search);
-            $this->db->or_like('acc_cat', $search);
-            $this->db->or_like('tax_detail', $search);
-            $this->db->or_like('gtotals', $search);
-            $this->db->or_like('vendor_gtotals', $search);
-            $this->db->or_like('amount_paids', $search);
-            $this->db->or_like('balances', $search);
-            $this->db->or_like('payment_id', $search);
-            $this->db->or_like('ocr_attachment', $search);
-            $this->db->or_like('create_date', $search);
-        }
-        if (!empty($date)) {
-            $dates = explode(' - ', $date);
-            if (count($dates) == 2) {
-                $start_date = date('Y-m-d', strtotime($dates[0]));
-                $end_date = date('Y-m-d', strtotime($dates[1]));
-                $this->db->where("create_date >=", $start_date);
-                $this->db->where("create_date <=", $end_date);
-            }
-        }
-        $this->db->where('create_by', $Id);
-        $this->db->group_end();
-
-        $query = $this->db->get();
-        return $query->num_rows();
     }
+    if (!empty($date)) {
+        $dates = explode(' - ', $date);
+        if (count($dates) == 2) {
+            $start_date = date('Y-m-d', strtotime($dates[0]));
+            $end_date = date('Y-m-d', strtotime($dates[1]));
+            $this->db->where("create_date >=", $start_date);
+            $this->db->where("create_date <=", $end_date);
+        }
+    }
+    $this->db->where('create_by', $Id);
+ $query1 = $this->db->get_compiled_select();
+  $this->db->select('id');
+    $this->db->from('service');
+    if ($search != "") {
+        $this->db->group_start();
+        $this->db->like('serviceprovider_id', $search);
+        $this->db->group_end();
+    }
+    if (!empty($date)) {
+        $dates = explode(' - ', $date);
+        if (count($dates) == 2) {
+            $start_date = date('Y-m-d', strtotime($dates[0]));
+            $end_date = date('Y-m-d', strtotime($dates[1]));
+            $this->db->where("create_date >=", $start_date);
+            $this->db->where("create_date <=", $end_date);
+        }
+    }
+    $this->db->where('create_by', $Id);
+  $query2 = $this->db->get_compiled_select();
+ $total_query = $this->db->query("($query1) UNION ALL ($query2)");
+
+    return $total_query->num_rows();
+}
+
 
     
             public function delete_pay_info() {
@@ -669,8 +552,7 @@ $this->db->where('a.supplier_id', $customer_id);
     public function getexpense_taxinfo()
      {
         $user_id = $this->session->userdata('user_id');
-
-        $sql="SELECT * FROM `tax_information` WHERE (`status_type` = 'expenses' OR `status_type` = 'Both') AND `created_by` = $user_id";
+     $sql="SELECT * FROM `tax_information` WHERE (`status_type` = 'expenses' OR `status_type` = 'Both') AND `created_by` = $user_id";
 
         $query = $this->db->query($sql);
         // echo $this->db->last_query();
@@ -734,23 +616,7 @@ $this->db->where('a.supplier_id', $customer_id);
     }
     
     
-    
-     public function getExpenseallData()
-    {
-       $user_id = $this->session->userdata('user_id');
 
-        $sql="SELECT * FROM `tax_information` WHERE (`status_type` = 'expenses' OR `status_type` = 'Both') AND `created_by` = $user_id";
-
-        $query = $this->db->query($sql);
-
-        if ($query->num_rows() > 0) {
-
-            return $query->result_array();
-
-        }
-
-        return false;
-    }
     
     public function getTruckingExpenseallData()
     {
@@ -868,15 +734,6 @@ $this->db->where('a.supplier_id', $customer_id);
 
 
 
-    public function expense_package()
-    {
-        $sql='select * from expense_packing_list where create_by='.$_SESSION['user_id'];
-        $query=$this->db->query($sql);
- if ($query->num_rows() > 0) {
-            return $query->result_array();
-        }
-        return false;
-    }
     
     
     public function getEditExpensesData($purchase_id)
@@ -2827,43 +2684,13 @@ $data2 = array(
 
 
 
-public function payment_type_dropdown() {
-        $this->db->select('*');
-        $this->db->from('payment_type');
-        $this->db->where('create_by',$this->session->userdata('user_id'));
-        $query = $this->db->get();
-    //    echo $this->db->last_query(); die();
-        return $query->result_array();
-    }
-    
-    
-    
-    
-    
-    
-    
-    
-    public function payment_terms_dropdown() {
-        $this->db->select('*');
-        $this->db->from('payment_terms');
-        
-                $this->db->where('create_by',$this->session->userdata('user_id'));
 
-        $query = $this->db->get();
-    //    echo $this->db->last_query(); die();
-        return $query->result_array();
-    }
     
     
     
     
-    public function drop_payment_type(){
-      $this->db->select('*');
-      $this->db->from('payment_type');
-      $this->db->where('create_by' ,$this->session->userdata('user_id'));
-      $query = $this->db->get();
-      return $query->result_array();
-  }
+    
+
     public function get_expense_product()
     {
         $this->db->select('a.*,b.*');
@@ -4206,31 +4033,31 @@ $delivery_date = date('Y-m-d', strtotime($this->input->post('delivery_date',TRUE
     }
 
 
-       //Retrieve purchase order Edit Data
-    public function retrieve_purchase_order_editdata($purchase_id) {
-        $this->db->select('a.*,
-                        b.*,
-                        c.product_id,
-                        c.product_name,
-                        c.product_model,
-                        d.supplier_id,
-                        d.supplier_name'
-        );
-        $this->db->from('purchase_order a');
-        $this->db->join('purchase_order_details b', 'b.purchase_id =a.purchase_order_id');
-        $this->db->join('product_information c', 'c.product_id =b.product_id');
-        $this->db->join('supplier_information d', 'd.supplier_id = a.supplier_id');
-        $this->db->where('a.create_by',$this->session->userdata('user_id'));
-        $this->db->where('a.purchase_order_id', $purchase_id);
-        $this->db->order_by('a.purchase_details', 'asc');
-        $query = $this->db->get();
-    //  echo $this->db->last_query();
-        if ($query->num_rows() > 0) {
-            return $query->result_array();
-        }
+    //    //To - Create Expense Page - Surya
+    // public function retrieve_purchase_order_editdata($purchase_id) {
+    //     $this->db->select('a.*,
+    //                     b.*,
+    //                     c.product_id,
+    //                     c.product_name,
+    //                     c.product_model,
+    //                     d.supplier_id,
+    //                     d.supplier_name'
+    //     );
+    //     $this->db->from('purchase_order a');
+    //     $this->db->join('purchase_order_details b', 'b.purchase_id =a.purchase_order_id');
+    //     $this->db->join('product_information c', 'c.product_id =b.product_id');
+    //     $this->db->join('supplier_information d', 'd.supplier_id = a.supplier_id');
+    //     $this->db->where('a.create_by',$this->session->userdata('user_id'));
+    //     $this->db->where('a.purchase_order_id', $purchase_id);
+    //     $this->db->order_by('a.purchase_details', 'asc');
+    //     $query = $this->db->get();
+    // //  echo $this->db->last_query();
+    //     if ($query->num_rows() > 0) {
+    //         return $query->result_array();
+    //     }
      
-        return true;
-    }
+    //     return true;
+    // }
 
 
        //Retrieve ocean import tracking Edit Data

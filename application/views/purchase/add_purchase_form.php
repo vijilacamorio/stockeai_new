@@ -4530,6 +4530,7 @@
    $('#main').hide();
    });
    $('#po').on('change', function (e) {
+      debugger;
    
    $('#purchaseTable1 tbody').empty();
    
