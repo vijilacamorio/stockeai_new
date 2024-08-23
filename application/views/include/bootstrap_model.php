@@ -899,13 +899,15 @@ $(document).ready(function(){
                     contentType: false, 
                     processData: false, 
                     success:function (response) {
+                    	console.log(response, 'response');
+                    	debugger;
                         if (response.status == 'success') {
 				                $('#paymenterrormessage').html('<div class="alert alert-success alert-dismissible text-left" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>' + response.msg + '</div>');
 				                $('.amt').css('display', 'table-cell');
 				                if (response.paymentData && response.paymentData.length > 0) {
 					                $('#makepaymentId').val(response.paymentData[0]['payment_id']);
 					                $('#amount_paid').val(response.paymentData[0]['amt_paid']);
-					                $('#balance').val(response.paymentData[0]['balance']);
+					                $('#Balance').val(response.paymentData[0]['balance']);
 					            }
 				                setTimeout(function() {
 				                    $('#payment_modal').modal('hide');
