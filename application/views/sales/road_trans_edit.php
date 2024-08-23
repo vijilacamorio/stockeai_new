@@ -178,6 +178,7 @@ tfoot tr{
                                     <input type="hidden"  value="<?php echo $payment_id; ?>" name="makepaymentId" class="payment_id" id="makepaymentId"/>
                                     <input type="hidden"  value="<?php echo html_escape($customer_id);?>" name="customer_id" class="customer_id" id="customer_id"/>
                                     <input type="hidden"  value="<?php echo $_GET['id']; ?>" name="admin_id" class="admin_id" id="admin_id"/>
+                                    <input type="hidden"  value="<?php echo $trucking_id; ?>" name="trucking_id" class="trucking_id" id="trucking_id"/>
                                   
                                     <input type="submit" id="payment_history" name="payment_history" class="btn btnclr" style="float:right; " value="Payment History" style="float:right;margin-bottom:30px;"/>
                                 </form>
@@ -193,7 +194,8 @@ tfoot tr{
                 </div>
 
                 <div class="panel-body">
-
+                <div class="displaymessage"></div>
+                <br/>
                    <form id="update_trucking" name="update_trucking" method="post">        
                         <input type="hidden"  value="<?php echo $payment_id; ?>" name="makepaymentId" class="payment_id" id="makepaymentId"/>
                         <div class="row">
@@ -425,20 +427,20 @@ tfoot tr{
                                         </td>
 
                                        <td class="wt">
-                                            <input type="text" name="product_quantity[]" id="cartoon_<?php echo $cnt; ?>" required="" min="0" class="productrate quantity form-control text-right store_cal_<?php echo $cnt; ?>" onkeyup="total_amt(this.id);"  placeholder="0.00" value="<?php echo $pf['qty'] ; ?>" tabindex="6"/>
+                                            <input type="text" name="product_quantity[]" id="cartoon_<?php echo $cnt; ?>" required="" min="0" class="quantity form-control text-right store_cal_<?php echo $cnt; ?>"  placeholder="0.00" value="<?php echo $pf['qty'] ; ?>" tabindex="6"/>
                                         </td>
                                         
                                         <td class="text-right">
                                             <input type="text" name="description[]" id="description" required="" class="form-control text-right" value="<?php echo $pf['description'] ; ?>" tabindex="7"/>
                                         </td>
                                         <td class="text-right">
-                                            <span class="input-symbol-euro"> 
-                                                <input type="text" name="product_rate[]" required="" onkeyup="total_amt(this.id);"  id="product_rate_<?php echo $cnt; ?>" class="form-control text-right productrate"  style="width:100%;" value="<?php echo $pf['rate'] ; ?>" min="0" tabindex="8"/>
+                                            <span class=""> 
+                                                <input type="text" name="product_rate[]" required=""  id="product_rate_<?php echo $cnt; ?>" class="form-control text-right productrate" value="<?php echo $pf['rate'] ; ?>" min="0" tabindex="8"/>
                                             </span>
                                        </td>
 
                                        <td class="text-right">
-                                        <select name="pro_no[]" id="invoice_no" class="form-control " required="" tabindex="1">
+                                        <select name="pro_no[]" id="invoice_no" class="form-control" required="" tabindex="1">
                                         
                                            <?php foreach($invoice as $inv){ 
                                                 $selec_pre = $pf['pro_no_reference'] ==$inv['commercial_invoice_number'] ? 'selected' : ''; 
@@ -448,7 +450,7 @@ tfoot tr{
                                         </select>
                                         </td>
                                         <td class="text-right"> 
-                                            <span class="input-symbol-euro">   
+                                            <span class="">   
                                             <input class="form-control total_price" type="text" name="total_price[]" id="total_price_<?php echo $cnt; ?>"  value="<?php echo $pf['total'] ; ?>"   readonly="readonly" /></span>
                                         </td>
      
@@ -487,7 +489,7 @@ tfoot tr{
                                             <table border="0">
                                                 <tr>
                                                     <td class="cus" name="cus"></td>
-                                                    <td><input  type="text"  readonly id="customer_gtotal"  name="customer_gtotal" /></td>
+                                                    <td><input class="form-control" type="text"  readonly id="customer_gtotal"  name="customer_gtotal" value="<?php echo $purchase_info[0]['customer_gtotal']; ?>"/></td>
                                                 </tr>
                                             </table>
                                         </td>
@@ -504,7 +506,7 @@ tfoot tr{
                                             <table border="0">
                                                 <tr>
                                                     <td class="cus" name="cus"></td>
-                                                    <td><input  type="text"  readonly id="amount_paid"  name="amount_paid" value="<?php echo $purchase_info[0]['amt_paid']; ?>"  required   /></td>
+                                                    <td><input class="form-control" type="text"  readonly id="amount_paid"  name="amount_paid" value="<?php echo $purchase_info[0]['amt_paid']; ?>"  required   /></td>
                                                 </tr>
                                             </table>
                                         
@@ -996,19 +998,16 @@ $this->load->view('include/bootstrap_model', $modaldata);
    console.log("taxi :"+valueSelected);
    $('#tax_details').val(answer +" ( "+tax+" )");
    calculate();
-   });
+   }); 
    var arr=[];
-
- 
-
-
-
-
-
-
-   $(document).on("input change", ".productrate", function(e){
-//    alert('ffff');
+/*
+   $(document).on("input change", ".quantity,.productrate", function(e){
+   
+   
+   
+   
    var total=$(this).closest('tr').find('.total_price').attr('id');
+   alert('teeee');
    var quantity=$(this).closest('tr').find('.quantity').attr('id');
    var amount = $(this).closest('tr').find('.productrate').attr('id');
    var grand=$('#gtotal').val();
@@ -1018,6 +1017,28 @@ $this->load->view('include/bootstrap_model', $modaldata);
    result = isNaN(result) ? 0 : result;
    arr.push(result);
    $('#'+total).val(result);
+   
+   gt();
+   
+   });
+*/
+   $(document).on("input change", ".quantity,.productrate", function(e){
+    //alert('teeee1');
+   var total=$(this).closest('tr').find('.total_price').attr('id');
+   
+   var quantity=$(this).closest('tr').find('.quantity').attr('id');
+    
+   var amount = $(this).closest('tr').find('.productrate').attr('id');
+   
+   var grand=$('#gtotal').val();
+   var quan=$('#'+quantity).val();
+   var amt=$('#'+amount).val();
+   var result=parseInt(quan) * parseInt(amt);
+   result = isNaN(result) ? 0 : result;
+   arr.push(result);
+   console.log('totalid:'+total+', quantityid:'+quantity+', amountid:'+amount);
+   console.log('quan:'+quan+', amt:'+amt);
+   $('#'+total).val(result);
    var first=$("#Total").val();
    var tax= $('#product_tax').val();
    
@@ -1026,25 +1047,24 @@ $this->load->view('include/bootstrap_model', $modaldata);
    var percent = field[1];
    var answer=0;
    var answer =(parseInt(percent) / 100) * parseInt(first);
-   console.log(answer);
    answer = isNaN(parseInt(answer)) ? 0 : parseInt(answer);
    $('#tax_details').val(answer +" ( "+tax+" )");
    
    var gtotal = parseInt(first + answer);
-   console.log(gtotal);
    var amt=parseInt(answer)+parseInt(first);
    var num = isNaN(parseInt(amt)) ? 0 : parseInt(amt)
    var custo_amt=$('#custocurrency_rate').val();
    $("#gtotal").val(num);  
-   console.log(num +"-"+custo_amt);
    var value=parseInt(num*custo_amt);
    var custo_final = isNaN(parseInt(value)) ? 0 : parseInt(value)
    $('#customer_gtotal').val(custo_final);
    var bal_amt=custo_final-$('#amount_paid').val();
    $('#balance').val(bal_amt);
    gt();
+   
    });
- 
+
+
 
 
    
@@ -1269,7 +1289,7 @@ $this->load->view('include/bootstrap_model', $modaldata);
                   console.log(response, "response");
                   if(response.status == 'success') {
                     
-                     $('.displaymessage').html('<div class="alert alert-success alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>' + response.msg + '</div>');
+                     $('.displaymessage').html('<div class="alert alert-success alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>Road transport has been updated successfully</div>');
                      window.setTimeout(function(){
                         document.getElementById('update_trucking').reset();
                         window.location = "<?php echo base_url(); ?>sales/roadTransport?id=<?php echo $_GET['id']; ?>"
@@ -1310,8 +1330,9 @@ $this->load->view('include/bootstrap_model', $modaldata);
             var html ="";
             var count=1;
             if (data.payment_get && data.payment_get.length > 0) {
+                console.log(data.payment_get);
                 data.payment_get.forEach(function(element) {
-                    html += "<tr><td>"+count+"</td><td>"+element.payment_date+"</td><td>"+element.reference_no+"</td><td>"+element.bank_name+"</td><td><?php echo $currency; ?>"+element.amt_paid+"</td><td><?php echo $currency; ?>"+element.balance+"</td><td>" + (element.details ? element.details : '') + "</td></tr>";
+                    html += "<tr><td>"+count+"</td><td>"+element.payment_date+"</td><td>"+element.reference_no+"</td><td>"+element.bank_name+"</td><td><?php echo $currency; ?>"+element.amt_paid+"</td><td><?php echo $currency; ?>"+element.balance+"</td><td>" + (element.description ? element.description : '') + "</td></tr>";
                     count++;
                 });
             } else {
@@ -1326,13 +1347,13 @@ $this->load->view('include/bootstrap_model', $modaldata);
       event.preventDefault();
    });
 
-   function total_amt(id_name){
+   /*function total_amt(id_name){
     var lastValue = id_name.split('_').pop();
     var quan      = $('#cartoon_'+lastValue).val();
     var rate      = $('#product_rate_'+lastValue).val();
     var tot_pri   = quan* rate;
     $('#total_price_'+lastValue).val(tot_pri);
-   }
+   }*/
    
 </script>
 

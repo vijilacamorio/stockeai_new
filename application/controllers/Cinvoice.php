@@ -844,9 +844,10 @@ public function payment_history_trucking()
     $payment_id=$this->input->post('makepaymentId');
     $customer_id=$this->input->post('customer_id');
     $current_in_id=$this->input->post('current_in_id');
+    $trucking_id=$this->input->post('trucking_id');
     $encodedId          = $this->input->post('admin_id');
     $admin_id           = decodeBase64UrlParameter($encodedId);
-    $overall_payment = $this->Invoices->get_cust_payment_overall_info_trucking($customer_id,$admin_id);
+    $overall_payment = $this->Invoices->get_cust_payment_overall_info_trucking('',$admin_id,$trucking_id);
    // echo $this->db->last_query();
     $get_cust_payment = $this->Invoices->get_cust_payment_info($customer_id,$current_in_id);
    // echo $this->db->last_query();

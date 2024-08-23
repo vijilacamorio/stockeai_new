@@ -411,7 +411,7 @@
                               <tr>
                                  <td style="padding-top: 20px;text-align:right;" colspan="5" ><b><?php echo display('total') ?>:</b></td>
                                  <td style="text-align:left;">
-                                    <span class="input-symbol-euro"><input type="text" id="Total" class="form-control text-right mobile_price" style="width: 235px;" name="total" value="0.00" readonly="readonly" /></span>
+                                    <span class="input-symbol-euro"><input type="text" id="Total" class="form-control text-right mobile_price"  name="total" value="0.00" readonly="readonly" /></span>
                                  </td>
                               </tr>
                               <tr>
@@ -419,7 +419,7 @@
                                  <td style="text-align:left;">
                                     <table border="0">
                                        <tr>
-                                          <td style="padding-bottom:30px;"><span class="input-symbol-euro"> <input type="text" id="tax_details" style="width: 235px;" class="form-control mobile_price" class="text-right" value="0.00" name="tax_details"  readonly="readonly" /></span></td>
+                                          <td style="padding-bottom:30px;"><span class="input-symbol-euro"> <input type="text" id="tax_details"  class="form-control mobile_price" class="text-right" value="0.00" name="tax_details"  readonly="readonly" /></span></td>
                                        </tr>
                                     </table>
                                  </td>
@@ -429,7 +429,7 @@
                                  <td>
                                     <table border="0">
                                        <tr>
-                                          <td style="padding-bottom:30px;">  <span class="input-symbol-euro">   <input type="text" id="gtotal" style="width: 235px;" class="form-control mobile_price" name="gtotal" onchange=""value="0.00" readonly="readonly" /></span></td>
+                                          <td style="padding-bottom:30px;">  <span class="input-symbol-euro"><input type="text" id="gtotal" class="form-control mobile_price" name="gtotal" onchange=""value="0.00" readonly="readonly" /></span></td>
                                        </tr>
                                     </table>
                                  </td>
@@ -441,7 +441,7 @@
                               
                                        <tr>
                                           <td class="cus" name="cus"></td> &nbsp; 
-                                          <td> <input  type="text" class="form-control" readonly id="customer_gtotal" value="0.00"  name="customer_gtotal"  required  style="margin-left:5px;"  /></td>
+                                          <td><input  type="text" class="form-control" readonly id="customer_gtotal" value="0.00"  name="customer_gtotal"  required  /></td>
                                        </tr>
 
                                     </table>
@@ -455,7 +455,7 @@
                                     <table border="0">
                                        <tr>
                                           <td class="cus" name="cus"></td> &nbsp;&nbsp;&nbsp; 
-                                          <td ><input  type="text"  readonly id="amount_paid"  name="amount_paid" value="0.00"  required   /></td>
+                                          <td ><input  type="text"  class="form-control" readonly id="amount_paid"  name="amount_paid" value="0.00"  required /></td>
                                        </tr>
                                     </table>
                                  </td>
@@ -466,7 +466,7 @@
                                     <table border="0">
                                        <tr>
                                           <td class="cus" name="cus"></td> &nbsp;&nbsp;&nbsp;
-                                          <td><input class="balance_modal" type="text"  readonly id="balance"  name="balance" value="0.00"/></td>
+                                          <td><input class="balance_modal form-control" type="text"  readonly id="balance"  name="balance" value="0.00"/></td>
                                        </tr>
                                     </table>
                                  </td>
@@ -946,9 +946,12 @@ $newRow.find('select').each(function() {
       }
       });
    }
-   /*$('#product_tax').on('change', function (e) {
+   $('#product_tax').on('change', function (e) {
    var optionSelected = $("option:selected", this);
    var valueSelected = this.value;
+   if(valueSelected==""){
+      valueSelected ='0';
+   }
    var total=$('#Total').val();
    var tax= $('#product_tax').val();
    
@@ -962,7 +965,7 @@ $newRow.find('select').each(function() {
    console.log("taxi :"+valueSelected);
    $('#tax_details').val(answer +" ( "+tax+" )");
    calculate();
-   }); */
+   });
    var arr=[];
    $(document).on("input change", ".quantity", function(e){
    
@@ -985,10 +988,7 @@ $newRow.find('select').each(function() {
    
    });
    $(document).on("input change", ".quantity", function(e){
-   
-   
-   
-   
+    
    var total=$(this).closest('tr').find('.total_price').attr('id');
    
    var quantity=$(this).closest('tr').find('.quantity').attr('id');
@@ -1028,9 +1028,6 @@ $newRow.find('select').each(function() {
    
    });
    $(document).on("input change", ".productrate", function(e){
-   
-   
-   
    
    var total=$(this).closest('tr').find('.total_price').attr('id');
    
