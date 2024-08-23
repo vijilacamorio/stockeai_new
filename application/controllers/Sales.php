@@ -502,7 +502,7 @@ public function createRoadTrans(){
         $receive_by         = $admin_id;
         $receive_date       = date('Y-m-d');
         $createdate         = date('Y-m-d H:i:s');
-        $paid_amount        = $this->input->post('paid_amount',TRUE);
+        $paid_amount        = $this->input->post('amount_paid',TRUE);
         $due_amount         = $this->input->post('due_amount',TRUE);
         $discount           = $this->input->post('discount',TRUE);
         $bank_id            = $this->input->post('bank_id',TRUE);

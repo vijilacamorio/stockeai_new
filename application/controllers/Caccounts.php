@@ -283,10 +283,10 @@ if ($this->db->field_exists($txd, 'quotation_taxinfo')) {
     // ================ Income tax entry   ======
    
     public function create_tax_setup(){
-      $tname = $this->input->post('tax_name',TRUE);
-      echo $tname;
-       $tax_name= str_replace("_"," ",$tname);
-       echo $tax_name;
+        $tname = $this->input->post('tax_name',TRUE);
+        $tax_name= str_replace("_"," ",$tname);
+        $encodedId = $this->input->post('encodedId', TRUE);
+        $decodedId          = decodeBase64UrlParameter($encodedId);
         $year = date("Y");
         $start_amount = $this->input->post('employer',TRUE);
         $end_amount = $this->input->post('employee',TRUE);
@@ -299,11 +299,10 @@ if ($this->db->field_exists($txd, 'quotation_taxinfo')) {
         $married_to = $this->input->post('married_to',TRUE);
         $head_household_from = $this->input->post('head_household_from',TRUE);
         $head_household_to = $this->input->post('head_household_to',TRUE);
-               $this->db->where('tax',$tax_name);
-                //   echo $this->db->last_query(); die();
-         $this->db->delete('state_localtax');
-         echo $this->db->last_query();
-       for ($i = 0, $n = count($details); $i < $n; $i++) {
+        $this->db->where('tax',$tax_name);
+        $this->db->where('create_by', $decodedId );
+        $this->db->delete('state_localtax');
+         for ($i = 0, $n = count($details); $i < $n; $i++) {
             $samount = $start_amount[$i];
             $eamount = $end_amount[$i];
             $arate = $details[$i];
@@ -325,21 +324,22 @@ if ($this->db->field_exists($txd, 'quotation_taxinfo')) {
                 'married' => $mfrom."-".$mto,
                 'head_household' => $hhfrom."-".$hhto,
                 'tax'  =>$tax_name,
-              'create_by' => $this->session->userdata('user_id')
-        );
-        //   print_r($data1);
-         $this->db->insert('state_localtax', $data1);
-          echo $this->db->last_query();
+              'create_by' => $decodedId 
+            );
+            $result = $this->db->insert('state_localtax', $data1);
             }
-            $this->session->set_flashdata('message', display('save_successfully'));
-            redirect("Chrm/payroll_setting");
-            if (empty($data1)) {
-                redirect("Chrm/payroll_setting");
-            }else{
-                redirect("Chrm/payroll_setting");
+            if ($result) {
+                $response = array('status' => 'success', 'msg' => 'State Tax has been added successfully');
+            } else {
+                $response = array('status' => 'error', 'msg' => 'An error occurred while adding the State Tax');
             }
+            echo json_encode($response);
     }
-    
+
+
+
+
+
     
     public function delete_row()
     {
@@ -347,36 +347,31 @@ if ($this->db->field_exists($txd, 'quotation_taxinfo')) {
         $result = $this->Accounts->delete_payrolldata($id);
     }
 
-    public function create_tax_federal(){
-      
+  
 
-  $tax_name= $this->input->post('tax_name',TRUE);
-   $url= $this->input->post('url',TRUE);
-$year = date("Y"); 
+    public function create_tax_federal() {
 
-        $start_amount = $this->input->post('employer',TRUE);
-        $end_amount = $this->input->post('employee',TRUE);
-        $details = $this->input->post('details',TRUE);
-        $single_from = $this->input->post('single_from',TRUE);
-        $single_to = $this->input->post('single_to',TRUE);
-        $tax_filling_from = $this->input->post('tax_filling_from',TRUE);
-        $tax_filling_to = $this->input->post('tax_filling_to',TRUE);
-        $married_from = $this->input->post('married_from',TRUE);
-        $married_to = $this->input->post('married_to',TRUE);
-        $head_household_from = $this->input->post('head_household_from',TRUE);
-        $head_household_to = $this->input->post('head_household_to',TRUE);
-
-// print_r( $head_household_to); die();
-
-
-     //   echo count($slab_no);
-               $this->db->where('tax',$tax_name);
-                //   echo $this->db->last_query(); die();
-
-         $this->db->delete('federal_tax');
-    //     echo $this->db->last_query();
-       for ($i = 0, $n = count($details); $i < $n; $i++) {
-           
+        $encodedId = $this->input->post('encodedId', TRUE);
+        $decodedId          = decodeBase64UrlParameter($encodedId);
+        $tax_name = $this->input->post('tax_name', TRUE);
+        $url = $this->input->post('url', TRUE);
+        $year = date("Y"); 
+        $start_amount = $this->input->post('employer', TRUE);
+        $end_amount = $this->input->post('employee', TRUE);
+        $details = $this->input->post('details', TRUE);
+        $single_from = $this->input->post('single_from', TRUE);
+        $single_to = $this->input->post('single_to', TRUE);
+        $tax_filling_from = $this->input->post('tax_filling_from', TRUE);
+        $tax_filling_to = $this->input->post('tax_filling_to', TRUE);
+        $married_from = $this->input->post('married_from', TRUE);
+        $married_to = $this->input->post('married_to', TRUE);
+        $head_household_from = $this->input->post('head_household_from', TRUE);
+        $head_household_to = $this->input->post('head_household_to', TRUE);
+        $this->db->where('tax', $tax_name);
+        $this->db->where('created_by', $decodedId);
+        $this->db->delete('federal_tax');
+        $success = true;
+        for ($i = 0, $n = count($details); $i < $n; $i++) {
             $samount = $start_amount[$i];
             $eamount = $end_amount[$i];
             $arate = $details[$i];
@@ -388,40 +383,32 @@ $year = date("Y");
             $mto = $married_to[$i];
             $hhfrom = $head_household_from[$i];
             $hhto = $head_household_to[$i];
-
-
             $data1 = array(
-                'year'  => $year,
-                'employer'    => $samount,
-                'employee'      => $eamount,
-                'details'            => $arate,
-                'single'   =>  $sfrom."-".$sto,
-                'tax_filling' => $tffrom."-".$tfto,           
-                'married' => $mfrom."-".$mto,
-                'head_household' => $hhfrom."-".$hhto,
-                'tax'  =>$tax_name,
-               'created_by'       => $this->session->userdata('user_id')
-             
-        );
-
-        //   print_r($data1);  
-
-
-
-         $this->db->insert('federal_tax', $data1);
-
-         echo $this->db->last_query(); 
-
-      
-
-        
-
-
-
+                'year'            => $year,
+                'employer'        => $samount,
+                'employee'        => $eamount,
+                'details'         => $arate,
+                'single'          => $sfrom . "-" . $sto,
+                'tax_filling'     => $tffrom . "-" . $tfto,           
+                'married'         => $mfrom . "-" . $mto,
+                'head_household'  => $hhfrom . "-" . $hhto,
+                'tax'             => $tax_name,
+                'created_by'      => $decodedId
+            );
+            $result = $this->db->insert('federal_tax', $data1);
+            if (!$result) {
+                $success = false;
+                break;  
             }
-            $this->session->set_flashdata('message', display('save_successfully'));
-            redirect("Chrm/payroll_setting"); 
+        }
+        if ($success) {
+            $response = array('status' => 'success', 'msg' => 'Tax has been added successfully');
+        } else {
+            $response = array('status' => 'error', 'msg' => 'An error occurred while adding the Tax');
+        }
+        echo json_encode($response);
     }
+    
 
     #==============TAX Entry==============#
     public function tax_entry()
