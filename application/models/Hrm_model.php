@@ -1338,7 +1338,7 @@ b.f_tax AS f_ftax, b.m_tax AS m_mtax, b.s_tax AS s_stax, b.u_tax AS u_utax');
         }
         $this->db->order_by('a.id', 'asc');
         $query = $this->db->get();
-// echo $this->db->last_query(); die();
+        // echo $this->db->last_query(); die();
         if ($query->num_rows() > 0) {
             return $query->result_array();
         } else {
@@ -1356,6 +1356,8 @@ b.f_tax AS f_ftax, b.m_tax AS m_mtax, b.s_tax AS s_stax, b.u_tax AS u_utax');
         $this->db->where('b.choice', 'No');
         $this->db->where('b.create_by', $decodedId);
         $query = $this->db->get();
+
+ 
         if ($query->num_rows() > 0) {
             return $query->result_array();
         } else {
@@ -3144,6 +3146,9 @@ SUM(a.monthly) as monthly_amount'
         $this->db->where('b.is_deleted', 0);
         $this->db->where('b.create_by', $Id);
         $query = $this->db->get();
+       
+        // echo $this->db->last_query(); die();
+
         return $query->num_rows();
     }
 //Payslip index - hr
@@ -3277,8 +3282,7 @@ SUM(a.monthly) as monthly_amount'
     // payroll Setting - Hr
     public function cityassign_update() {
         $sql1 = "UPDATE state_and_tax
-                 SET tax = TRIM(BOTH ',' FROM tax),
-                     ";
+        SET tax = TRIM(BOTH ',' FROM tax)";      
         $query1 = $this->db->query($sql1);
     }
     // payroll Setting - Hr
@@ -3310,8 +3314,7 @@ SUM(a.monthly) as monthly_amount'
     // payroll Setting - Hr
     public function countyassign_update() {
         $sql2 = "UPDATE state_and_tax
-        SET tax = TRIM(BOTH ',' FROM tax),
-        ";
+        SET tax = TRIM(BOTH ',' FROM tax)";
         $query2 = $this->db->query($sql2);
     }
     // payroll Setting - Hr
