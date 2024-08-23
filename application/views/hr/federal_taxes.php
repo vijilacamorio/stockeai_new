@@ -596,7 +596,7 @@
             <h4 class="modal-title">STATE NAME</h4>
          </div>
          <div class="modal-body">
-         <div class="add_state_name"></div>
+         <div class="add_state_name" style="text-align:left;"></div>
         
          <form id="add_statetax"  method="post">
             <div class="panel-body">
@@ -687,7 +687,7 @@ $("#add_statetax").validate({
             <h4 class="modal-title">STATE TAX NAME</h4>
          </div>
          <div class="modal-body">
-         <div class="add_statetax_name" ></div>
+         <div class="add_statetax_name"  style="text-align:left;"></div>
          <form id="assign_statetax"  method="post">
             <div class="panel-body">
                <input type="hidden" name="<?php echo $this->security->get_csrf_token_name();?>" value="<?php echo $this->security->get_csrf_hash();?>">
@@ -785,7 +785,7 @@ $("#assign_statetax").validate({
              <h4 class="modal-title">CITY NAME</h4>
          </div>
          <div class="modal-body">
-            <div class="add_city"></div>
+            <div class="add_city" style="text-align:left;"></div>
          <form id="add_newcity"  method="post">
             <div class="panel-body">
                <input type="hidden" name="<?php echo $this->security->get_csrf_token_name();?>" value="<?php echo $this->security->get_csrf_hash();?>">
@@ -869,7 +869,7 @@ $("#add_newcity").validate({
          </div>
          <div class="modal-body">
             <div id="customeMessage" class="alert hide"></div>
-            <div class="add_citytax_name"></div>
+            <div class="add_citytax_name" style="text-align:left;" ></div>
          <form id="add_assigncity"  method="post">
             <div class="panel-body">
                <input type="hidden" name="<?php echo $this->security->get_csrf_token_name();?>" value="<?php echo $this->security->get_csrf_hash();?>">
@@ -962,7 +962,7 @@ $("#add_assigncity").validate({
             <h4 class="modal-title">COUNTY NAME</h4>
          </div>   
          <div class="modal-body">
-              <div class="alert_errorcounty"></div>
+              <div class="alert_errorcounty" style="text-align:left;" ></div>
             <form id="add_newcounty"  method="post">
             <div class="panel-body">
                <input type="hidden" name="<?php echo $this->security->get_csrf_token_name();?>" value="<?php echo $this->security->get_csrf_hash();?>">
@@ -1045,7 +1045,7 @@ $("#add_newcounty").validate({
             <h4 class="modal-title">COUNTY TAX NAME</h4>
          </div>
          <div class="modal-body">
-            <div class="alert_assigncounty"></div>
+            <div class="alert_assigncounty" style="text-align:left;" ></div>
             <form id="add_assigncounty"  method="post">       
             <div class="panel-body">
                <input type="hidden" name="<?php echo $this->security->get_csrf_token_name();?>" value="<?php echo $this->security->get_csrf_hash();?>">

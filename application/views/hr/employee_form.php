@@ -1554,13 +1554,13 @@ $("#add_designation").validate({
        $('#payroll_type').change(function(){
            var selectedOption = $(this).val();
            if(selectedOption === 'Hourly') {
-               $('#cost').text('Pay rate (Hourly)').show(); 
+                $('#cost').text('Pay Rate (Hourly)').append('<i class="text-danger">*</i>').show(); 
                $('#hrate').show(); 
            } else if (selectedOption === 'SalesCommission') {
                $('#cost').hide(); 
                $('#hrate').hide(); 
            } else {
-               $('#cost').text('Pay rate (Daily)').show(); 
+               $('#cost').text('Pay Rate (Daily)').show(); 
                $('#hrate').show(); 
            }
        });

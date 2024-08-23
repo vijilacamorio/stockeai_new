@@ -1338,7 +1338,7 @@ b.f_tax AS f_ftax, b.m_tax AS m_mtax, b.s_tax AS s_stax, b.u_tax AS u_utax');
         }
         $this->db->order_by('a.id', 'asc');
         $query = $this->db->get();
-// echo $this->db->last_query(); die();
+        // echo $this->db->last_query(); die();
         if ($query->num_rows() > 0) {
             return $query->result_array();
         } else {
@@ -1356,6 +1356,8 @@ b.f_tax AS f_ftax, b.m_tax AS m_mtax, b.s_tax AS s_stax, b.u_tax AS u_utax');
         $this->db->where('b.choice', 'No');
         $this->db->where('b.create_by', $decodedId);
         $query = $this->db->get();
+
+ 
         if ($query->num_rows() > 0) {
             return $query->result_array();
         } else {
@@ -3144,6 +3146,9 @@ SUM(a.monthly) as monthly_amount'
         $this->db->where('b.is_deleted', 0);
         $this->db->where('b.create_by', $Id);
         $query = $this->db->get();
+       
+        // echo $this->db->last_query(); die();
+
         return $query->num_rows();
     }
 //Payslip index - hr
@@ -3275,22 +3280,30 @@ SUM(a.monthly) as monthly_amount'
         return $update_result1;
     }
     // payroll Setting - Hr
-    public function cityassign_update($decodedId) {
+    public function cityassign_update() {
         $sql1 = "UPDATE state_and_tax
-                 SET tax = TRIM(BOTH ',' FROM tax),
-                     created_by = $decodedId";
+        SET tax = TRIM(BOTH ',' FROM tax)";      
         $query1 = $this->db->query($sql1);
     }
     // payroll Setting - Hr
     public function county_update($selected_county, $ctax, $decodedId) {
         $this->load->database();
         $selected_county = $this->db->escape_str($selected_county);
-        $ctax            = $this->db->escape_str($ctax);
+        $ctax = $this->db->escape_str($ctax);
         $this->db->trans_start();
+        $this->db->select('tax');
         $this->db->where('state', $selected_county);
         $this->db->where('created_by', $decodedId);
-        $this->db->set('tax', "CONCAT(tax, ',', '{$ctax}')", FALSE);
-        $this->db->update('state_and_tax');
+        $query = $this->db->get('state_and_tax');
+        $row = $query->row();
+        if ($row) {
+            $existing_tax = rtrim($row->tax, ','); 
+            $new_tax = $existing_tax ? $existing_tax . ',' . $ctax : $ctax;
+            $this->db->set('tax', $new_tax);
+            $this->db->where('state', $selected_county);
+            $this->db->where('created_by', $decodedId);
+            $this->db->update('state_and_tax');
+        }
         $this->db->trans_complete();
         if ($this->db->trans_status() === FALSE) {
             return false;
@@ -3299,10 +3312,9 @@ SUM(a.monthly) as monthly_amount'
         }
     }
     // payroll Setting - Hr
-    public function countyassign_update($decodedId) {
+    public function countyassign_update() {
         $sql2 = "UPDATE state_and_tax
-        SET tax = TRIM(BOTH ',' FROM tax),
-        created_by = $decodedId";
+        SET tax = TRIM(BOTH ',' FROM tax)";
         $query2 = $this->db->query($sql2);
     }
     // payroll Setting - Hr
