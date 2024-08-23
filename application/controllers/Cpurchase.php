@@ -151,6 +151,54 @@ class Cpurchase extends CI_Controller {
         echo json_encode($data);
     }
 }
+
+//For Expense Index Page  - Surya
+ public function getpurchaseDatas() {
+        $encodedId      = isset($_GET['id']) ? $_GET['id'] : null;
+        $decodedId      = decodeBase64UrlParameter($encodedId);
+        $limit          = $this->input->post('length');
+        $start          = $this->input->post('start');
+        $search         = $this->input->post('search')['value'];
+        $orderField     = $this->input->post('columns')[$this->input->post('order')[0]['column']]['data'] =='sl' ? 'created_date' : $this->input->post('columns')[$this->input->post('order')[0]['column']]['data'];
+        $orderDirection = $this->input->post('order')[0]['dir'];
+        $date           = $this->input->post("date");
+        $totalItems     = $this->Purchases->getTotalPurchases($search, $decodedId,$date);
+        $items          = $this->Purchases->getPaginatedPurchases($limit, $start, $orderField, $orderDirection, $search, $decodedId,$date);
+        $data           = [];
+        $i              = $start + 1;
+        foreach ($items as $item) {
+            $edit   = '<a href="' . base_url('Cinvoice/invoice_update_form?id=' . $encodedId. '&invoice_id=' . $item['invoice_id']) . '" class="btnclr btn btn-sm" style="margin-right: 5px;"><i class="fa fa-pencil" aria-hidden="true"></i></a>';
+            $delete = '<a style="margin-right: 5px;" onClick=deleteInvoicedata('.$item["invoice_id"].') class="btnclr btn btn-sm" ><i class="fa fa-trash" aria-hidden="true"></i></a>' ;
+            //$mail = '<a href="' . base_url('Cinvoice/invoice_update_form?id=' . $encodedId. '&invoice_id=' . $item['invoice_id']) . '" class="btn btn-sm btn-danger" ><i class="fa fa-trash" aria-hidden="true"></i></a>';
+            $mail = '<a data-toggle="modal" data-target="#sendemailmodal" onClick=sendEmailproforma('.$item["invoice_id"].') class="btnclr btn btn-sm" style="margin-right: 5px;"><i class="fa fa-envelope" aria-hidden="true"></i></a>';
+            $download = '<a href="' . base_url('Cinvoice/invoice_inserted_data?id=' . $encodedId. '&invoice_id=' . $item['invoice_id']) . '" class="btnclr btn btn-sm" ><i class="fa fa-download" aria-hidden="true"></i></a>';
+            $row = [
+                'sl'               => $i,
+                "commercial_invoice_number"   => $item['commercial_invoice_number'],
+                "invoice_id"   => $item['invoice_id'],
+                "customer_id" => $item['customer_id'],
+                "payment_terms" => $item['payment_terms'],
+                "payment_due_date"   => $item['payment_due_date'],
+                "payment_type"            => $item['payment_type'],
+                "total_tax"           => $item['total_tax'],
+                "gtotal"             => $item['gtotal'],
+                "paid_amount"         => $item['paid_amount'],
+                'due_amount'   => $item['due_amount'],
+                "created_date"    => $item['created_date'],
+                'action'          => $download .'&nbsp;'. $edit . $mail . $delete,
+            ];
+            $data[] = $row;
+            $i++;
+        }
+        $response = [
+            "draw"            => $this->input->post('draw'),
+            "recordsTotal"    => $totalItems,
+            "recordsFiltered" => $totalItems,
+            "data"            => $data,
+        ];
+        echo json_encode($response);
+    }
+
     private function extractFieldData($text) {
         $lines = explode("\n", $text);
         $resultArray = preg_split("/\n\n/", implode("\n", $lines));

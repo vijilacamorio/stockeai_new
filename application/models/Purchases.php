@@ -24,7 +24,64 @@ public function add_payment_terms($postData){
         return $query->result_array();
     }
     
-    
+     public function getPaginatedPurchases($limit, $offset, $orderField, $orderDirection, $search, $Id,$date="") {
+    $this->db->select('commercial_invoice_number, invoice_id, customer_id, payment_terms, payment_due_date, payment_type, total_tax, gtotal, paid_amount, due_amount, created_date');
+    $this->db->from('invoice');
+    if ($search != "") {
+       $this->db->group_start();
+        $this->db->like('commercial_invoice_number', $search);
+        $this->db->or_like('invoice_id', $search);
+        $this->db->or_like('customer_id', $search);
+        $this->db->or_like('payment_terms', $search);
+        $this->db->or_like('payment_due_date', $search);
+        $this->db->or_like('payment_type', $search);
+      
+        $this->db->or_like('total_tax', $search);
+        $this->db->or_like('gtotal', $search);
+        $this->db->or_like('paid_amount', $search);
+        $this->db->or_like('due_amount', $search);
+        $this->db->or_like('created_date', $search);
+        $this->db->group_end();
+    }
+    if (!empty($date)) {
+        $dates = explode(' - ', $date);
+        if (count($dates) == 2) {
+            $start_date = date('Y-m-d', strtotime($dates[0]));
+            $end_date = date('Y-m-d', strtotime($dates[1]));
+            $this->db->where("date >=", $start_date);
+            $this->db->where("date <=", $end_date);
+        }
+    }
+   $this->db->where('sales_by', $Id);
+   $this->db->where('is_deleted', '0');
+     $this->db->limit($limit, $offset);
+    $this->db->order_by($orderField, $orderDirection);
+    $query = $this->db->get();
+    //echo $this->db->last_query();die();
+     $result = $query->result_array();
+    return $result;
+}
+ public function getTotalPurchases($search, $Id,$date="") {
+        $this->db->select('commercial_invoice_number');
+        $this->db->from('invoice');
+        if ($search != "") {
+           $this->db->or_like(array('commercial_invoice_number' => $search, 'invoice_id' => $search, 'customer_id' => $search, 'payment_terms' => $search,
+            'payment_due_date'=> $search, 'payment_type' => $search,'total_tax'=> $search, 'gtotal' => $search, 'paid_amount' => $search, 'due_amount' => $search, 'created_date' => $search));
+        }
+           if (!empty($date)) {
+        $dates = explode(' - ', $date);
+        if (count($dates) == 2) {
+            $start_date = date('Y-m-d', strtotime($dates[0]));
+            $end_date = date('Y-m-d', strtotime($dates[1]));
+            $this->db->where("date >=", $start_date);
+            $this->db->where("date <=", $end_date);
+        }
+    }
+        $this->db->where('sales_by', $Id);
+        $this->db->where('is_deleted', '0');
+        $query = $this->db->get();
+        return $query->num_rows();
+    }
     
             public function delete_pay_info() {
     $payment_id = $this->input->post('payment_id');
