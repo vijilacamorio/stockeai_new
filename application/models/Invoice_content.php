@@ -44,38 +44,19 @@ class Invoice_content extends CI_Model {
             return $query->result_array();
 
         }
-
-     //   return false;
-
+ 
     }
 
-
-
-
-public function retrieve_data() {
-           $id=$_SESSION['user_id'];
-        $this->db->select('*');
-        $this->db->from('invoice_content');
-        $this->db->where('uid', $id);
-        $query = $this->db->get();
-
-        if ($query->num_rows() > 0) {
-            return $query->result_array();
+    // Changed by Ajith on 27/08/2024
+    public function retrieve_data($decodedId) {
+            $this->db->select('*');
+            $this->db->from('invoice_content');
+            $this->db->where('uid',$decodedId);
+            $query = $this->db->get();
+            if ($query->num_rows() > 0) {
+                return $query->result_array();
+            }
         }
-    }
-
-//     public function invoice_data_info() {
-//         $id=$_SESSION['user_id'];
-//      $this->db->select('*');
-//      $this->db->from('company_information');
-//      $this->db->where('company_id', $id);
-//      $query = $this->db->get();
-// echo $this->db->last_query();
-//      if ($query->num_rows() > 0) {
-//          return $query->result_array();
-//      }
-//  }
-
 
 
     public function retrieve_info_data() {

@@ -31,10 +31,12 @@ class Company_setup extends CI_Controller {
 
 	
 	#===============Companybranch===========#
-	public function company_branch()
-	{	
-		// $company_id = $this->input->post('company_id');
-        $content = $this->lcompany->company_branch_total();
+	public function company_branch(){	
+
+		$encodedId                 = isset($_GET['id']) ? $_GET['id'] : null;
+		$decodedId                 = decodeBase64UrlParameter($encodedId);
+ 
+        $content = $this->lcompany->company_branch_total($encodedId  , $decodedId);
 		$this->template->full_admin_html_view($content);
 	}
 
