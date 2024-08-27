@@ -38,8 +38,6 @@ label.error {
   margin-top: 5px; 
   color: red; 
 }
-
-
 </style>
 
 <?php 
