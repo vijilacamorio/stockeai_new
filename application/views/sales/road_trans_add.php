@@ -125,12 +125,12 @@
    </style>
    <section class="content">
       
-      <?php    $payment_id=rand(); ?>
+      <?php $payment_id=rand(); /* ?>
       <form id="histroy" style="display:none;" method="post" >
          <input type="hidden" name="<?php echo $this->security->get_csrf_token_name();?>" value="<?php echo $this->security->get_csrf_hash();?>">
          <input type="hidden"  value="<?php echo $payment_id; ?>" name="makepaymentId" class="makepaymentId" id="makepaymentId"/>
          <input type="submit" id="payment_history" name="payment_history" class="btn" style="float:right;color:white;background-color: #38469f;" value="Payment History" style="float:right;margin-bottom:30px;"/>
-      </form>
+      </form> <?php */ ?>
       <!-- Purchase report -->
       <div class="row">
          <div class="col-sm-12">
@@ -207,7 +207,7 @@
                      </div>
                      <input type="hidden" id="invoice_hdn"/> <input type="hidden" id="invoice_hdn1"/>
                      <div class="row">
-                        <input type="hidden"  value="<?php echo $payment_id; ?>"  name="payment_id" id="payment_id"/>
+                        
                         <div class="col-sm-6">
                            <div class="form-group row">
                               <label for="supplier_sss" class="col-sm-4 col-form-label"><?php echo display('Customer Name') ?>
@@ -349,13 +349,14 @@
                               <td style="border:none;text-align:right;font-weight:bold;"><?php echo display('Tax') ?> : 
                               </td>
                               <td style="width:12%">
-                                 <input list="magic_tax" name="tx"  id="product_tax" class="form-control"   onchange="this.blur();" />
-                                 <datalist id="magic_tax">
-                                    <?php                                
-                                       foreach($trucking_data as $tx){?>
-                                    <option value="<?php echo $tx['tax_id'].'-'.$tx['tax'].'%';?>">  <?php echo $tx['tax_id'].'-'.$tx['tax'].'%';  ?></option>
-                                    <?php } ?>
-                                 </datalist>
+                                 <select name="tx" id="product_tax" class="form-control" >
+                                        
+                                    <?php foreach($trucking_data as $tx){
+                                            //$selecttx = strtoupper($match[1]) == $tx['tax_id'].'-'.$tx['tax'].'%' ? 'selected' : ''; ?>
+                                            <option <?php //echo $selecttx; ?> value="<?php echo $tx['tax_id'].'-'.$tx['tax'].'%';?>">  <?php echo $tx['tax_id'].'-'.$tx['tax'].'%';  ?></option>
+                                        <?php } ?> 
+                                    </select>
+                                
                               </td>
                               <td  style="width:20%;"><a href="#" class="btnclr client-add-btn btn " aria-hidden="true" style="margin-right: 295px;"  data-toggle="modal" data-target="#tax_info" ><i class="fa fa-plus"></i></a></td>
                            </tr>
@@ -491,7 +492,7 @@
                      <div class="form-group row">
                         <label for="remarks" class="col-sm-2 col-form-label"><?php echo display('Remarks') ?></label>
                         <div class="col-sm-8">
-                           <textarea rows="4" cols="50" name="remarks" class=" form-control" style="border:2px solid #d7d4d6;" id="remarks"></textarea>
+                           <textarea rows="4" cols="50" name="remarks" class="form-control" style="border:2px solid #d7d4d6;" id="remarks"></textarea>
                         </div>
                      </div>
                      <div class="form-group row">
@@ -518,6 +519,7 @@
 
 <?php
 $modaldata['bootstrap_model'] = array('vendor','tax_info','payment_model','bank_info');
+$modaldata['payment_id'] = $payment_id;
 
 $this->load->view('include/bootstrap_model', $modaldata);
 ?>

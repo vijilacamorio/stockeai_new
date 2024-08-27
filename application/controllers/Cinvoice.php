@@ -9,7 +9,7 @@ class Cinvoice extends CI_Controller {
         parent::__construct();
         $this->load->model('Web_settings');
         $this->load->model('Customers');
-        $this->load->model('Invoices');
+        $this->load->model('Invoices'); 
         $this->load->model('Settings');
         $this->load->model('Products');
         $this->load->library('linvoice');
@@ -317,7 +317,7 @@ public function insertPayment()
     $admin_comp_id = decodeBase64UrlParameter($this->input->post('admin_company_id'));
     $response = array();
     $data = array(
-        'payment_id'    => rand(),
+        'payment_id'    => $this->input->post('payment_id',TRUE),
         'payment_date'  => $this->input->post('payment_date', TRUE),
         'reference_no'  => $this->input->post('ref_no', TRUE),
         'bank_name'     => $this->input->post('bank', TRUE),

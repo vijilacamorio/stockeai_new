@@ -224,7 +224,7 @@ tfoot tr{
                         </div>
                         <input type="hidden" id="invoice_hdn"/> <input type="hidden" id="invoice_hdn1"/>
                         <div class="row">
-                            <input type="hidden"  value="<?php echo $payment_id; ?>"  name="payment_id"/>
+                            <?php /*<input type="hidden"  value="<?php echo $payment_id; ?>"  name="payment_id"/> */ ?>
                             <div class="col-sm-6">
                             <div class="form-group row">
                                 <label for="supplier_sss" class="col-sm-4 col-form-label"><?php echo display('Customer Name') ?>
@@ -325,7 +325,7 @@ tfoot tr{
                                 </div>
                                 <label for="delivery_time" class="col-sm-1 col-form-label"><?php echo display('TO' )?>
                                 </label>
-                                <div class="col-sm-3">
+                                <div class="col-sm-3"> 
                                 
                                     <input type="time" required tabindex="2" class="form-control " style="border:2px solid #d7d4d6;" name="delivery_time_to" value="{delivery_time_to}" id="time"  />
                                 </div>
@@ -353,7 +353,7 @@ tfoot tr{
 
                                     
                                         <?php foreach ($trucking_data as $key => $attachment) { ?> 
-                                            <span class="attach_<?php echo $key; ?>"><span class="file-block"><span class="file-delete" onClick="deleteAttachment(<?php echo $attachment['id']; ?>,<?php echo $key; ?>);"><i class="fa fa-trash-o"></i></span><a href="<?php  echo base_url(OCEAN_EXPORT_IMG_PATH.$attachment['files']); ?>" target=_blank><?php echo $attachment['files']; ?></a></span></span>
+                                            <span class="attach_<?php echo $key; ?>"><span class="file-block"><span class="file-delete" onClick="deleteAttachment(<?php echo $attachment['id']; ?>,<?php echo $key; ?>);"><i class="fa fa-trash-o"></i></span><a href="<?php  echo base_url(TRUCK_IMG_PATH.$attachment['files']); ?>" target=_blank><?php echo $attachment['files']; ?></a></span></span>
                                         <?php } ?>
                                     
                                     </div>
@@ -620,7 +620,7 @@ $this->load->view('include/bootstrap_model', $modaldata);
    function discard(){
    $.get(
    "<?php echo base_url(); ?>Cinvoice/delete_trucking/", 
-   { val: $("#invoice_hdn1").val(), csrfName:csrfHash,payment_id:$('#payment_id').val() }, // put your parameters here
+   { val: $("#invoice_hdn1").val(), csrfName:csrfHash,payment_id:$('#makepaymentId').val() }, // put your parameters here
    function(responseText){
    console.log(responseText);
    window.btn_clicked = true;      //set btn_clicked to true

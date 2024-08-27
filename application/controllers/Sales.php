@@ -457,7 +457,7 @@ public function createRoadTrans(){
        
         $company_info = $this->Invoices->company_information($company_id);
         
-        $trucking_data = $this->Invoices->getAllTruckingdata($company_id);
+        $trucking_data = $this->Invoices->edit_Trucking_taxdata($company_id);
        
         $setting_detail = $this->Web_settings->retrieve_setting_editdata($company_id);
 
@@ -683,7 +683,7 @@ public function createRoadTrans(){
 
 
 
-            if (empty($con)) {
+            if (empty($con)) { 
 
                 $con = $rand_number;
 
