@@ -457,7 +457,7 @@ public function createRoadTrans(){
        
         $company_info = $this->Invoices->company_information($company_id);
         
-        $trucking_data = $this->Invoices->getAllTruckingdata($company_id);
+        $trucking_data = $this->Invoices->edit_Trucking_taxdata($company_id);
        
         $setting_detail = $this->Web_settings->retrieve_setting_editdata($company_id);
 
@@ -502,7 +502,7 @@ public function createRoadTrans(){
         $receive_by         = $admin_id;
         $receive_date       = date('Y-m-d');
         $createdate         = date('Y-m-d H:i:s');
-        $paid_amount        = $this->input->post('paid_amount',TRUE);
+        $paid_amount        = $this->input->post('amount_paid',TRUE);
         $due_amount         = $this->input->post('due_amount',TRUE);
         $discount           = $this->input->post('discount',TRUE);
         $bank_id            = $this->input->post('bank_id',TRUE);
@@ -683,7 +683,7 @@ public function createRoadTrans(){
 
 
 
-            if (empty($con)) {
+            if (empty($con)) { 
 
                 $con = $rand_number;
 

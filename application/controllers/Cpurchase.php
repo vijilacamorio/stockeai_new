@@ -12,8 +12,9 @@ class Cpurchase extends CI_Controller {
     
         $this->db->query('SET SESSION sql_mode = ""');
             $this->load->model(array(
-            'accounts_model','Web_settings','Purchases'
+            'accounts_model','Web_settings','Purchases','Invoices','Suppliers','Products'
         )); 
+        $this->load->library('lpurchase');
     }
     public function process_form() {
     $CI = & get_instance();
@@ -151,6 +152,57 @@ class Cpurchase extends CI_Controller {
         echo json_encode($data);
     }
 }
+
+//For Expense Index Page  - Surya
+ public function getpurchaseDatas() {
+        $encodedId      = isset($_GET['id']) ? $_GET['id'] : null;
+        $decodedId      = decodeBase64UrlParameter($encodedId);
+        $limit          = $this->input->post('length');
+        $start          = $this->input->post('start');
+        $search         = $this->input->post('search')['value'];
+        $orderField     = $this->input->post('columns')[$this->input->post('order')[0]['column']]['data'] =='sl' ? 'create_date' : $this->input->post('columns')[$this->input->post('order')[0]['column']]['data'];
+        $orderDirection = $this->input->post('order')[0]['dir'];
+        $date           = $this->input->post("date");
+        $totalItems     = $this->Purchases->getTotalPurchases($search, $decodedId,$date);
+        $items          = $this->Purchases->getPaginatedPurchases($limit, $start, $orderField, $orderDirection, $search, $decodedId,$date);
+        $data           = [];
+        $i              = $start + 1;
+        foreach ($items as $item) {
+            $edit   = '<a href="' . base_url('Cpurchase/invoice_update_form?id=' . $encodedId. '&invoice_id=' . $item['invoice_id']) . '" class="btnclr btn btn-sm" style="margin-right: 5px;"><i class="fa fa-pencil" aria-hidden="true"></i></a>';
+            $delete = '<a style="margin-right: 5px;" onClick=deleteInvoicedata('.$item["invoice_id"].') class="btnclr btn btn-sm" ><i class="fa fa-trash" aria-hidden="true"></i></a>' ;
+            //$mail = '<a href="' . base_url('Cinvoice/invoice_update_form?id=' . $encodedId. '&invoice_id=' . $item['invoice_id']) . '" class="btn btn-sm btn-danger" ><i class="fa fa-trash" aria-hidden="true"></i></a>';
+            $mail = '<a data-toggle="modal" data-target="#sendemailmodal" onClick=sendEmailproforma('.$item["invoice_id"].') class="btnclr btn btn-sm" style="margin-right: 5px;"><i class="fa fa-envelope" aria-hidden="true"></i></a>';
+            $download = '<a href="' . base_url('Cinvoice/invoice_inserted_data?id=' . $encodedId. '&invoice_id=' . $item['invoice_id']) . '" class="btnclr btn btn-sm" ><i class="fa fa-download" aria-hidden="true"></i></a>';
+            $row = [
+                'sl'               => $i,
+                "purchase_id"   => $item['purchase_id'],
+                "chalan_no"   => $item['chalan_no'],
+                "supplier_id" => $item['supplier_name'],
+                "total_amt" => $item['total_amt'],
+                "total_tax"   => $item['total_tax'],
+                "grand_total_amount"            => $item['grand_total_amount'],
+                "paid_amount"           => $item['paid_amount'],
+                "balance"             => $item['balance'],
+                "payment_id"         => $item['payment_id'],
+                'gtotal_preferred_currency'   => $item['gtotal_preferred_currency'],
+                "purchase_date"    => $item['purchase_date'],
+                  "payment_due_date"    => $item['payment_due_date'],
+                  "create_date"    => $item['create_date'],
+                  "source"  =>$item['source'],
+                'action'          => $download .'&nbsp;'. $edit . $mail . $delete,
+            ];
+            $data[] = $row;
+            $i++;
+        }
+        $response = [
+            "draw"            => $this->input->post('draw'),
+            "recordsTotal"    => $totalItems,
+            "recordsFiltered" => $totalItems,
+            "data"            => $data,
+        ];
+        echo json_encode($response);
+    }
+
     private function extractFieldData($text) {
         $lines = explode("\n", $text);
         $resultArray = preg_split("/\n\n/", implode("\n", $lines));
@@ -944,13 +996,41 @@ $CI = & get_instance();
         $content = $CI->lpurchase->packing_update_form($purchase_id);
         $this->template->full_admin_html_view($content);
 }
+
+   //Passing Data to Create Expense Page  - Surya 
     public function index() {
-       
-        $CI = & get_instance();
-        $CI->auth->check_admin_auth();
-        $CI->load->library('lpurchase');
-        $content = $CI->lpurchase->purchase_add_form1();
-        $this->template->full_admin_html_view($content);
+       $bank_list        = $this->Web_settings->bank_list(decodeBase64UrlParameter($_GET['id']));
+       $supplier_list =$this->Suppliers->supplier_list(decodeBase64UrlParameter($_GET['id']));
+       $setting_detail = $this->Web_settings->retrieve_setting_editdata();
+       $curn_info_default = $this->db->select('*')->from('currency_tbl')->where('icon',$currency_details[0]['currency'])->get()->result_array();
+        $all_product_list = $this->Products->get_all_products();
+        $payment_type_dropdown = $this->Invoices->payment_type();;
+      $payment_terms_dropdown = $this->Suppliers->payment_terms_dropdown();
+   
+       $curn_info_default = $this->db->select('*')->from('currency_tbl')->where('icon',$currency_details[0]['currency'])->get()->result_array();
+        $sale_costpersqft_per = $this->Invoices->sales_cost_permission();
+        $expense_tax =  $this->Purchases->getexpense_taxinfo(decodeBase64UrlParameter($_GET['id']));
+       $country_code = $this->db->select('*')->from('country')->get()->result_array();
+        $data = array(
+            'curn_info_default' =>$curn_info_default[0]['currency_name'],
+            'supplier_list' => $supplier_list,
+            'bank_list'     => $bank_list,
+            'all_supplier'  => $all_supplier,
+            'product_list'  => $all_product_list,
+            'expense_tax' => $expense_tax,
+           
+           
+        
+            'country_code' => $country_code,
+            
+             'payment_type' =>   $payment_type_dropdown,
+            'payment_terms' => $payment_terms_dropdown,
+                       'setting_detail' => $setting_detail
+
+        );
+        
+        $purchaseForm = $this->parser->parse('purchase/add_purchase_form', $data, true);
+        $this->template->full_admin_html_view($purchaseForm);
     }
 
 
@@ -1027,55 +1107,11 @@ $result = $CI->Purchases->servicepro($date) ;
      
     
  public function manage_purchase() {
-         $this->session->unset_userdata('newexpenseid');
-        $date = $this->input->post("daterange");
-        $menu= $this->input->post("options");
-        $CI = & get_instance();
-        $CI->load->model('Purchases');
-        $this->load->library('lpurchase');
-                $CI->load->model('Web_settings');
-
-        $content1 = $this->lpurchase->purchase_list();
-                $setting_detail = $CI->Web_settings->retrieve_setting_editdata();
-
-        $expense = $CI->Purchases->newexpense($date);
-
-       
-        $expensebro = $expense['rows'][0]['supplier_id'];
-
-       $sup = $CI->db->select('supplier_name')
-       ->from('supplier_information')
-       ->where('supplier_id',$expensebro)
-       ->get()->result_array();
-       
-       
-       $servpro = $CI->Purchases->servicepro($date) ;
- 
-$out = array();
-foreach ($expense as $key => $value){
-    $out[] = (object)array_merge((array)$servpro[$key], (array)$value);
-}
-
-$array = json_decode(json_encode($out), true);
-        $currency_details = $CI->Web_settings->retrieve_setting_editdata();
-  
-
-
- $result  = array_merge($servpro,$expense);
- 
-  
-
-        $data = array(
+    $setting_detail = $this->Web_settings->retrieve_setting_editdata();
+  $data = array(
                'currency'               =>$currency_details[0]['currency'],
-               'invoice'                =>  $content1,
-               'expense'                => $expense,
-               'servpro'                =>  $servpro,
-               'service_provider_name'  =>$servpro,
-               'supplier_name'          =>$sup,
-               'allinfo'                => $array,
                 'setting_detail' => $setting_detail,
-  
-        );
+   );
         $content = $this->load->view('purchase/purchase', $data, true);
         $this->template->full_admin_html_view($content);
 

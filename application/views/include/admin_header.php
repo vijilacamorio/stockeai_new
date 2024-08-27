@@ -603,7 +603,7 @@ $(document).ready(function() {
 						</a>
 						<ul class="treeview-menu">
 							<li class="treeview  <?php echo ($this->uri->segment(2) == 'manage_purchase') ? 'active' : ''; ?>">
-								<a href="<?php echo base_url(); ?>Cpurchase/manage_purchase"><?php echo display('Create Expense'); ?></a>
+								<a href="<?php echo base_url(); ?>Cpurchase/manage_purchase?id=<?php echo $encode_com_id; ?>"><?php echo display('Create Expense'); ?></a>
 							</li>
 							<li class="treeview  <?php echo ($this->uri->segment(2) == 'manage_purchase_order') ? 'active' : ''; ?>">
 								<a href="<?php echo base_url(); ?>Cpurchase/manage_purchase_order"><?php echo display('Purchase Order'); ?></a>

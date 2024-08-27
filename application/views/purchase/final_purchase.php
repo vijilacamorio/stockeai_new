@@ -1,15 +1,4 @@
-
-
-                    <div class="panel-body">
-<style>
- .with_po > .navbar{
-display:none; 
-}
-.with_po > .main-sidebar{
-display:none; 
-}
-    
-    </style>
+ <div class="panel-body">
 <div class="with_po">  
                       <form id="insert_purchase"  method="post">
                <div class="row">

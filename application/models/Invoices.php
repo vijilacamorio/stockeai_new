@@ -472,13 +472,18 @@ public function get_cust_payment_overall_info($customer_id){
         }
         return false;
     }
-    public function get_cust_payment_overall_info_trucking($customer_id,$admin_id){
+    public function get_cust_payment_overall_info_trucking($customer_id,$admin_id,$truck_id=""){
         $this->db->select('sum(a.grand_total_amount) as overall_gtotal, sum(a.balance) as overall_due, sum(a.amt_paid) as overall_paid');
               $this->db->from('sale_trucking a');
+              if($customer_id!=""){
                 $this->db->where('a.bill_to',$customer_id);
+              }
+              if($truck_id!=""){
+                $this->db->where('a.trucking_id',$truck_id);
+              }
             $this->db->where('a.create_by',$admin_id);
               $query = $this->db->get();
-             // echo $this->db->last_query(); exit;
+           //  echo $this->db->last_query(); exit;
              if ($query->num_rows() > 0) {
                   return $query->result_array();
               }
@@ -2426,7 +2431,7 @@ if(!empty($this->input->post('paid_amount',TRUE))){
      //For edit Sale - Payment History - Surya
     public function get_payment_info($payment_id){
       //,sum(amt_paid) as total_paid
-$this->db->select('payment_date,reference_no,bank_name,amt_paid,balance,details');
+$this->db->select('payment_date,reference_no,bank_name,amt_paid,balance,details,description');
 $this->db->from('payment');
 $this->db->where('payment_id',$payment_id);
 $this->db->order_by('id', 'asc');

@@ -172,7 +172,7 @@ class Suppliers extends CI_Model {
         return  $supplier_id;
 
     }
-     public function supplier_list($company_id="") {
+     public function supplier_list($company_id) {
         $this->db->select('supplier_name,supplier_id');
         $this->db->from('supplier_information');
         if($company_id ==""){

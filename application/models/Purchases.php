@@ -23,8 +23,108 @@ public function add_payment_terms($postData){
         $query = $this->db->get();
         return $query->result_array();
     }
-    
-    
+//For Expense Index Page  - Surya
+public function getPaginatedPurchases($limit, $offset, $orderField, $orderDirection, $search, $Id, $date="") {
+    $this->db->select('a.id, a.purchase_id, a.chalan_no, a.supplier_id, a.total_amt, a.grand_total_amount, a.gtotal_preferred_currency, a.total_tax, a.paid_amount, a.balance, a.payment_id, a.purchase_date, a.payment_due_date, a.create_date, "Product Purchase" as source, b.supplier_name');
+    $this->db->from('product_purchase a');
+    $this->db->join('supplier_information b', 'a.supplier_id = b.supplier_id');
+
+    if ($search != "") {
+        $this->db->group_start();
+        $this->db->like('a.chalan_no', $search);
+       $this->db->group_end();
+    }
+    if (!empty($date)) {
+        $dates = explode(' - ', $date);
+        if (count($dates) == 2) {
+            $start_date = date('Y-m-d', strtotime($dates[0]));
+            $end_date = date('Y-m-d', strtotime($dates[1]));
+            $this->db->where("a.create_date >=", $start_date);
+            $this->db->where("a.create_date <=", $end_date);
+        }
+    }
+    $this->db->where('a.create_by', $Id);
+
+    $query1 = $this->db->get_compiled_select(); 
+  $this->db->select('a.id, a.serviceprovider_id as purchase_id, a.bill_number as chalan_no, a.supplier_id, a.total, a.gtotals as grand_total_amount, a.gtotal_preferred_currency, a.tax_detail as total_tax, a.amount_paids as paid_amount, a.balances as balance, a.payment_id, a.bill_date as purchase_date, a.due_date as payment_due_date, a.create_date, "Service Provider" as source, b.supplier_name');
+    $this->db->from('service a');
+    $this->db->join('supplier_information b', 'a.supplier_id = b.supplier_id');
+
+    if ($search != "") {
+        $this->db->group_start();
+        $this->db->like('a.serviceprovider_id', $search);
+       $this->db->group_end();
+    }
+    if (!empty($date)) {
+        $dates = explode(' - ', $date);
+        if (count($dates) == 2) {
+            $start_date = date('Y-m-d', strtotime($dates[0]));
+            $end_date = date('Y-m-d', strtotime($dates[1]));
+            $this->db->where("a.create_date >=", $start_date);
+            $this->db->where("a.create_date <=", $end_date);
+        }
+    }
+    $this->db->where('a.create_by', $Id);
+
+     $query2 = $this->db->get_compiled_select();
+  $combined_query = "($query1) UNION ALL ($query2) ORDER BY $orderField $orderDirection LIMIT $limit OFFSET $offset";
+
+    $query = $this->db->query($combined_query);
+
+     if (!$query) {
+        $error = $this->db->error();
+        echo "Error Code: " . $error['code'];
+        echo "Error Message: " . $error['message'];
+        return [];
+    }
+
+     return $query->result_array();
+}
+
+//For Expense Index Page  - Surya
+public function getTotalPurchases($search, $Id, $date="") {
+    $this->db->select('id');
+    $this->db->from('product_purchase');
+    if ($search != "") {
+        $this->db->group_start();
+        $this->db->like('chalan_no', $search);
+        $this->db->group_end();
+    }
+    if (!empty($date)) {
+        $dates = explode(' - ', $date);
+        if (count($dates) == 2) {
+            $start_date = date('Y-m-d', strtotime($dates[0]));
+            $end_date = date('Y-m-d', strtotime($dates[1]));
+            $this->db->where("create_date >=", $start_date);
+            $this->db->where("create_date <=", $end_date);
+        }
+    }
+    $this->db->where('create_by', $Id);
+ $query1 = $this->db->get_compiled_select();
+  $this->db->select('id');
+    $this->db->from('service');
+    if ($search != "") {
+        $this->db->group_start();
+        $this->db->like('serviceprovider_id', $search);
+        $this->db->group_end();
+    }
+    if (!empty($date)) {
+        $dates = explode(' - ', $date);
+        if (count($dates) == 2) {
+            $start_date = date('Y-m-d', strtotime($dates[0]));
+            $end_date = date('Y-m-d', strtotime($dates[1]));
+            $this->db->where("create_date >=", $start_date);
+            $this->db->where("create_date <=", $end_date);
+        }
+    }
+    $this->db->where('create_by', $Id);
+  $query2 = $this->db->get_compiled_select();
+ $total_query = $this->db->query("($query1) UNION ALL ($query2)");
+
+    return $total_query->num_rows();
+}
+
+
     
             public function delete_pay_info() {
     $payment_id = $this->input->post('payment_id');
@@ -452,8 +552,7 @@ $this->db->where('a.supplier_id', $customer_id);
     public function getexpense_taxinfo()
      {
         $user_id = $this->session->userdata('user_id');
-
-        $sql="SELECT * FROM `tax_information` WHERE (`status_type` = 'expenses' OR `status_type` = 'Both') AND `created_by` = $user_id";
+     $sql="SELECT * FROM `tax_information` WHERE (`status_type` = 'expenses' OR `status_type` = 'Both') AND `created_by` = $user_id";
 
         $query = $this->db->query($sql);
         // echo $this->db->last_query();
@@ -517,23 +616,7 @@ $this->db->where('a.supplier_id', $customer_id);
     }
     
     
-    
-     public function getExpenseallData()
-    {
-       $user_id = $this->session->userdata('user_id');
 
-        $sql="SELECT * FROM `tax_information` WHERE (`status_type` = 'expenses' OR `status_type` = 'Both') AND `created_by` = $user_id";
-
-        $query = $this->db->query($sql);
-
-        if ($query->num_rows() > 0) {
-
-            return $query->result_array();
-
-        }
-
-        return false;
-    }
     
     public function getTruckingExpenseallData()
     {
@@ -651,15 +734,6 @@ $this->db->where('a.supplier_id', $customer_id);
 
 
 
-    public function expense_package()
-    {
-        $sql='select * from expense_packing_list where create_by='.$_SESSION['user_id'];
-        $query=$this->db->query($sql);
- if ($query->num_rows() > 0) {
-            return $query->result_array();
-        }
-        return false;
-    }
     
     
     public function getEditExpensesData($purchase_id)
@@ -2610,43 +2684,13 @@ $data2 = array(
 
 
 
-public function payment_type_dropdown() {
-        $this->db->select('*');
-        $this->db->from('payment_type');
-        $this->db->where('create_by',$this->session->userdata('user_id'));
-        $query = $this->db->get();
-    //    echo $this->db->last_query(); die();
-        return $query->result_array();
-    }
-    
-    
-    
-    
-    
-    
-    
-    
-    public function payment_terms_dropdown() {
-        $this->db->select('*');
-        $this->db->from('payment_terms');
-        
-                $this->db->where('create_by',$this->session->userdata('user_id'));
 
-        $query = $this->db->get();
-    //    echo $this->db->last_query(); die();
-        return $query->result_array();
-    }
     
     
     
     
-    public function drop_payment_type(){
-      $this->db->select('*');
-      $this->db->from('payment_type');
-      $this->db->where('create_by' ,$this->session->userdata('user_id'));
-      $query = $this->db->get();
-      return $query->result_array();
-  }
+    
+
     public function get_expense_product()
     {
         $this->db->select('a.*,b.*');
@@ -3989,31 +4033,31 @@ $delivery_date = date('Y-m-d', strtotime($this->input->post('delivery_date',TRUE
     }
 
 
-       //Retrieve purchase order Edit Data
-    public function retrieve_purchase_order_editdata($purchase_id) {
-        $this->db->select('a.*,
-                        b.*,
-                        c.product_id,
-                        c.product_name,
-                        c.product_model,
-                        d.supplier_id,
-                        d.supplier_name'
-        );
-        $this->db->from('purchase_order a');
-        $this->db->join('purchase_order_details b', 'b.purchase_id =a.purchase_order_id');
-        $this->db->join('product_information c', 'c.product_id =b.product_id');
-        $this->db->join('supplier_information d', 'd.supplier_id = a.supplier_id');
-        $this->db->where('a.create_by',$this->session->userdata('user_id'));
-        $this->db->where('a.purchase_order_id', $purchase_id);
-        $this->db->order_by('a.purchase_details', 'asc');
-        $query = $this->db->get();
-    //  echo $this->db->last_query();
-        if ($query->num_rows() > 0) {
-            return $query->result_array();
-        }
+    //    //To - Create Expense Page - Surya
+    // public function retrieve_purchase_order_editdata($purchase_id) {
+    //     $this->db->select('a.*,
+    //                     b.*,
+    //                     c.product_id,
+    //                     c.product_name,
+    //                     c.product_model,
+    //                     d.supplier_id,
+    //                     d.supplier_name'
+    //     );
+    //     $this->db->from('purchase_order a');
+    //     $this->db->join('purchase_order_details b', 'b.purchase_id =a.purchase_order_id');
+    //     $this->db->join('product_information c', 'c.product_id =b.product_id');
+    //     $this->db->join('supplier_information d', 'd.supplier_id = a.supplier_id');
+    //     $this->db->where('a.create_by',$this->session->userdata('user_id'));
+    //     $this->db->where('a.purchase_order_id', $purchase_id);
+    //     $this->db->order_by('a.purchase_details', 'asc');
+    //     $query = $this->db->get();
+    // //  echo $this->db->last_query();
+    //     if ($query->num_rows() > 0) {
+    //         return $query->result_array();
+    //     }
      
-        return true;
-    }
+    //     return true;
+    // }
 
 
        //Retrieve ocean import tracking Edit Data

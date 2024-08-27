@@ -125,12 +125,12 @@
    </style>
    <section class="content">
       
-      <?php    $payment_id=rand(); ?>
+      <?php $payment_id=rand(); /* ?>
       <form id="histroy" style="display:none;" method="post" >
          <input type="hidden" name="<?php echo $this->security->get_csrf_token_name();?>" value="<?php echo $this->security->get_csrf_hash();?>">
          <input type="hidden"  value="<?php echo $payment_id; ?>" name="makepaymentId" class="makepaymentId" id="makepaymentId"/>
          <input type="submit" id="payment_history" name="payment_history" class="btn" style="float:right;color:white;background-color: #38469f;" value="Payment History" style="float:right;margin-bottom:30px;"/>
-      </form>
+      </form> <?php */ ?>
       <!-- Purchase report -->
       <div class="row">
          <div class="col-sm-12">
@@ -207,7 +207,7 @@
                      </div>
                      <input type="hidden" id="invoice_hdn"/> <input type="hidden" id="invoice_hdn1"/>
                      <div class="row">
-                        <input type="hidden"  value="<?php echo $payment_id; ?>"  name="payment_id" id="payment_id"/>
+                        
                         <div class="col-sm-6">
                            <div class="form-group row">
                               <label for="supplier_sss" class="col-sm-4 col-form-label"><?php echo display('Customer Name') ?>
@@ -349,13 +349,14 @@
                               <td style="border:none;text-align:right;font-weight:bold;"><?php echo display('Tax') ?> : 
                               </td>
                               <td style="width:12%">
-                                 <input list="magic_tax" name="tx"  id="product_tax" class="form-control"   onchange="this.blur();" />
-                                 <datalist id="magic_tax">
-                                    <?php                                
-                                       foreach($trucking_data as $tx){?>
-                                    <option value="<?php echo $tx['tax_id'].'-'.$tx['tax'].'%';?>">  <?php echo $tx['tax_id'].'-'.$tx['tax'].'%';  ?></option>
-                                    <?php } ?>
-                                 </datalist>
+                                 <select name="tx" id="product_tax" class="form-control" >
+                                        
+                                    <?php foreach($trucking_data as $tx){
+                                            //$selecttx = strtoupper($match[1]) == $tx['tax_id'].'-'.$tx['tax'].'%' ? 'selected' : ''; ?>
+                                            <option <?php //echo $selecttx; ?> value="<?php echo $tx['tax_id'].'-'.$tx['tax'].'%';?>">  <?php echo $tx['tax_id'].'-'.$tx['tax'].'%';  ?></option>
+                                        <?php } ?> 
+                                    </select>
+                                
                               </td>
                               <td  style="width:20%;"><a href="#" class="btnclr client-add-btn btn " aria-hidden="true" style="margin-right: 295px;"  data-toggle="modal" data-target="#tax_info" ><i class="fa fa-plus"></i></a></td>
                            </tr>
@@ -411,7 +412,7 @@
                               <tr>
                                  <td style="padding-top: 20px;text-align:right;" colspan="5" ><b><?php echo display('total') ?>:</b></td>
                                  <td style="text-align:left;">
-                                    <span class="input-symbol-euro"><input type="text" id="Total" class="form-control text-right mobile_price" style="width: 235px;" name="total" value="0.00" readonly="readonly" /></span>
+                                    <span class="input-symbol-euro"><input type="text" id="Total" class="form-control text-right mobile_price"  name="total" value="0.00" readonly="readonly" /></span>
                                  </td>
                               </tr>
                               <tr>
@@ -419,7 +420,7 @@
                                  <td style="text-align:left;">
                                     <table border="0">
                                        <tr>
-                                          <td style="padding-bottom:30px;"><span class="input-symbol-euro"> <input type="text" id="tax_details" style="width: 235px;" class="form-control mobile_price" class="text-right" value="0.00" name="tax_details"  readonly="readonly" /></span></td>
+                                          <td style="padding-bottom:30px;"><span class="input-symbol-euro"> <input type="text" id="tax_details"  class="form-control mobile_price" class="text-right" value="0.00" name="tax_details"  readonly="readonly" /></span></td>
                                        </tr>
                                     </table>
                                  </td>
@@ -429,7 +430,7 @@
                                  <td>
                                     <table border="0">
                                        <tr>
-                                          <td style="padding-bottom:30px;">  <span class="input-symbol-euro">   <input type="text" id="gtotal" style="width: 235px;" class="form-control mobile_price" name="gtotal" onchange=""value="0.00" readonly="readonly" /></span></td>
+                                          <td style="padding-bottom:30px;">  <span class="input-symbol-euro"><input type="text" id="gtotal" class="form-control mobile_price" name="gtotal" onchange=""value="0.00" readonly="readonly" /></span></td>
                                        </tr>
                                     </table>
                                  </td>
@@ -441,7 +442,7 @@
                               
                                        <tr>
                                           <td class="cus" name="cus"></td> &nbsp; 
-                                          <td> <input  type="text" class="form-control" readonly id="customer_gtotal" value="0.00"  name="customer_gtotal"  required  style="margin-left:5px;"  /></td>
+                                          <td><input  type="text" class="form-control" readonly id="customer_gtotal" value="0.00"  name="customer_gtotal"  required  /></td>
                                        </tr>
 
                                     </table>
@@ -455,7 +456,7 @@
                                     <table border="0">
                                        <tr>
                                           <td class="cus" name="cus"></td> &nbsp;&nbsp;&nbsp; 
-                                          <td ><input  type="text"  readonly id="amount_paid"  name="amount_paid" value="0.00"  required   /></td>
+                                          <td ><input  type="text"  class="form-control" readonly id="amount_paid"  name="amount_paid" value="0.00"  required /></td>
                                        </tr>
                                     </table>
                                  </td>
@@ -466,7 +467,7 @@
                                     <table border="0">
                                        <tr>
                                           <td class="cus" name="cus"></td> &nbsp;&nbsp;&nbsp;
-                                          <td><input class="balance_modal" type="text"  readonly id="balance"  name="balance" value="0.00"/></td>
+                                          <td><input class="balance_modal form-control" type="text"  readonly id="balance"  name="balance" value="0.00"/></td>
                                        </tr>
                                     </table>
                                  </td>
@@ -491,7 +492,7 @@
                      <div class="form-group row">
                         <label for="remarks" class="col-sm-2 col-form-label"><?php echo display('Remarks') ?></label>
                         <div class="col-sm-8">
-                           <textarea rows="4" cols="50" name="remarks" class=" form-control" style="border:2px solid #d7d4d6;" id="remarks"></textarea>
+                           <textarea rows="4" cols="50" name="remarks" class="form-control" style="border:2px solid #d7d4d6;" id="remarks"></textarea>
                         </div>
                      </div>
                      <div class="form-group row">
@@ -518,6 +519,7 @@
 
 <?php
 $modaldata['bootstrap_model'] = array('vendor','tax_info','payment_model','bank_info');
+$modaldata['payment_id'] = $payment_id;
 
 $this->load->view('include/bootstrap_model', $modaldata);
 ?>
@@ -946,9 +948,12 @@ $newRow.find('select').each(function() {
       }
       });
    }
-   /*$('#product_tax').on('change', function (e) {
+   $('#product_tax').on('change', function (e) {
    var optionSelected = $("option:selected", this);
    var valueSelected = this.value;
+   if(valueSelected==""){
+      valueSelected ='0';
+   }
    var total=$('#Total').val();
    var tax= $('#product_tax').val();
    
@@ -962,7 +967,7 @@ $newRow.find('select').each(function() {
    console.log("taxi :"+valueSelected);
    $('#tax_details').val(answer +" ( "+tax+" )");
    calculate();
-   }); */
+   });
    var arr=[];
    $(document).on("input change", ".quantity", function(e){
    
@@ -985,10 +990,7 @@ $newRow.find('select').each(function() {
    
    });
    $(document).on("input change", ".quantity", function(e){
-   
-   
-   
-   
+    
    var total=$(this).closest('tr').find('.total_price').attr('id');
    
    var quantity=$(this).closest('tr').find('.quantity').attr('id');
@@ -1028,9 +1030,6 @@ $newRow.find('select').each(function() {
    
    });
    $(document).on("input change", ".productrate", function(e){
-   
-   
-   
    
    var total=$(this).closest('tr').find('.total_price').attr('id');
    
