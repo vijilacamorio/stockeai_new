@@ -1071,31 +1071,37 @@ $(document).ready(function() {
 						<i class="fa fa-info-circle"></i><span><?php echo ('Online Help'); ?></span>
 					</a>
 				</li>
-				<li class="treeview <?php echo ($this->uri->segment(2) == 'Cweb_setting') ? 'active' : ''; ?>">
+
+
+
+
+ 
+
+
+				<li class="treeview">
 					<a href="#">
-						<i class="ti-settings"></i><span><?php echo display('settings'); ?></span>
+						<i class="ti-settings"></i> <span><?php echo display('settings'); ?></span>
 						<span class="pull-right-container">
 							<i class="fa fa-angle-left pull-right"></i>
 						</span>
 					</a>
 					<ul class="treeview-menu">
-						<li class="treeview  ">
+ 						<li class="treeview  ">
 							<a href="fa fa-asl-interpreting">
 								<i class="ti-user"></i><span><?php echo display('Manage Invoice Template') ?></span>
 							</a>
 							<ul class="treeview-menu">
 								<li class="treeview">
-									<a href="<?php echo base_url('Cweb_setting/invoice_template') ?>"><?php echo display('Sales Invoice'); ?>
-									</a>
+							    <a href="<?php echo base_url(); ?>Cweb_setting/invoice_template?id=<?php echo $encode_com_id; ?>"><?php echo display('Sales Invoice'); ?></a>
 								</li>
 								<li class="treeview">
-									<a
-										href="<?php echo base_url('Cweb_setting/invoice_design') ?>"><?php echo display('Invoice Design'); ?></a>
-								</li>
+										<a href="<?php echo base_url(); ?>Cweb_setting/invoice_design?id=<?php echo $encode_com_id; ?>"><?php echo display('Invoice Design'); ?></a>
+									</li>
 								<li class="treeview">
-									<a
-										href="<?php echo base_url('Cweb_setting/invoice_content') ?>"><?php echo display('Invoice Content'); ?></a>
-								</li>
+										<a href="<?php echo base_url(); ?>Cweb_setting/invoice_content?id=<?php echo $encode_com_id; ?>"><?php echo display('Invoice Content'); ?></a>
+								
+ 
+									</li>
 							</ul>
 						</li>
 						<li class="treeview  ">
@@ -1254,19 +1260,13 @@ $(document).ready(function() {
 								</li>
 							</ul>
 						</li>
-					</ul>
-				</li>
-				<li class="treeview">
-					<a href="#">
-						<i class="ti-settings"></i> <span><?php echo display('settings'); ?></span>
-						<span class="pull-right-container">
-							<i class="fa fa-angle-left pull-right"></i>
-						</span>
-					</a>
-					<ul class="treeview-menu">
-						<li class="treeview  "><a
-								href="<?php echo base_url(); ?>Company_setup/manage_company"><?php echo display('Manage my Company'); ?></a>
+ 				  
+
+						<li class="treeview  ">
+						<a href="<?php echo base_url(); ?>Company_setup/manage_company?id=<?php echo $encode_com_id; ?>"><?php echo display('Manage my Company'); ?></a>
 						</li>
+
+ 
 						<li class="treeview  "><a
 								href="<?php echo base_url(); ?>Language"><?php echo display('language'); ?> </a></li>
 						<li class="treeview  "><a
@@ -1574,6 +1574,7 @@ $(document).ready(function() {
 					  $split = explode('-', $test);
 					  if (trim($split[0]) == 'bank') {
 					  ?>
+
 					<li class="treeview <?php echo ($this->uri->segment(1) == 'Csettings') ? 'active' : ''; ?>">
 						<a href="#">
 							<i class="ti-briefcase"></i><span><?php echo display('bank'); ?></span>

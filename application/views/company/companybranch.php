@@ -1,23 +1,6 @@
 
 
 
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css"/>
-<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap/3/css/bootstrap.css" />
-<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css" />
-<link rel="stylesheet" type="text/css" href="<?php echo base_url()?>my-assets/css/css.css" />
-
-
-<style>
-    .btnclr{
-       background-color:<?php echo $setting_detail[0]['button_color']; ?>;
-       color: white;
-
-   }
-</style>
-
-
-
-
 <!-- Add User start -->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
 <div class="content-wrapper">
@@ -35,11 +18,7 @@
             </ol>
         </div>
     </section>
-<style>
-.select2{
-    display:none;
-}
-    </style>
+ 
     <section class="content">
         <!-- Alert Message -->
         <?php
@@ -64,24 +43,19 @@
             $this->session->unset_userdata('error_message');
             }
         ?>
-
-
-        <div class='row'> 
-                    
-        </div>
+        <div class='row'></div>
         <!-- New user -->
         <div class="row">
             <div class="col-sm-12">
                 <div class="panel panel-bd lobidrag">
-              
-
                     <div class="panel-heading">
                         <div class="panel-title">
                         </div>
                     </div>
-                    
                     <div class="panel-body">
-                   <?php echo form_open_multipart('User/company_insert_branch');?>
+
+                   <form  id="create_company"  method="post" >     
+                   
                         <div class="form-group row">
                             <label class="col-sm-3 col-form-label"><?php echo display('Company Name') ?><i class="text-danger">*</i></label>
                           
@@ -89,7 +63,7 @@
                                 <input type="text" tabindex="1" class="form-control" name="company_name" id="company_name" placeholder="Enter your Company name" required />
                             </div>
                         </div>
-
+                      
                         <div class="form-group row">
                             <label class="col-sm-3 col-form-label"><?php echo display('email') ?><i class="text-danger">*</i></label>
                           
@@ -366,7 +340,7 @@
 								
                             </div>
                         </div>
-                   <?php echo form_close(); ?>
+                            </form>
                     </div>
                  
                 </div>
@@ -654,4 +628,75 @@ function removeUrlsstxField(groupIdst) {
     }
 }
 
+
+
+
+ 
+$(document).ready(function(){
+  var succalert = '<div class="alert alert-success alert-dismissible" role="alert">';
+  var failalert = '<div class="alert alert-danger alert-dismissible" role="alert">';
+$("#create_company").validate({
+    rules: {
+        company_name : "required",  
+        email       : "required",  
+        mobile      : "required",  
+        c_city      : "required",  
+        c_state     : "required",  
+        address     : "required",  
+        website     : "required",   
+    },
+    messages: {
+        company_name : "Company Name isrequired",  
+        email       : "Email  is required",  
+        mobile      : "Mobile is required",  
+        c_city      : "City is required",  
+        c_state     : "State is required",  
+        address     : "Address is required",  
+        website     : "Website is required",   
+    },
+    submitHandler: function(form) {
+      var formData = new FormData(form);
+      formData.append(csrfName, csrfHash);
+      $.ajax({
+        type: "POST",
+        dataType: "json",
+        url: "<?php echo base_url('user/company_insert_branch'); ?>",
+        data: formData,
+        contentType: false,
+        processData: false,
+        success: function(response) {
+           console.log(response, "response");
+           if(response.status == 'success')
+           {
+            $('.error_display').html(succalert+response.msg+'</div>');
+            console.log(response.msg, "Success");
+            window.setTimeout(function(){
+              window.location = "<?php echo base_url('Company_setup/manage_company?id='.$encodedId); ?>"
+            },500);
+           }else{
+            $('.error_display').html(failalert+response.msg+'</div>'); 
+            console.log(response.msg, "Error");
+           }
+        },
+        error: function(xhr, status, error) {
+          alert('An error occurred: ' + error);
+        }
+      })
+    }
+});
+});
+ 
+ 
 </script>
+ 
+<style>
+    .btnclr{
+       background-color:<?php echo $setting_detail[0]['button_color']; ?>;
+       color: white;
+
+   }
+   .select2{
+    display:none;
+}
+</style>
+
