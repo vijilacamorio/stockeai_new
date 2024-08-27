@@ -873,6 +873,11 @@ document.getElementById('create_timesheet').addEventListener('submit', function(
         }
     });
 });
+
+
+
+
+
  $(document).ready(function(){
   var succalert = '<div class="alert alert-success alert-dismissible" role="alert">';
   var failalert = '<div class="alert alert-danger alert-dismissible" role="alert">';

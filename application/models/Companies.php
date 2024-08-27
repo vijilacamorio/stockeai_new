@@ -111,22 +111,30 @@ public function editurldata($company_id)
         }
         return false;
     }
-	public function retrieve_localtax()
+
+
+
+
+    // Changed by Ajith on 27-08-2024
+	public function retrieve_localtax($decodedId)
     {
         $this->db->select('*');
         $this->db->from('local_tax_id');
-        $this->db->where('create_by', $this->session->userdata('user_id'));
+        $this->db->where('create_by',$decodedId);
         $query = $this->db->get();
+		echo $this->db->last_query(); die();
         if ($query->num_rows() > 0) {
             return $query->result();
         }
         return false;
     }
-	public function retrieve_statetax()
+
+    // Changed by Ajith on 27-08-2024
+	public function retrieve_statetax($decodedId)
     {
         $this->db->select('*');
         $this->db->from('state_tax_id');
-        $this->db->where('create_by', $this->session->userdata('user_id'));
+        $this->db->where('create_by', $decodedId);
         $query = $this->db->get();
         if ($query->num_rows() > 0) {
             return $query->result();
@@ -155,11 +163,11 @@ public function company_info()
 		}
 		return false;
 	}
-	public function company_details()
-	{
+	//Changed by Aith on 27/08/2024
+	public function company_details($decodedId){
 		$this->db->select('*');
 		$this->db->from('company_information');
-			$this->db->where('create_by', $this->session->userdata('user_id'));
+		$this->db->where('create_by',$decodedId);
 		$query = $this->db->get();
 		if ($query->num_rows() > 0) {
 			return $query->result_array();	

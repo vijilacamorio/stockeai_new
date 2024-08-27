@@ -269,6 +269,13 @@ $company_assign_role = $this->db->update('company_assignrole', $update_data);
         }
         echo json_encode($response);
     }
+
+
+
+
+
+
+
 public function company_insert_branch(){
         $uid=$_SESSION['user_id'];
         $url=$this->input->post('url',TRUE);
@@ -392,6 +399,13 @@ public function company_insert_branch(){
        redirect('Company_setup/manage_company');
     }
 }
+
+
+
+
+
+
+
 public function company_update_branch($company_id){
         $uid=$_SESSION['user_id'];
      $id=$company_id;

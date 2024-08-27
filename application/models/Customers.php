@@ -147,13 +147,14 @@ class Customers extends CI_Model {
     }
 
     // Fetch Payment data
-    public function fetchpaymentdata($paymentid) 
+    public function fetchpaymentdata($paymentid, $admin_comp_id) 
     {
         $this->db->select('*');
         $this->db->from('payment');
         $this->db->where('id', $paymentid);
-        $this->db->where('create_by', $this->session->userdata('user_id'));
+        $this->db->where('create_by', $admin_comp_id);
         $query = $this->db->get();
+        // echo $this->db->last_query(); die();
         if ($query->num_rows() > 0) {
             return $query->result_array();
         }

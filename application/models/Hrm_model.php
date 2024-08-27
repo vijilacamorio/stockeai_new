@@ -3268,6 +3268,10 @@ SUM(a.monthly) as monthly_amount'
         $query_result = $this->db->query($sql, array($state_code, $selected_state, $decodedId));
         return $query_result;
     }
+
+
+
+    
     // payroll Setting - Hr
     public function city_update($selected_state, $tx, $decodedId) {
         $this->load->database();
