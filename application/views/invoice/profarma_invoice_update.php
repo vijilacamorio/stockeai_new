@@ -671,7 +671,7 @@
                               <tr>
                                  <td class="cus" name="cus" style="width: 40px;"></td>
                                  <td>
-                                    <input type="text" readonly value="<?php echo number_format($purchase_info[0]['bal_amt'], 2); ?>" name="balance" id="Balance" required class="form-control balance_modal" style="width: 150px;" />            
+                                    <input type="text" readonly value="<?php echo $purchase_info[0]['bal_amt']; ?>" name="balance" id="Balance" required class="form-control balance_modal" style="width: 150px;" />            
                                  </td>
                               </tr>
                            </table>
@@ -2149,14 +2149,21 @@ var id = netheight.slice(indexLastDot + 1);
    
    
         $('#payment_from_modal').on('input',function(e){
-   
+         var payment = parseFloat($('#payment_from_modal').val().replace(/,/g, '')) || 0;
+         var amount_to_pay = parseFloat($('#amount_to_pay').val().replace(/,/g, '')) || 0;
+         console.log('payment: ' + payment + ', amount to pay: ' + amount_to_pay);
+         var bal_value = amount_to_pay - payment;
+
+         /*console.log('balance: ' + value);
     var payment=parseInt($('#payment_from_modal').val());
-   var amount_to_pay=parseInt($('#amount_to_pay').val());
-   var value=parseInt(amount_to_pay)-parseInt(payment);
-   $('#balance_modal').val(parseFloat(value).toFixed(2));
-   if (isNaN(value)) {
-     $('#balance_modal').val("0");
-      }
+   var amount_to_pay=$('#amount_to_pay').val();
+   console.log('payment:'+payment+', amount to_pay:'+amount_to_pay);
+   var value=parseFloat(amount_to_pay)-parseFloat(payment); */
+   console.log('balance:'+bal_value);
+   //$('#balance_modal').val(bal_value);
+  // if (isNaN(bal_value)) {
+     //$('#balance_modal').val("0");
+     // }
     });
          $('#bank_id').change(function(){
            localStorage.setItem("selected_bank_name",$('#bank_id').val());
@@ -2689,7 +2696,7 @@ var id = netheight.slice(indexLastDot + 1);
    $('#paypls').on('click', function (e) {
       e.preventDefault();
       var Balance = $('.balance_modal').val();
-      $('#amount_to_pay').val(parseFloat(Balance).toFixed(2));
+      $('#amount_to_pay').val(Balance);
       $('#payment_modal').modal('show');
    });
    $('#insert_product').submit(function (event) {

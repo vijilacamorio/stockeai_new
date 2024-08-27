@@ -1388,6 +1388,7 @@ public function deletesale(){
         $adminId = $this->input->get('id');
         $admin_comp_id = decodeBase64UrlParameter($adminId);
         $purchase_detail = $this->Invoices->retrieve_profarma_invoice_editdata($invoice_id, $admin_comp_id);
+        //print_r($purchase_detail); exit;
         $edit_profarmadata = $this->Invoices->editAlldataprofarma();
         $customer_id = $purchase_detail[0]['customer_id'];
         if (!empty($purchase_detail)) {
@@ -3077,7 +3078,7 @@ public function performer_ins()
             'total_weight' => $this->input->post('total_weight', TRUE),
             'gtotal' => $this->input->post('gtotal', TRUE),
             'total' => $this->input->post('Over_all_Total', TRUE),
-            'payment_id' => $this->input->post('makepaymentId', TRUE),
+            'payment_id' => $this->input->post('paymentIds', TRUE),
             'customer_gtotal' => $this->input->post('customer_gtotal', TRUE),
             'country_goods' => $this->input->post('country_goods', TRUE),
             'country_destination' => $this->input->post('country_destination', TRUE),

@@ -91,7 +91,7 @@
    <?php    $payment_id=rand(); ?>
    <form id="histroy" style="display:none;" method="post" >
       <input type="hidden" name="<?php echo $this->security->get_csrf_token_name();?>" value="<?php echo $this->security->get_csrf_hash();?>">
-      <input type="hidden"  value="<?php echo $payment_id; ?>" name="payment_id" class="payment_id" id="payment_id"/>
+      <input type="hidden"  value="<?php echo $payment_id; ?>" name="paymentIds" class="payment_id" id="paymentIds"/>
       <input type="submit" id="payment_history" name="payment_history" class="btn" style="float:right;" value="Payment History" style="float:right;margin-bottom:30px;"/>
    </form>
    <!-- Purchase report -->
@@ -111,6 +111,7 @@
    <form id="insert_trucking" method="post">
 		<div class="displaymessage"></div>
 		<br>
+      <input type="hidden"  value="<?php echo $payment_id; ?>" name="paymentIds" class="payment_id" id="paymentIds"/>
 		<div class="row">
 			<div class="col-sm-6">
 				<div class="form-group row">
@@ -536,8 +537,8 @@
                         <td class="cus" name="cus" style="border:none; width: auto; position: relative;right: 25px; top: 2px;"></td>
                         <td>&nbsp</td>
                         <td style="position: relative;right: 21px;text-align: justify;">
-                           <input type="text" class="form-control" readonly id="balance" name="balance"  required  style="width: 150px !important;" />                     
-                        </td>
+                           <input type="text" class="form-control balance_modal" readonly id="balance" name="balance"  required  style="width: 150px !important;" />                     
+                        </td> 
                      </tr>
                   </table>
                </td>
@@ -1153,9 +1154,10 @@ $this->load->view('include/bootstrap_model', $modaldata);
    
    $(document).ready(function() {
       $('#paypls').on('click', function(e) {
-         $('#amount_to_pay').val($('#gtotal').val());
-            $('#payment_modal').modal('show');
-            e . preventDefault();
+         e.preventDefault();
+          Balance = $('.balance_modal').val();
+         $('#amount_to_pay').val(Balance);
+         $('#payment_modal').modal('show');
       });
    });
    
