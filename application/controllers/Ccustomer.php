@@ -215,15 +215,6 @@ $this->form_validation->set_message('required', 'The {field} field is required.'
      echo json_encode($response);
     }
 
-
-
-
-
-
-
-
-
-
     function uploadCsv_Customer() {
         $filename = $_FILES['upload_csv_file']['name'];
         $ext      = substr(strrchr($filename, '.'), 1);
