@@ -3781,12 +3781,8 @@ public function customer_info_report(){
     $CI->load->model('Web_settings');
 
     $data['setting_detail'] = $CI->Web_settings->retrieve_setting_editdata($this->admin_id);
-    $data['customer_name'] = $this->Customers->all_customer($this->admin_id);
-    echo '<pre>';
-    echo $this->db->last_query(); 
-    print_r($data['customer_name']); exit;
-    $data['get_all_invoice_sale']= $this->Invoices->get_all_invoice_sale($this->admin_id);
-
+    $data['customer_data'] = $this->Customers->all_customer($this->admin_id);
+   
     $content = $CI->parser->parse('report/customer_info_report', $data, true);
     $this->template->full_admin_html_view($content);
 }

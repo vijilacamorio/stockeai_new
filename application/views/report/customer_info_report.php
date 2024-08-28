@@ -1,38 +1,4 @@
-<?php error_reporting(1);  ?>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css"/>
-<script type="text/javascript" src="<?php echo base_url()?>assets/js/jquery.base64.js"></script>
-<script type="text/javascript" src="<?php echo base_url()?>assets/js/drag_drop_index_table.js"></script>
-<script type="text/javascript" src="<?php echo base_url()?>assets/js/html2canvas.js"></script>
-<script type="text/javascript" src="<?php echo base_url()?>assets/js/jspdf.plugin.autotable"></script>
-<script type="text/javascript" src="<?php echo base_url()?>assets/js/jspdf.umd.js"></script>
-<script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
-<script type="text/javascript" src="<?php echo base_url()?>my-assets/js/invoice_tableManager.js"></script>
-<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap/3/css/bootstrap.css" />
-<!--<script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>-->
-<!--<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css" />-->
-<!-- <script type="text/javascript" src="<?php echo base_url()?>my-assets/js/tableManager.js"></script> -->
-<script type="text/javascript" src="https://unpkg.com/xlsx@0.15.1/dist/xlsx.full.min.js"></script>
-<script type="text/javascript" src="http://mrrio.github.io/jsPDF/dist/jspdf.debug.js"></script>
-<input type="hidden" name="<?php echo $this->security->get_csrf_token_name();?>" value="<?php echo $this->security->get_csrf_hash();?>">
-<script src='https://kit.fontawesome.com/a076d05399.js' crossorigin='anonymous'></script>
-<script src="<?php echo base_url() ?>assets/js/dashboard.js" ></script>
-<script src="https://code.highcharts.com/highcharts.js"></script>
-<script src="https://code.highcharts.com/modules/exporting.js"></script>
-<script src="https://code.highcharts.com/modules/export-data.js"></script>
-<script src="https://code.highcharts.com/modules/accessibility.js"></script>
-<link href="<?php echo base_url() ?>assets/css/style.css" rel="stylesheet">
-<link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
-<link rel="stylesheet" href="<?php echo base_url() ?>my-assets/css/style.css">
-<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-<script type="text/javascript" src="http://www.bacubacu.com/colresizable/js/colResizable-1.5.min.js"></script>
-<link rel="stylesheet" type="text/css" href="<?php echo base_url()?>my-assets/css/css.css" />
-<input type="hidden" name="<?php echo $this->security->get_csrf_token_name();?>" value="<?php echo $this->security->get_csrf_hash();?>">
-<link rel="stylesheet" type="text/css" href="<?php echo base_url()?>my-assets/css/css.css" />
-<!-- <script type="text/javascript" src="http://www.bacubacu.com/colresizable/js/colResizable-1.5.min.js"></script> -->
-<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap/3/css/bootstrap.css" />
-<link rel="stylesheet" type="text/css" href="<?php echo base_url()?>my-assets/css/css.css" />
+
 <style>
 
 .btnclr{
@@ -70,10 +36,7 @@
     color:#e74c3c;
     text-shadow: 3px 3px 0 #fff, -3px -3px 0 #fff, 3px -3px 0 #fff, -3px 3px 0 #fff;
 }
-   
-   
-  
-   .logo-9{
+.logo-9{
     position:relative;
 } 
    
@@ -111,155 +74,100 @@
 <div class="content-wrapper">
    <section class="content-header">
       <div class="header-icon">
-      <figure class="one">
-               <img src="<?php echo base_url()  ?>asset/images/reportcustomer.png"  class="headshotphoto" style="height:50px;" />
+         <figure class="one">
+            <img src="<?php echo base_url()  ?>asset/images/reportcustomer.png"  class="headshotphoto" style="height:50px;" />
       </div>
-         
-        
-        
-           <div class="header-title">
-          <div class="logo-holder logo-9">
-         <h1><?php echo 'Customer Information' ?></h1>
-       </div>
-
+      <div class="header-title">
+         <div class="logo-holder logo-9">
+            <h1><?php echo 'Customer Information' ?></h1>
+         </div>
          <small><?php //echo display('user_wise_sale_report') ?></small>
          <ol class="breadcrumb" style="border: 3px solid #d7d4d6;" >
             <li><a href="<?php echo base_url()?>"><i class="pe-7s-home"></i> <?php echo display('home') ?></a></li>
             <li><a href="#"><?php echo display('report') ?></a></li>
             <li class="active" style="color:orange"><?php echo 'Customer Information';?></li>
       
-       <div class="load-wrapp">
-       <div class="load-10">
-         <div class="bar"></div>
-       </div>
-       </div>
-      
-      
-      
-      
-      
+            <div class="load-wrapp">
+               <div class="load-10">
+                  <div class="bar"></div>
+               </div>
+            </div>
          </ol>
       </div>
    </section>
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   <script></script>
    <section class="content">
       <div class="row">
-       
-      </div>
-      <!-- Manage Invoice report -->
- 
-
-
-            <div class="row">
          <div class="col-sm-16 col-md-14">
             <div class="panel panel-bd lobidrag" id="printableArea"   style="border: 3px solid #d7d4d6;" >
                <div class="panel-body">
                    <div class="sortableTable__container">
                     <div class="sortableTable__discard">
                     </div>
-
-
-
-
-
-
-
                 
-          <div class="dropdown bootcol" id="drop">
-    <button class="btnclr btn btn-default dropdown-toggle" style='margin-bottom: -70px; margin-left: 620px;' type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-        <span class="fa fa-download"></span> <?php echo display('download') ?>
-    </button>
-    <ul class="dropdown-menu" style='    margin-top: 40px;
-    margin-left: 600px;' aria-labelledby="dropdownMenu1">
-        <li><a href="#" onclick="generate()"><img src="<?php echo base_url() ?>assets/images/pdf.png" width="24px"> <?php echo display('PDF') ?></a></li>
-        <li class="divider"></li>
-        <li><a href="#" onclick="fnExcelReport()"><img src="<?php echo base_url() ?>assets/images/xls.png" width="24px"> <?php echo display('XLS') ?></a></li>
-    </ul>
-    <button type="button" style='margin-bottom: -70px;' class="btnclr btn btn-default dropdown-toggle" onclick="printDiv('printableArea')"><b class="ti-printer"></b>&nbsp;<?php echo display('print') ?></button>
-</div>
+                     <div class="dropdown bootcol" id="drop">
+                        <button class="btnclr btn btn-default dropdown-toggle" style='margin-bottom: -70px; margin-left: 620px;' type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                           <span class="fa fa-download"></span> <?php echo display('download') ?>
+                        </button>
+                        <ul class="dropdown-menu" style='    margin-top: 40px;
+                        margin-left: 600px;' aria-labelledby="dropdownMenu1">
+                           <li><a href="#" onclick="generate()"><img src="<?php echo base_url() ?>assets/images/pdf.png" width="24px"> <?php echo display('PDF') ?></a></li>
+                           <li class="divider"></li>
+                           <li><a href="#" onclick="fnExcelReport()"><img src="<?php echo base_url() ?>assets/images/xls.png" width="24px"> <?php echo display('XLS') ?></a></li>
+                        </ul>
+                        <button type="button" style='margin-bottom: -70px;' class="btnclr btn btn-default dropdown-toggle" onclick="printDiv('printableArea')"><b class="ti-printer"></b>&nbsp;<?php echo display('print') ?></button>
+                     </div>
+                     <input id="search" type="text" class="form-control"  style='float: right;width: 300px; margin-top: 10px;padding: 15px;margin-right:10px;' placeholder="Search for Customer">
 
-               <input id="search" type="text" class="form-control"  style='    float: right;
-                  width: 300px;
-                  margin-top: 10px;
-                  padding: 15px;margin-right:10px;' placeholder="Search for Customer">
+                     <div id='printableArea'>
+                        <table class="table table-bordered" id="ProfarmaInvList" cellspacing="0" width="100%">
+                           <thead class="sortableTable">
+                              <tr class="sortableTable__header btnclr">
 
-               <div id='printableArea'>
-               
-               
-               
-                
-               
-               
-               
-               
-            
-                  <table class="table table-bordered" id="ProfarmaInvList" cellspacing="0" width="100%">
-                     <thead class="sortableTable">
-                        <tr class="sortableTable__header btnclr">
-
-
-
-
-
-                        <th class="1 value"  data-col="1"    style="height: 45.0114px; width: 234.011px; text-align:center; " > <?php echo "ID" ;?></th>
-                        <th class="2 value" data-col="2"    style="width: 198.011px; text-align:center;"       ><?php echo 'Customer ID' ;?></th>
-                        <th class="3 value" data-col="3"  style="width: 198.011px; text-align:center;"       ><?php echo 'Customer Name' ; ?></th>
-                        <th class="4 value" data-col="4"     style="width: 198.011px; text-align:center;"       ><?php echo 'Email';?></th>
-                        <th class="5 value" data-col="5"     style="width: 198.011px; text-align:center;"       ><?php echo 'Phone';?></th>
-                        <th class="6 value" data-col="6"     style="width: 198.011px; text-align:center;"       ><?php echo 'City';?></th>
-                        <th class="7 value" data-col="7"     style="width: 198.011px; text-align:center;"       ><?php echo 'State';?></th>
-                        <th class="8 value" data-col="8"     style="width: 198.011px; text-align:center;"       ><?php echo 'Zip';?></th>
-                        <th class="9 value" data-col="9"    style="width: 198.011px; text-align:center;"       ><?php echo 'Past Due';?></th>
-                     </tr>
-                  </thead>
-                  <tbody class="sortableTable__body" id="tab">
-                     <?php
-                        //  print_r($customer_name);
+                              <th class="1 value"  data-col="1"    style="height: 45.0114px; width: 234.011px; text-align:center; " > <?php echo "ID" ;?></th>
+                              <th class="2 value" data-col="2"    style="width: 198.011px; text-align:center;"       ><?php echo 'Customer ID' ;?></th>
+                              <th class="3 value" data-col="3"  style="width: 198.011px; text-align:center;"       ><?php echo 'Customer Name' ; ?></th>
+                              <th class="4 value" data-col="4"     style="width: 198.011px; text-align:center;"       ><?php echo 'Email';?></th>
+                              <th class="5 value" data-col="5"     style="width: 198.011px; text-align:center;"       ><?php echo 'Phone';?></th>
+                              <th class="6 value" data-col="6"     style="width: 198.011px; text-align:center;"       ><?php echo 'City';?></th>
+                              <th class="7 value" data-col="7"     style="width: 198.011px; text-align:center;"       ><?php echo 'State';?></th>
+                              <th class="8 value" data-col="8"     style="width: 198.011px; text-align:center;"       ><?php echo 'Zip';?></th>
+                              <th class="9 value" data-col="9"    style="width: 198.011px; text-align:center;"       ><?php echo 'Past Due';?></th>
+                           </tr>
+                        </thead>
+                        <tbody class="sortableTable__body" id="tab">
+                           <?php
+                       
                              $count=1;
-                               if($customer_name){
-                              foreach($customer_name['rows'] as $arr){
+                               if($customer_data){
+                                 foreach($customer_data['rows'] as $arr){
                               ?>
-                     <tr style="text-align:center" class="task-list-row" data-task-id="<?php echo $count; ?>">
-                        <!--<td style="display: none;"><input type="hidden" class="form-control" id="rowinvoice_id" value="<?php echo $arr['customer_id'];  ?>" /></td>-->
-                        <td data-col="1" class="1 value" style="text-align:center;"><?php   echo $count;  ?></td>
-                        <td data-col="2" class="2 value" style="text-align:center;"><?php   echo $arr['customer_id'];  ?></td>
-                        <td data-col="3" class="3 value" style="text-align:center;"><?php   echo $arr['customer_name'];  ?></td>
-                        <td data-col="4" class="4 value" style="text-align:center;" ><?php   echo $arr['customer_email'];  ?></td>
-                        <td data-col="5" class="5 value" style="text-align:center;" ><?php   echo $arr['phone'];  ?></td>
-                        <td data-col="6" class="6 value" style="text-align:center;" ><?php   echo $arr['city'];  ?></td>
-                        <td data-col="7" class="7 value" style="text-align:center;" ><?php   echo $arr['state'];  ?></td>
-                        <td data-col="8" class="8 value" style="text-align:center;" ><?php   echo $arr['zip'];  ?></td>
-                        <td data-col="9" class="9 value" style="text-align:center;"><?php if(!empty($arr['inv_due_amount_usd']) && ($arr['inv_due_amount_usd'] !==null) && ($arr['inv_due_amount_usd'] !=='0')){ echo $currency." ". $arr['inv_due_amount_usd'];}else if(!empty($arr['inv_due_amount']) && ($arr['inv_due_amount'] !==null) && ($arr['inv_due_amount'] !=='0')  ){  echo $currency." ".$arr['inv_due_amount'];    }else{echo $currency." "."0.00";} ?></td>
-                     </tr>
-                     <?php   
-                        $count++;
-                         } }  else{
-                            ?>
-                     <tr>
-                        <td colspan="17" style="text-align:center;font-weight:bold;"><?php  echo "No Records Found"  ;?></td>
-                     </tr>
-                     <?php
-                        }
-                        
-                        ?>
-                  </tbody>
-               </table>
-               
-               
+                              <tr style="text-align:center" class="task-list-row" data-task-id="<?php echo $count; ?>">
+                                 <!--<td style="display: none;"><input type="hidden" class="form-control" id="rowinvoice_id" value="<?php echo $arr['customer_id'];  ?>" /></td>-->
+                                 <td data-col="1" class="1 value" style="text-align:center;"><?php   echo $count;  ?></td>
+                                 <td data-col="2" class="2 value" style="text-align:center;"><?php   echo $arr['customer_id'];  ?></td>
+                                 <td data-col="3" class="3 value" style="text-align:center;"><?php   echo $arr['customer_name'];  ?></td>
+                                 <td data-col="4" class="4 value" style="text-align:center;" ><?php   echo $arr['customer_email'];  ?></td>
+                                 <td data-col="5" class="5 value" style="text-align:center;" ><?php   echo $arr['phone'];  ?></td>
+                                 <td data-col="6" class="6 value" style="text-align:center;" ><?php   echo $arr['city'];  ?></td>
+                                 <td data-col="7" class="7 value" style="text-align:center;" ><?php   echo $arr['state'];  ?></td>
+                                 <td data-col="8" class="8 value" style="text-align:center;" ><?php   echo $arr['zip'];  ?></td>
+                                 <td data-col="9" class="9 value" style="text-align:center;"><?php if(!empty($arr['inv_due_amount_usd']) && ($arr['inv_due_amount_usd'] !==null) && ($arr['inv_due_amount_usd'] !=='0')){ echo $currency." ". $arr['inv_due_amount_usd'];}else if(!empty($arr['inv_due_amount']) && ($arr['inv_due_amount'] !==null) && ($arr['inv_due_amount'] !=='0')  ){  echo $currency." ".$arr['inv_due_amount'];    }else{echo $currency." "."0.00";} ?></td>
+                              </tr>
+                              <?php   
+                                 $count++;
+                                 } 
+                              }  else{
+                              ?>
+                              <tr>
+                                 <td colspan="17" style="text-align:center;font-weight:bold;"><?php  echo "No Records Found"  ;?></td>
+                              </tr>
+                           <?php
+                              } ?>
+                        </tbody>
+                     </table>
                </div>
-               
-               
-   </section>
-   </div>
+            </section>
+         </div>
    <input type="hidden" value="Sale/New Sale" id="url"/>
    <script src="<?php echo base_url()?>assets/js/jquery.bootgrid.min.js"></script>
    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.5/jspdf.min.js"></script>
