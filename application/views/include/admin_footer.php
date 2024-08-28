@@ -444,7 +444,9 @@ function updateOverallTotals(includeGross = false) {
                  var num = isNaN(parseFloat(amt)) ? 0 : parseFloat(amt);
                   var additional_cost =parseFloat($('#additional_cost').val()) || 0;
                    $('#gtotal').val((num+additional_cost).toFixed(2)); 
-
+if(num <= 0){
+   $('#gtotal').val((overall_total+additional_cost).toFixed(2)); 
+}
  var paid_amount =parseFloat($('#amount_paid').val()) || 0;
     
        var balance_amount= gtotal- paid_amount;

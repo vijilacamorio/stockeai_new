@@ -999,23 +999,20 @@ $CI = & get_instance();
 
    //Passing Data to Create Expense Page  - Surya 
     public function index() {
-       $bank_list        = $this->Web_settings->bank_list(decodeBase64UrlParameter($_GET['id']));
+      
        $supplier_list =$this->Suppliers->supplier_list(decodeBase64UrlParameter($_GET['id']));
        $setting_detail = $this->Web_settings->retrieve_setting_editdata();
+       $currency_details = $this->Web_settings->retrieve_setting_editdata(); 
        $curn_info_default = $this->db->select('*')->from('currency_tbl')->where('icon',$currency_details[0]['currency'])->get()->result_array();
         $all_product_list = $this->Products->get_all_products();
         $payment_type_dropdown = $this->Invoices->payment_type();;
       $payment_terms_dropdown = $this->Suppliers->payment_terms_dropdown();
-   
-       $curn_info_default = $this->db->select('*')->from('currency_tbl')->where('icon',$currency_details[0]['currency'])->get()->result_array();
-        $sale_costpersqft_per = $this->Invoices->sales_cost_permission();
+     //  $sale_costpersqft_per = $this->Invoices->sales_cost_permission();
         $expense_tax =  $this->Purchases->getexpense_taxinfo(decodeBase64UrlParameter($_GET['id']));
        $country_code = $this->db->select('*')->from('country')->get()->result_array();
         $data = array(
             'curn_info_default' =>$curn_info_default[0]['currency_name'],
             'supplier_list' => $supplier_list,
-            'bank_list'     => $bank_list,
-            'all_supplier'  => $all_supplier,
             'product_list'  => $all_product_list,
             'expense_tax' => $expense_tax,
            
@@ -1028,7 +1025,7 @@ $CI = & get_instance();
                        'setting_detail' => $setting_detail
 
         );
-        
+       
         $purchaseForm = $this->parser->parse('purchase/add_purchase_form', $data, true);
         $this->template->full_admin_html_view($purchaseForm);
     }

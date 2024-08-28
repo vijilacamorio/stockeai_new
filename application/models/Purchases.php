@@ -2227,8 +2227,30 @@ function adjustDatesBasedOnNotifications_truck($delivery_date,$container_pickup_
 }
 
  public function purchase_entry() {
-
+    die;
+   $this->form_validation->set_rules('customer_name', 'Customer Name', 'required');
+    $this->form_validation->set_rules('commercial_invoice_number', 'Invoice Number', 'required');
+    $this->form_validation->set_rules('billing_address', 'Billing Address', 'required');
+    $this->form_validation->set_rules('terms', 'Payment Terms', 'required');
+    $this->form_validation->set_rules('payment_due_date', 'Payment Due Date', 'required');
+    $this->form_validation->set_rules("thickness[]", "Thickness", "required|regex_match[/^\s*\d+(\.\d+)?\s*$/]");
+    $this->form_validation->set_rules("supplier_block_no[]", "Supplier Block Number",  "required|regex_match[/^\s*\d+(\.\d+)?\s*$/]");
+    $this->form_validation->set_rules("supplier_slab_no[]", "Supplier Slab No", "required|regex_match[/^\s*\d+(\.\d+)?\s*$/]");
+    $this->form_validation->set_rules("gross_width[]", "Gross Width", "required|regex_match[/^\s*\d+(\.\d+)?\s*$/]");
+    $this->form_validation->set_rules("gross_height[]", "Gross Height", "required|regex_match[/^\s*\d+(\.\d+)?\s*$/]");
+    $this->form_validation->set_rules("bundle_no[]", "Bundle Number",  "required|regex_match[/^\s*\d+(\.\d+)?\s*$/]");
+    $this->form_validation->set_rules("net_width[]", "Net Width",  "required|regex_match[/^\s*\d+(\.\d+)?\s*$/]");
+    $this->form_validation->set_rules("net_height[]", "Net Height",  "required|regex_match[/^\s*\d+(\.\d+)?\s*$/]");
+    if ($this->form_validation->run() == FALSE) {
+        $response = [
+            'status' => 'failure',
+            'msg' => validation_errors()
+        ];
+        echo json_encode($response);
+        return;
+    }
      $pur_id=$this->input->post('purchase_id',TRUE);
+      $createdby = decodeBase64UrlParameter($this->input->post('admin_company_id'));
       $purchase_id='';
      if(empty($pur_id)){
           $purchase_id = date('YmdHis');
@@ -2240,55 +2262,26 @@ function adjustDatesBasedOnNotifications_truck($delivery_date,$container_pickup_
         $p_id = $this->input->post('product_id',TRUE);
         $supplier_id = $this->input->post('supplier_id',TRUE);
         $supinfo =$this->db->select('*')->from('supplier_information')->where('supplier_id',$supplier_id)->get()->row();
-        $sup_head = $supinfo->supplier_id.'-'.$supinfo->supplier_name;
-        $sup_coa = $this->db->select('*')->from('acc_coa')->where('HeadName',$sup_head)->get()->row();
-     //   echo $this->db->last_query();
-        $receive_by=$this->session->userdata('user_id');
-        $receive_date=date('Y-m-d');
-        $createdate=date('Y-m-d H:i:s');
         $paid_amount = $this->input->post('paid_amount',TRUE);
         $due_amount = $this->input->post('due_amount',TRUE);
-        $discount = $this->input->post('discount',TRUE);
-          $bank_id = $this->input->post('bank_id',TRUE);
-        if(!empty($bank_id)){
-         $bankname = $this->db->select('bank_name')->from('bank_add')->where('bank_id',$bank_id)->get()->row()->bank_name;
-         $bankcoaid = $this->db->select('HeadCode')->from('acc_coa')->where('HeadName',$bankname)->get()->row()->HeadCode;
-       }else{
-           $bankcoaid = '';
-       }
-       if(!empty($_FILES['attachments']['name'])){
-        $config['upload_path'] = 'my-assets/productnewimg/';
-        $config['allowed_types'] = 'jpg|jpeg|png|gif';
-        $config['file_name'] = $_FILES['attachments']['name'];
-        //Load upload library and initialize here configuration
-        $this->load->library('upload',$config);
-        $this->upload->initialize($config);
-        if($this->upload->do_upload('attachments')){
-            $uploadData = $this->upload->data();
-            $profile_img = $uploadData['file_name'];
-        }else{
-            $profile_img = '';
-        }
-    }else{
-        $profile_img = '';
-    }
+
         //supplier & product id relation ship checker.
-        for ($i = 0, $n = count($p_id); $i < $n; $i++) {
-            $product_id = $p_id[$i];
-            $value = $this->product_supplier_check($product_id, $supplier_id);
-            if ($value == 0) {
-                $this->session->set_flashdata('message', display('product_and_supplier_did_not_match'));
-            }
-        }
+        // for ($i = 0, $n = count($p_id); $i < $n; $i++) {
+        //     $product_id = $p_id[$i];
+        //     $value = $this->product_supplier_check($product_id, $supplier_id);
+        //     if ($value == 0) {
+        //         $this->session->set_flashdata('message', display('product_and_supplier_did_not_match'));
+        //     }
+        // }
         $msg='';
         if($this->input->post('message_invoice',TRUE)){
 $msg=$this->input->post('message_invoice',TRUE);
         }else{
           $msg='Product Purchased on '.$this->input->post('bill_date',TRUE);
         }
-       $data = array(
+       $purchase_data = [
            'purchase_id'        => $purchase_id,
-           'create_by'       =>  $this->session->userdata('user_id'),
+           'create_by'       =>  $createdby,
            'chalan_no'          => $this->input->post('invoice_no',TRUE),
            'supplier_id'        => $this->input->post('supplier_id',TRUE),
            'total_amt' => $this->input->post('overall_total',TRUE),
@@ -2327,8 +2320,8 @@ $msg=$this->input->post('message_invoice',TRUE);
             'account_category'=>$this->input->post('account_category'),
             'sub_category'=>$this->input->post('sub_category'),
             'account_subcat'=>$this->input->post('account_subcat'),
-            'image'              =>  $profile_img,
-        );
+           
+       ];
         $purchase_id_1 = $this->db->where('purchase_id',$this->input->post('purchase_id',TRUE));
         $q=$this->db->get('product_purchase');
         $row = $q->row_array();
@@ -2346,108 +2339,7 @@ $msg=$this->input->post('message_invoice',TRUE);
     }
     $purchase_id_2 = $this->db->select('purchase_id')->from('product_purchase')->where('chalan_no',$this->input->post('invoice_no',TRUE))->get()->row()->purchase_id;
     $this->session->set_userdata("purchase_2",$purchase_id_2);
-    // echo $this->db->last_query();
-
-   
-   
-   
-    $purchasecoatran = array(
-          'VNo'            =>  $purchase_id,
-          'Vtype'          =>  'Purchase',
-          'VDate'          =>  $this->input->post('bill_date',TRUE),
-          'COAID'          =>  $sup_coa->HeadCode,
-          'Narration'      =>  'Supplier .'.$supinfo->supplier_name,
-          'Debit'          =>  0,
-          'Credit'         =>  $this->input->post('grand_total_price',TRUE),
-          'IsPosted'       =>  1,
-          'CreateBy'       =>  $receive_by,
-          'CreateDate'     =>  $receive_date,
-          'IsAppove'       =>  1
-        );
-          ///Inventory Debit
-       $coscr = array(
-      'VNo'            =>  $purchase_id,
-      'Vtype'          =>  'Purchase',
-      'VDate'          =>  $this->input->post('bill_date',TRUE),
-      'COAID'          =>  10107,
-      'Narration'      =>  'Inventory Debit For Supplier '.$supinfo->supplier_name,
-      'Debit'          =>  $this->input->post('grand_total_price',TRUE),
-      'Credit'         =>  0,//purchase price asbe
-      'IsPosted'       => 1,
-      'CreateBy'       => $receive_by,
-      'CreateDate'     => $createdate,
-      'IsAppove'       => 1
-    );
-       // Expense for company
-         $expense = array(
-      'VNo'            => $purchase_id,
-      'Vtype'          => 'Purchase',
-      'VDate'          => $this->input->post('bill_date',TRUE),
-      'COAID'          => 402,
-      'Narration'      => 'Company Credit For  '.$supinfo->supplier_name,
-      'Debit'          => $this->input->post('grand_total_price',TRUE),
-      'Credit'         => 0,//purchase price asbe
-      'IsPosted'       => 1,
-      'CreateBy'       => $receive_by,
-      'CreateDate'     => $createdate,
-      'IsAppove'       => 1
-    );
-             $cashinhand = array(
-      'VNo'            =>  $purchase_id,
-      'Vtype'          =>  'Purchase',
-      'VDate'          =>  $this->input->post('bill_date',TRUE),
-      'COAID'          =>  1020101,
-      'Narration'      =>  'Cash in Hand For Supplier '.$supinfo->supplier_name,
-      'Debit'          =>  0,
-      'Credit'         =>  $paid_amount,
-      'IsPosted'       =>  1,
-      'CreateBy'       =>  $receive_by,
-      'CreateDate'     =>  $createdate,
-      'IsAppove'       =>  1
-    );
-     $supplierdebit = array(
-          'VNo'            =>  $purchase_id,
-          'Vtype'          =>  'Purchase',
-          'VDate'          =>  $this->input->post('bill_date',TRUE),
-          'COAID'          =>  $sup_coa->HeadCode,
-          'Narration'      =>  'Supplier .'.$supinfo->supplier_name,
-          'Debit'          =>  $paid_amount,
-          'Credit'         =>  0,
-          'IsPosted'       =>  1,
-          'CreateBy'       =>  $receive_by,
-          'CreateDate'     =>  $receive_date,
-          'IsAppove'       =>  1
-        );
-               // bank ledger
- $bankc = array(
-      'VNo'            =>  $purchase_id,
-      'Vtype'          =>  'Purchase',
-      'VDate'          =>  $this->input->post('bill_date',TRUE),
-      'COAID'          =>  $bankcoaid,
-      'Narration'      =>  'Paid amount for Supplier  '.$supinfo->supplier_name,
-      'Debit'          =>  0,
-      'Credit'         =>  $paid_amount,
-      'IsPosted'       =>  1,
-      'CreateBy'       =>  $receive_by,
-      'CreateDate'     =>  $createdate,
-      'IsAppove'       =>  1
-    );
-// Bank summary for credit
-       //new end
-        $this->db->insert('acc_transaction',$coscr);
-        $this->db->insert('acc_transaction',$purchasecoatran);
-        $this->db->insert('acc_transaction',$expense);
-        if($this->input->post('paytype_drop',TRUE) == 'CASH'){
-          if(!empty($paid_amount)){
-        $this->db->insert('acc_transaction',$cashinhand);
-        $this->db->insert('acc_transaction',$supplierdebit);
-        }
-        }else {
-          if(!empty($paid_amount)){
-        $this->db->insert('acc_transaction',$bankc);
-        $this->db->insert('acc_transaction',$supplierdebit);
-      }
-    }
+  
 
 
         $prodt                = $this->input->post('prodt',TRUE);
