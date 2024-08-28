@@ -177,10 +177,11 @@ class Customers extends CI_Model {
     }
 
 
-    public function all_customer() {
+    public function all_customer($admin_id) {
         $this->db->select('*');
         $this->db->from('customer_information');
-        $this->db->where('create_by', $this->session->userdata('user_id'));
+        $this->db->where('create_by', $admin_id);
+        $this->db->where('is_deleted',0);
         $query = $this->db->get();
         if ($query->num_rows() > 0) {
             return $query->result_array();

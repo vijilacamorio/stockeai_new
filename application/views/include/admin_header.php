@@ -664,37 +664,37 @@ $(document).ready(function() {
 								</a>
 								<ul class="treeview-menu">
 									<li class="treeview">
-										<a href="<?php echo base_url('accounts/treeview_form') ?>"><?php echo 'Account List  '; ?></a>
+										<a href="<?php echo base_url('accounts/treeview_form?id='.$encode_com_id) ?>"><?php echo 'Account List'; ?></a>
 									</li>
 									<li class="treeview">
-										<a href="<?php echo base_url('accounts/balance_sheet_compare') ?>"><?php echo 'Balance Sheet Comparison '; ?></a>
+										<a href="<?php echo base_url('accounts/balance_sheet_compare?id='.$encode_com_id) ?>"><?php echo 'Balance Sheet Comparison '; ?></a>
 									</li>
 									<li class="treeview">
-										<a href="<?php echo base_url('accounts/balance_sheet') ?>"><?php echo 'Balance Sheet'; ?></a>
+										<a href="<?php echo base_url('accounts/balance_sheet?id='.$encode_com_id) ?>"><?php echo 'Balance Sheet'; ?></a>
 									</li>
 									<li class="treeview">
-										<a href="<?php echo base_url('accounts/transaction_split') ?>"><?php echo 'Transaction List with Splits'; ?></a>
+										<a href="<?php echo base_url('accounts/transaction_split?id='.$encode_com_id) ?>"><?php echo 'Transaction List with Splits'; ?></a>
 									</li>
 									<li class="treeview">
-										<a href="<?php echo base_url('accounts/cash_flow_report') ?>"><?php echo 'Statement of Cash Flows'; ?></a>
+										<a href="<?php echo base_url('accounts/cash_flow_report?id='.$encode_com_id) ?>"><?php echo 'Statement of Cash Flows'; ?></a>
 									</li>
 									<li class="treeview">
-										<a href="<?php echo base_url(); ?>accounts/trail_balance_reports"><?php echo display('trial_balance');  ?></a>
+										<a href="<?php echo base_url(); ?>accounts/trail_balance_reports?id=<?php echo $encode_com_id; ?>"><?php echo display('trial_balance');  ?></a>
 									</li>
 									<li class="treeview">
-										<a href="<?php echo base_url('accounts/transcation_details') ?>"><?php echo 'Transaction Details'; ?></a>
+										<a href="<?php echo base_url('accounts/transcation_details?id='.$encode_com_id) ?>"><?php echo 'Transaction Details'; ?></a>
 									</li>
 									<li class="treeview">
-										<a href="<?php echo base_url('accounts/generalLedger') ?>"><?php echo 'General Ledger'; ?></a>
+										<a href="<?php echo base_url('accounts/generalLedger?id='.$encode_com_id) ?>"><?php echo 'General Ledger'; ?></a>
 									</li>
 									<li class="treeview">
-										<a href="<?php echo base_url('accounts/journal') ?>"><?php echo 'Journal'; ?></a>
+										<a href="<?php echo base_url('accounts/journal?id='.$encode_com_id) ?>"><?php echo 'Journal'; ?></a>
 									</li>
 									<li class="treeview">
-										<a href="<?php echo base_url('accounts/profit_loss') ?>"><?php echo 'Profit Loss'; ?></a>
+										<a href="<?php echo base_url('accounts/profit_loss?id='.$encode_com_id) ?>"><?php echo 'Profit Loss'; ?></a>
 									</li>
 									<li class="treeview">
-										<a  href="<?php echo base_url('accounts/profit_loss_comparison') ?>"><?php echo 'Profit Loss Comparison'; ?></a>
+										<a  href="<?php echo base_url('accounts/profit_loss_comparison?id='.$encode_com_id) ?>"><?php echo 'Profit Loss Comparison'; ?></a>
 									</li>
 								</ul>
 							</li>
@@ -704,14 +704,14 @@ $(document).ready(function() {
 								</a>
 								<ul class="treeview-menu">
 									<li class="treeview">
-										<a href="<?php echo base_url('Cinvoice/customer_info_report') ?>"><?php echo 'Customer Information'; ?>
+										<a href="<?php echo base_url('Cinvoice/customer_info_report?id='.$encode_com_id) ?>"><?php echo 'Customer Information'; ?>
 										</a>
 									</li>
 									<li class="treeview">
-										<a href="<?php echo base_url('Cinvoice/customer_report_data') ?>"><?php echo 'Sales By Customer'; ?></a>
+										<a href="<?php echo base_url('Cinvoice/customer_report_data?id='.$encode_com_id) ?>"><?php echo 'Sales By Customer'; ?></a>
 									</li>
 									<li class="treeview">
-										<a href="<?php echo base_url('Ccustomer/transaction_list') ?>"><?php echo 'Transaction By Customer'; ?></a>
+										<a href="<?php echo base_url('Ccustomer/transaction_list?id='.$encode_com_id) ?>"><?php echo 'Transaction By Customer'; ?></a>
 									</li>
 								</ul>
 							</li>

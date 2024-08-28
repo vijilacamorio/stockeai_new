@@ -68,7 +68,7 @@ $this->load->view('include/bootstrap_model', $modaldata);
                         
                     </div>
                     <div class="errormessage"></div>
-                   <form id="insert_customer_form">
+                   <form id="insert_customer_form" name="insert_customer_form" enctype="multipart/form-data">
                     <div class="panel-body">
                         <div class="col-sm-6">
                             <div class="form-group row">
@@ -78,8 +78,7 @@ $this->load->view('include/bootstrap_model', $modaldata);
                                     class="col-sm-4 col-form-label"><?php echo display('Customer Name'); ?> <i
                                         class="text-danger">*</i></label>
                                 <div class="col-sm-8">
-                                    <input class="form-control" name="customer_name" id="customer_name" type="text"
-                                        placeholder=" Customer Name" style="border: 2px solid #d7d4d6;" 
+                                    <input class="form-control" name="customer_name" id="customer_name" type="text" placeholder="Customer Name" style="border: 2px solid #d7d4d6;" 
                                         tabindex="1">
                                 </div>
                             </div>
@@ -132,7 +131,7 @@ $this->load->view('include/bootstrap_model', $modaldata);
                                 <div class="col-sm-8">
                                     <input class="form-control" name="phone" id="mobile" type="tel"
                                         style="border: 2px solid #d7d4d6;"  oninput="formatPhoneNumber(this)" placeholder="(XXX) XXX-XXXX"
-                                        min="0" tabindex="3">
+                                         tabindex="3">
                                 </div>
                             </div>
                             <div class="form-group row">
@@ -149,7 +148,7 @@ $this->load->view('include/bootstrap_model', $modaldata);
                                     <?php echo  display('Mobile'); ?></label>
                                 <div class="col-sm-8">
                                     <input class="form-control" name="mobile" id="mobile" type="tel"
-                                        style="border: 2px solid #d7d4d6;" oninput="formatPhoneNumber(this)" placeholder="(XXX) XXX-XXXX" min="0" tabindex="2">
+                                        style="border: 2px solid #d7d4d6;" oninput="formatPhoneNumber(this)" placeholder="(XXX) XXX-XXXX" tabindex="2">
                                 </div>
                             </div>
                             <div class="form-group row">
@@ -719,31 +718,31 @@ $('#add_pay_terms').submit(function(e) {
             }
         },
         submitHandler: function(form) {
-
-            var formData = new FormData($("#insert_invoice")[0]);
+            event.preventDefault();
+            var formData = new FormData(form);
             formData.append(csrfName, csrfHash);
+            formData.append('<?php echo $this->security->get_csrf_token_name(); ?>', '<?php echo $this->security->get_csrf_hash(); ?>');
                 $.ajax({
                     type:"POST",
-                    dataType:"json",
-                    url:"<?php echo base_url(); ?>Cinvoice/manual_sales_insert?id=<?php echo $_GET['id']; ?>",
-                    data:formData,
-                    contentType: false, 
+                    url:'<?php echo base_url('Ccustomer/insert_customer'); ?>',
+                    dataType: "json",
+                    contentType: false,
                     processData: false, 
+                    data: formData,
                     success:function (response) {
-                      if (response.status === 'success') {
-                        debugger;
-                        $('.hidden_button').show();
-                        // $('#errormessage_invoice').html('<div class="alert alert-success alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>' + response.msg + '</div>');
-            $('.error_display').html(succalert + response.msg + alert2);
-        
-            $('#inv_id').val(response.invoice_id);
-            $('#inv_no').val(response.invoice_no);
-            window.setTimeout(function() {
-                window.location = "<?php echo base_url(); ?>Cinvoice/manage_invoice?id=<?php echo $_GET['id']; ?>";
-            }, 2500);
-        } else {
-           $('.error_display').html(failalert + response.msg + alert2);
-         }
+                        console.log(response);
+                        if (response.status == 'success') {
+                            $('.errormessage').html(succalert + response.msg + alert2);
+                            setTimeout(function() {
+                                window.location.href = "<?php echo base_url('Ccustomer/manage_customer') ?>?id=<?php echo $_GET['id']; ?>";
+                            }, 2500);
+
+                        } else if (response.status == 'failure') {
+                            $('.errormessage').html(failalert + response.msg + alert2);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error:', error);
                     }
                 });
             event.preventDefault();
