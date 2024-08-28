@@ -5,6 +5,8 @@ require_once 'vendor/autoload.php';
 use Dompdf\Dompdf;
 use Dompdf\Options;
 class Cinvoice extends CI_Controller {
+    private $id;
+
     function __construct() {
         parent::__construct();
         $this->load->model('Web_settings');
@@ -21,6 +23,8 @@ class Cinvoice extends CI_Controller {
         $this->load->model('Units');
         $this->load->model('Purchases');
         $this->load->library('form_validation');
+        $encodedId = $_GET['id'];
+        $this->admin_id   = decodeBase64UrlParameter($encodedId);
     }
     public function bill_payment(){
         $CI = & get_instance();
@@ -3769,5 +3773,22 @@ public function downloadQuotation()
     $dompdf->setPaper('A4', 'portrait');
     $dompdf->render();
     $dompdf->stream('proforma_invoice_' . $quotationId . '.pdf', array('Attachment' => 1));
+}
+public function customer_info_report(){
+
+    $CI = & get_instance();
+    $this->load->model('Invoices');
+    $this->load->model('Customers');
+    $CI->load->model('Web_settings');
+
+    $data['setting_detail'] = $CI->Web_settings->retrieve_setting_editdata($this->admin_id);
+    $data['customer_name'] = $this->Customers->all_customer($this->admin_id);
+    echo '<pre>';
+    echo $this->db->last_query(); 
+    print_r($data['customer_name']); exit;
+    $data['get_all_invoice_sale']= $this->Invoices->get_all_invoice_sale($this->admin_id);
+
+    $content = $CI->parser->parse('report/customer_info_report', $data, true);
+    $this->template->full_admin_html_view($content);
 }
 }
