@@ -188,8 +188,7 @@ if($email!=='')
 </div>
 <!-- Add new customer end -->
 <script type="text/javascript">
-    ////////////Show & Hide///////////
-    $('#colorcombo').hide();
+     $('#colorcombo').hide();
     $('#templateformart').hide();
     $('#uploadlogo').hide();
     $('#template').click(function(){
@@ -201,8 +200,7 @@ if($email!=='')
       $('#templatelogo').click(function(){
         $("#uploadlogo").toggle();
     });
-      /////////////Ajax////////////
-         $("#header").blur(function(){
+          $("#header").blur(function(){
     var value=$(this).val();
     var uid='<?php echo $decodedId; ?>';
     $.ajax({url: "http://localhost//assets/update_templates.php?value="+value+"&input=header&id="+uid, success: function(result){
