@@ -3082,7 +3082,7 @@ public function performer_ins()
             'total_weight' => $this->input->post('total_weight', TRUE),
             'gtotal' => $this->input->post('gtotal', TRUE),
             'total' => $this->input->post('Over_all_Total', TRUE),
-            'payment_id' => $this->input->post('paymentIds', TRUE),
+            'payment_id' => $this->input->post('makepaymentId', TRUE),
             'customer_gtotal' => $this->input->post('customer_gtotal', TRUE),
             'country_goods' => $this->input->post('country_goods', TRUE),
             'country_destination' => $this->input->post('country_destination', TRUE),
@@ -3098,7 +3098,6 @@ public function performer_ins()
             'modified_by' => $this->session->userdata('unique_id')
         ];
         $existing_invoice = $this->db->where('chalan_no', $this->input->post('chalan_no', TRUE))->get('profarma_invoice')->row_array();
-        // echo $this->db->last_query(); die();
      
         $existing_purchaseid = '';
         if (!empty($existing_invoice)) {
@@ -3108,11 +3107,11 @@ public function performer_ins()
            $data['modified_date']=date('Y-m-d H:i:s');
            $existing_purchaseid = $existing_invoice['purchase_id'];
            $this->db->update('profarma_invoice', $data);
-           // echo $this->db->last_query(); die();
         } else {
             $data['purchase_id'] = $purchase_id;
             $existing_purchaseid = $purchase_id;
             $proforma_insert_id = $this->Invoices->insert_profarmainvoice($data);
+            // echo $this->db->last_query(); die();
         }
         $product_data = [
             'available_quantity' => $this->input->post('available_quantity', TRUE),

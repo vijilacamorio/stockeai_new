@@ -173,7 +173,7 @@
          </div>
       </div>
       <!-- <input type="hidden"  value="<?php echo $payment_id; ?>"  name="payment_id"/> -->
-      <input type="hidden" id="makepaymentId" name="makepaymentId" value="">
+      <input type="hidden" id="makepaymentId" name="makepaymentId">
       <input type="hidden" name="<?php echo $this->security->get_csrf_token_name();?>" value="<?php echo $this->security->get_csrf_hash();?>">
       <input type="hidden" id="invoice_hdn"/>
       <input type="hidden" name="admin_company_id" id="admin_company_id" value="<?php echo $_GET['id']; ?>">

@@ -2427,19 +2427,20 @@ if(!empty($this->input->post('paid_amount',TRUE))){
         if ($query->num_rows() > 0) {
             return $query->result_array();
         }
-     }
-     //For edit Sale - Payment History - Surya
+    }
+
+    //For edit Sale - Payment History - Surya
     public function get_payment_info($payment_id){
-      //,sum(amt_paid) as total_paid
-$this->db->select('payment_date,reference_no,bank_name,amt_paid,balance,details,description');
-$this->db->from('payment');
-$this->db->where('payment_id',$payment_id);
-$this->db->order_by('id', 'asc');
+        $this->db->select('payment_date,reference_no,bank_name,amt_paid,balance,details,description');
+        $this->db->from('payment');
+        $this->db->where('payment_id',$payment_id);
+        $this->db->order_by('id', 'asc');
         $query = $this->db->get();
         if ($query->num_rows() > 0) {
             return $query->result_array();
         }
     }
+
      public function update_ocean_import() {
         //print_r($this->input->post()); die;
         $purchase_id  = $this->input->post('ocean_export_tracking_id',TRUE);

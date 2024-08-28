@@ -1549,6 +1549,8 @@ $("#add_designation").validate({
                hrateInput.removeAttribute('required');
            }  
        });
+
+       
        payrollTypeSelect.dispatchEvent(new Event('change'));
        $(document).ready(function(){
        $('#payroll_type').change(function(){
@@ -1560,7 +1562,7 @@ $("#add_designation").validate({
                $('#cost').hide(); 
                $('#hrate').hide(); 
            } else {
-               $('#cost').text('Pay Rate (Daily)').show(); 
+                $('#cost').text('Pay Rate (Daily)').append('<i class="text-danger">*</i>').show(); 
                $('#hrate').show(); 
            }
        });

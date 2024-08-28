@@ -46,26 +46,23 @@ $CI =& get_instance();
 
 
 	#=============Company Search item===============#
-	public function company_branch_total()
+	public function company_branch_total($encodedId  , $decodedId)
 	{ 
 		   $CI = & get_instance();
            $CI->load->model('Web_settings');
-           $setting_detail = $CI->Web_settings->retrieve_setting_editdata();
-		   $state_list = $CI->Companies->retrieve_statetax();
-		   $local_list = $CI->Companies->retrieve_localtax();
-
-
-        $data = array(
+           $setting_detail = $CI->Web_settings->retrieve_setting_editdata($decodedId);
+		   $state_list = $CI->Companies->retrieve_statetax($decodedId);
+		   $local_list = $CI->Companies->retrieve_localtax($decodedId);
+           $data = array(
             'title' => display('manage_users'),
 			'setting_detail' => $setting_detail,
 			'state' => $state_list,
 			'local' => $local_list,
-        );
-        $userForm = $CI->parser->parse('company/companybranch', $data, true);
-        return $userForm;
-
-		
+          );
+          $userForm = $CI->parser->parse('company/companybranch', $data, true);
+          return $userForm;
 	}
+
 
 
 
