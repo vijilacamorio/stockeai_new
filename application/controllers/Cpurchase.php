@@ -1744,19 +1744,9 @@ public function uploadCsv_Serviceprovider_second()
 
     //Insert purchase
     public function insert_purchase() {
-
-        $CI = & get_instance();
-        $CI->auth->check_admin_auth();
-        $CI->load->model('Purchases');
-        $data=$CI->Purchases->purchase_entry();
+ $data=$this->Purchases->purchase_entry();
         echo json_encode($data);
-
-
-
-         
-    
-
-    }
+  }
 
 
       //Insert purchase

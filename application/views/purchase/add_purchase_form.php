@@ -86,9 +86,11 @@ $this->load->view('include/bootstrap_model', $modaldata);
                  
                      </div>
                      <div class="without_po">
-                        <form id="insert_purchase1"  method="post">
+                        <div id="errormessage_expense"></div>
+                        <form id="insert_expense"  method="post">
                            <div class="row">
-                              <div class="col-sm-6">
+                           <div class="col-sm-6">  
+                          <input type="hidden" id="admin_company_id" name="admin_company_id">
                           <input type="hidden" id="makepaymentId" name="makepaymentId">
                                  <div class="form-group row">
                                     <label for="supplier_sss" class="col-sm-4 col-form-label"><?php echo display('Vendor');?>
@@ -116,7 +118,7 @@ $this->load->view('include/bootstrap_model', $modaldata);
                                  </div>
                               </div>
                               <input type="hidden" name="<?php echo $this->security->get_csrf_token_name();?>" value="<?php echo $this->security->get_csrf_hash();?>">
-                              <input type="hidden"    class="payment_id" name="payment_id"/>
+                              
                               <div class="col-sm-6">
                                  <br/>
                                  <div class="form-group row">
@@ -190,17 +192,7 @@ $this->load->view('include/bootstrap_model', $modaldata);
                                        <a href="#" class="btnclr client-add-btn btn " aria-hidden="true"    data-toggle="modal" data-target="#payment_type_new" ><i class="fa fa-plus"></i></a>
                                     </div>
                                  </div>  
-
-                               
-
-
-                                 <input type="hidden" id="hidden_weight" name="hidden_weight"/>
-
-
-                               
-
-
-                                 <div class="form-group row">
+<div class="form-group row">
                                     <label for="account_category" class="col-sm-4 col-form-label">Account Category</label>
                                     <div class="col-sm-8">
                                        <select id="ddl"  name="account_category" class="form-control" style="border:2px solid #d7d4d6;"  onchange="configureDropDownLists(this,document.getElementById('ddl2'))">
@@ -442,7 +434,7 @@ $this->load->view('include/bootstrap_model', $modaldata);
                                                 <option value="<?php echo $tx['product_name'].'-'.$tx['product_model'];?>">  <?php echo $tx['product_name'].'-'.$tx['product_model'];  ?></option>
                                                 <?php } ?>
                                              </datalist>
-                                             <input type='hidden' class='common_product autocomplete_hidden_value  product_id_1' name='product_id[]' id='SchoolHiddenId_1' />
+                                             <input type='hidden' class='common_product autocomplete_hidden_value  product_id_1' name='product_id[]' id='product_id_1' />
                                           </td>
                                           <td>
                                              <input type="text" id="bundle_no_1" name="bundle_no[]" required="" class="bundle_no form-control" />
@@ -567,8 +559,7 @@ foreach ($tax_data as $tx) {?>
                            <td  style="width:20%;"><a href="#" class="client-add-btn btn btnclr" aria-hidden="true" style="color:white;  margin-right: 295px;"  data-toggle="modal" data-target="#tax_info" ><i class="fa fa-plus"></i></a></td>
                         </tr>
                      </table>
-                     <input type="hidden" id="paid_convert" name="paid_convert"/>   <input type="hidden" id="bal_convert" name="bal_convert"/>
-                    <table border="0" style="width: 100%; border-collapse: collapse; text-align: left;" class="overall table table-bordered table-hover" style="border:2px solid #d7d4d6;">
+                   <table border="0" style="width: 100%; border-collapse: collapse; text-align: left;" class="overall table table-bordered table-hover" style="border:2px solid #d7d4d6;">
     <tbody>
         <tr>
             <!-- Left Side -->
@@ -698,7 +689,8 @@ foreach ($tax_data as $tx) {?>
                      </div>
                     
 
-
+<input type="hidden" id="Final_invoice_number" /> 
+<input type="hidden" id="Final_invoice_id" /> 
 <script type="text/javascript">
    $(document).ready(function(){
     //$('#main').hide();
@@ -853,79 +845,28 @@ updateOverallTotals(true);
                   $('#tax_details').val(answer.toFixed(2) +" ( "+tax+" )");
                 $('#customer_gtotal').val(custo_final.toFixed(2));  
                   $('#balance').val(balance_amount.toFixed(2));
+                  $('#paid_customer_currency').val(balance_amount*custo_amt);
           updateOverallTotals();
                 });
                 $('#paypls').on('click',function(){
 $('#amount_to_pay').val($('#balance').val());
 });
-
-$('#insert_purchase').submit(function (event) {
-    var dataString = {
-        dataString : $("#insert_purchase").serialize()
-    
-   };
-   dataString[csrfName] = csrfHash;
-  
-    $.ajax({
-        type:"POST",
-        dataType:"json",
-        url:"<?php echo base_url(); ?>Cpurchase/insert_purchase",
-        data:$("#insert_purchase").serialize(),
-
-        success:function (data) {
-        console.log(data);
-   
-            var split = data.split("/");
-            $('#invoice_hdn1').val(split[0]);
-         console.log(split[0]+"---"+split[1]);
-     
-            $('#invoice_hdn').val(split[1]);
-            $("#bodyModal1").html('New Expense Created Successfully');
-        
-            $('#final_submit,.final_submit').show();
-$('.download').show();
-    $('#myModal1').modal('show');
-    window.setTimeout(function(){
-        $('.modal').modal('hide');
-       
-$('.modal-backdrop').remove();
-$("#bodyModal1").html("");
- },2500);
-
-
-       }
-
-    });
-
-    event.preventDefault();
-});
-
-$("#add_salesPartners").validate({
+$("#insert_expense").validate({
    rules: {
-   sfirst_name: "required",
-    last_name: "required",  
-     //sphone: "required",
-      federalidentificationnumber: {
-         validation_group: true
-      },
-      ssnInput: {
-         validation_group: true
-      },
-    federaltaxclassification : "required",
-    emp_tax_detail: "required",  
+    supplier_id: "required",
+    invoice_no: "required", 
+    payment_due_date : "required", 
+    bill_date : "required",
+    payment_terms: "required",  
+    paytype_drop : "required"
  },
  messages: {
-     sfirst_name: "First Name is required",
-    last_name: "Last Name is required",
-    // sphone: "Phone is required",
-     ssnInput: {
-      require_from_group: "Social security number or Federal Identification Number is required"
-     },
-     federaltaxclassification: {
-       require_from_group: "Social security number or Federal Identification Number is required"
-     },
-      federaltaxclassification: "Federal Tax Classification Tax is required",
-      emp_tax_detail: "Employee Tax is required",
+     supplier_id: "Supplier Name is required",
+    invoice_no: "Invoice Number is required",
+    payment_terms: "Payment Term is required",
+    paytype_drop: "Payment Type is required",
+      payment_due_date: "Payment Due Date is required",
+      bill_date: "Bill Date is required",
  },
     errorPlacement: function(error, element) {
             if (element.hasClass("select2-hidden-accessible")) {
@@ -940,28 +881,19 @@ submitHandler: function(form) {
   $.ajax({
     type: "POST",
     dataType: "json",
-    url: "<?php echo base_url('Chrm/salespartner_create'); ?>",
+    url:"<?php echo base_url(); ?>Cpurchase/insert_purchase",
     data: formData,
     contentType: false,
     processData: false,
     success: function(response) {
     if (response.status == 'success') {
 
-   $('#errormessage_salespartner').html('<div class="alert alert-success">' + response.msg + '</div>');
-                       
-                        var $select = $('select#emp_id');
-                        $select.empty();
-                        $.each(response.data, function(index, item) {
-                            var option = '<option value="' + item.first_name + '">' + item.first_name + '</option>';
-$select . append(option);
-              
-                    });
-                       window.setTimeout(function(){
-           $('#salesPartners').modal('hide');
-           }, 2500);
+   $('#errormessage_expense').html('<div class="alert alert-success">' + response.msg + '</div>');
+     $('#Final_invoice_number').val(response.invoice_no);
+          $('#Final_invoice_id').val(response.invoice_id);
          
                   }else{
-          $('#errormessage_salespartner').html(failalert+response.msg+'</div>'); 
+          $('#errormessage_expense').html(failalert+response.msg+'</div>'); 
           console.log(response.msg, "Error");
        }                  
     },
