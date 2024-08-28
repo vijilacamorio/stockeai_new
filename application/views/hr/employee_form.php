@@ -1423,6 +1423,10 @@ $("#add_designation").validate({
         });
     }
 });
+
+
+
+
  // Insert Employeee Type
    $("#add_employee_type").validate({
     rules: {

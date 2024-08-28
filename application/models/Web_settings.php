@@ -25,8 +25,6 @@ class Web_settings extends CI_Model
     {
         $this->db->where('id', $notification_id);
         $this->db->update('schedule_list', array('bell_notification' => 0));
-        echo $this->db->last_query();
-        die();
         return $this->db->affected_rows() > 0;
     }
     public function schedule_alert($data)
@@ -552,7 +550,6 @@ class Web_settings extends CI_Model
         }
         return true;
     }
- 
     public function update_invoice_set($decodedId)
     {
         $purchase_id = date('YmdHis');
@@ -613,15 +610,6 @@ class Web_settings extends CI_Model
         }
         return true;
     }
-
-
-
-
-
-
-
-
-
     public function update_invoice_setting($data)
     {
         $this->db->insert('invoice_settings', $data);
