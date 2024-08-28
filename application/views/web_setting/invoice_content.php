@@ -1,4 +1,3 @@
-
 <div class="content-wrapper">
     <section class="content-header">
         <div class="header-icon">
@@ -14,7 +13,6 @@
             </ol>
         </div>
     </section>
-
     <section class="content">
         <!-- Alert Message -->      
         <?php
@@ -39,9 +37,6 @@
             $this->session->unset_userdata('error_message');
         }
         ?>
-
-
-
         <!-- New customer -->
         <div class="row">
             <div class="col-sm-12">
@@ -51,60 +46,47 @@
                       <div class="container">
                           <div class="row">
                               <div class="col-sm-4  "> <div class="panel panel-default">
-
 <form action="updateinvoice2" method="post">
     <div class="panel-body"> 
        <div class="form-group">
            <label>Buisness Name</label>
            <input type="text" name="name" class="form-control" value="<?php if($cname!=''){echo $cname ; }?>">
-
        </div>
        <div class="form-group">
            <label>Buisness Phone</label>
            <input type="text" name="phone" class="form-control" value="<?php if($phone!=''){echo $phone ; }?>">
-           
        </div>
        <div class="form-group">
            <label>Buisness Email</label>
            <input type="text" name="email" class="form-control" value="<?php if($email!=''){echo $email ; }?>">
-           
        </div>
        <div class="form-group">
            <label>Buisness Address</label>
            <input type="text" name="address" class="form-control" value="<?php if($address!=''){
             echo $address;
              }?>">
-           
        </div>
        <div class="form-group">
            <label>Buisness Register no</label>
            <input type="text" name="regno" class="form-control" value="<?php if($reg_number!=''){
             echo $reg_number;
              }?>">
-           
        </div>
-
        <input type="hidden"   name="encodedId" value="<?php echo $encodedId;  ?>"  >
        <input type="hidden"   name="decodedId" value="<?php echo $decodedId;  ?>"  >
-
         <div class="form-group">
            <label>Website</label>
            <input type="text" name="website" class="form-control" value="<?php if($website!=''){
             echo $website;
              }?>">
-           
        </div>
        <div class="form-group">
-           
            <input type="submit"  class="btnclr btn m-b-5 m-r-2" name="add-customer"   style="color:white;border-color: #2e6da4;"  value="ADD" >
-           
        </div>
-
     </div>
   </div>    </div>
                               <div class="col-sm-8"> <div class="panel panel-default">
     <div class="panel-body">
-        
         <div class="row">
             <div class="col-sm-3"><?php  
             if($cname!=='')
@@ -117,8 +99,6 @@
             { 
             echo $address; 
         }; ?>   <br> 
-                 
-                  
                   REg no:<?php if($reg_number!=='')
             { 
             echo $reg_number; 
@@ -130,7 +110,6 @@
             {
                    echo $website;
                }
-
                     ?><br>
                   <?php
 if($email!=='')
@@ -143,27 +122,17 @@ if($email!=='')
                 </p>
               </div>
              <div class="col-sm-6 text-center"><?php echo $header; ?></div>
-
             <div class="col-sm-3">
-              
-         <?php   if (!empty($invoice_logo)) { ?>
-    <img src="<?php echo base_url() . $invoice_logo[0]['invoice_logo']; ?>" style="width: 40%;">
-<?php } else { ?>
-    <img src="<?php echo base_url() . $logo[0]['logo']; ?>" style="width: 40%;">
-<?php } ?>
-          
-          
+           <img src="<?php echo base_url() .$invoice_logo[0]['invoice_logo']; ?>" style="width: 40%;">
+
           </div>
         </div>
         <div class="row">
-
-
 <table width="100%" height='100%' border="1">
   <tr style="background-color: #<?php echo $color; ?>;color: white;">
     <td>Commercial</td>
     <td>Date</td>
     <td>Total Due</td>
-    
     <td>enclosed</td>
   </tr>
   <tr>
@@ -171,7 +140,6 @@ if($email!=='')
     <td>&nbsp;</td>
     <td>&nbsp;</td>
     <td>&nbsp;</td>
-    
   </tr>
 </table>
 <br>
@@ -183,56 +151,44 @@ if($email!=='')
     <td>Qty</td>
     <td>Rate</td>
     <td>Amount</td>
-    
   </tr>
- 
   <tr>
     <td>&nbsp;</td>
     <td>&nbsp;</td>
     <td>&nbsp;</td>
     <td>&nbsp;</td>
     <td>&nbsp;</td>
- 
   </tr>
 </table>
+ <br>
+ <br>
+<div class="form-group"  style="margin-left:15px;" >
+           <label>Remarks :</label>
+           <td>&nbsp;</td>
+       </div>
+        </div>
+         <br>
 
-    
+        <div class="form-group"  style="margin-left:15px;" >
+           <label></label>
+       </div>
         </div>
     </div>
   </div>
-
-  <div class="form-group">
-           <label>Remarks :</label>
-          <input type="text" readonly="">
-           
-       </div>
+ 
        </div>                    </div>
                           </div>
                       </div>
                         </div>
                     </div>
-                    
-
                 </div>
             </div>
         </div>
-
-
-
-
-
-
-
-
-
-
     </section>
 </div>
 <!-- Add new customer end -->
-
 <script type="text/javascript">
-    ////////////Show & Hide///////////
-    $('#colorcombo').hide();
+     $('#colorcombo').hide();
     $('#templateformart').hide();
     $('#uploadlogo').hide();
     $('#template').click(function(){
@@ -243,49 +199,30 @@ if($email!=='')
     });
       $('#templatelogo').click(function(){
         $("#uploadlogo").toggle();
-
     });
-      /////////////Ajax////////////
-
-         $("#header").blur(function(){
+          $("#header").blur(function(){
     var value=$(this).val();
     var uid='<?php echo $decodedId; ?>';
     $.ajax({url: "http://localhost//assets/update_templates.php?value="+value+"&input=header&id="+uid, success: function(result){
- 
    location.reload();
-   
   }
 });
 });
-
 ///////////////Ajax Dot////////
 function dot(value)
 {
     var uid='<?php echo $decodedId; ?>';
-  
      $.ajax({url: "http://localhost//assets/update_templates.php?value="+value+"&input=color&id="+uid, success: function(result){
          alert('Color '+result);  
         location.reload();
-    
-      
   }});
  }
-    
-
 </script>
-
-
 <style type="text/css">
-
 .btnclr{
        background-color:<?php echo $setting_detail[0]['button_color']; ?>;
        color: white;
-
    }
-
- 
-
-
     .dot1 {
   height: 25px;
   width: 25px;

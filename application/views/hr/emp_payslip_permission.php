@@ -474,15 +474,15 @@ th,td{
         <td colspan="5" class="text-right" style="font-weight:bold;">Total Hours :</td>
         <td style="text-align: center;"> <input  type="text"   readonly id="total_net" value="<?php echo $time_sheet_data[0]['total_hours'] ; ?>" name="total_net" />    </td>
         <?php  if($time_sheet_data[0]['total_hours'] > $extratime_info[0]['work_hour']) { ?>
-        <input  type="hidden"   readonly id="above_extra_beforehours"
+        <input  type="text"   readonly id="above_extra_beforehours"
         value="<?php
         $mins  =  $time_sheet_data[0]['total_hours'] - $extratime_info[0]['work_hour'];
         $get_value  =  $time_sheet_data[0]['total_hours'] - $mins;
         echo $get_value  ; ?>"  name="above_extra_beforehours" /> 
-        <input type="hidden" id="above_extra_rate" name="above_extra_rate" value="<?php echo  $employee_name[0]['hrate']; ?>" /> 
-        <input type="hidden" id="above_extra_sum" name="above_extra_sum" value="<?php echo  $get_value * $employee_name[0]['hrate'] ; ?>" /> 
-        <input type="hidden" id="above_this_hours" name="above_this_hours" value="<?php echo  $get_value; ?>" /> 
-        <input type="hidden" id="above_extra_ytd" name="above_extra_ytd" value="<?php echo  $get_value * $employee_name[0]['hrate'] ; ?>" />
+        <input type="text" id="above_extra_rate" name="above_extra_rate" value="<?php echo  $employee_name[0]['hrate']; ?>" /> 
+        <input type="text" id="above_extra_sum" name="above_extra_sum" value="<?php echo  $get_value * $employee_name[0]['hrate'] ; ?>" /> 
+        <input type="text" id="above_this_hours" name="above_this_hours" value="<?php echo  $get_value; ?>" /> 
+        <input type="text" id="above_extra_ytd" name="above_extra_ytd" value="<?php echo  $get_value * $employee_name[0]['hrate'] ; ?>" />
         <?php } else{ ?>
         <input type="hidden" readonly id="above_extra_beforehours"
         value="<?php   echo $time_sheet_data[0]['total_hours'];
@@ -518,6 +518,8 @@ th,td{
                       <?php } elseif ($employee_name[0]['payroll_type'] == 'SalesCommission') { ?>
                    <?php } ?>                     
                 </tr>
+
+ 
                                     <?php 
                                     $weektotal = 0;
                                     if ($time_sheet_data[0]['week_one'] > $extratime_info[0]['work_hour']) {
@@ -538,18 +540,19 @@ th,td{
                                     $weektotal = $weekone + $weektwo + $weekthree;
                                     ?>
                                  <br>
+                 
                                  <?php  if($time_sheet_data[0]['total_hours'] > $extratime_info[0]['work_hour']) { ?>
-                                 <input type="hidden" id="extra_hour" name="extra_hour"  value="<?php echo $weektotal; ?>"   />
-                                 <input type="hidden" id="extra_rate" name="extra_rate" value="<?php echo  $employee_name[0]['hrate'] * $extratime_info[0]['extra_workamount']; ?>" />
-                                 <input type="hidden" id="extra_thisrate" name="extra_thisrate" value="<?php echo ($weektotal) * ($employee_name[0]['hrate'] * $extratime_info[0]['extra_workamount']); ?>" />
-                                 <input type="hidden" id="extra_this_hour" name="extra_this_hour" value="<?php echo $weektotal;  ?>" />
-                                 <input type="hidden" id="extra_ytd" name="extra_ytd" value="<?php echo ($weektotal) * ($employee_name[0]['hrate'] * $extratime_info[0]['extra_workamount']); ?>"   />
+                                 <input type="text" id="extra_hour" name="extra_hour"  value="<?php echo $weektotal; ?>"   />
+                                 <input type="text" id="extra_rate" name="extra_rate" value="<?php echo  $employee_name[0]['hrate'] * $extratime_info[0]['extra_workamount']; ?>" />
+                                 <input type="text" id="extra_thisrate" name="extra_thisrate" value="<?php echo ($weektotal) * ($employee_name[0]['hrate'] * $extratime_info[0]['extra_workamount']); ?>" />
+                                 <input type="text" id="extra_this_hour" name="extra_this_hour" value="<?php echo $weektotal;  ?>" />
+                                 <input type="text" id="extra_ytd" name="extra_ytd" value="<?php echo ($weektotal) * ($employee_name[0]['hrate'] * $extratime_info[0]['extra_workamount']); ?>"   />
                                  <?php    } else{  ?>
-                                 <input type="hidden" id="extra_hour" name="extra_hour" value="<?php echo $time_sheet_data[0]['total_hours']; ?>" />
-                                 <input type="hidden" id="extra_rate" name="extra_rate" value="<?php echo  $employee_name[0]['hrate']; ?>" />
-                                 <input type="hidden" id="extra_thisrate" name="extra_thisrate" value="<?php echo ($time_sheet_data[0]['total_hours']  * $employee_name[0]['hrate']); ?>" />
-                                 <input type="hidden" id="extra_rate" name="extra_rate" value="<?php echo  $employee_name[0]['hrate']; ?>" />
-                                 <input type="hidden" id="extra_thisrate" name="extra_thisrate" value="<?php echo ($time_sheet_data[0]['total_hours']  * $employee_name[0]['hrate']); ?>" />
+                                 <input type="text" id="extra_hour" name="extra_hour" value="<?php echo $time_sheet_data[0]['total_hours']; ?>" />
+                                 <input type="text" id="extra_rate" name="extra_rate" value="<?php echo  $employee_name[0]['hrate']; ?>" />
+                                 <input type="text" id="extra_thisrate" name="extra_thisrate" value="<?php echo ($time_sheet_data[0]['total_hours']  * $employee_name[0]['hrate']); ?>" />
+                                 <input type="text" id="extra_rate" name="extra_rate" value="<?php echo  $employee_name[0]['hrate']; ?>" />
+                                 <input type="text" id="extra_thisrate" name="extra_thisrate" value="<?php echo ($time_sheet_data[0]['total_hours']  * $employee_name[0]['hrate']); ?>" />
                                 <?php } ?>
                                 </tfoot>
 		                    </table>

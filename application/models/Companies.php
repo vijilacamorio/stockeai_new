@@ -111,10 +111,6 @@ public function editurldata($company_id)
         }
         return false;
     }
-
-
-
-
     // Changed by Ajith on 27-08-2024
 	public function retrieve_localtax($decodedId)
     {
@@ -122,13 +118,12 @@ public function editurldata($company_id)
         $this->db->from('local_tax_id');
         $this->db->where('create_by',$decodedId);
         $query = $this->db->get();
-		echo $this->db->last_query(); die();
+		// echo $this->db->last_query(); die();
         if ($query->num_rows() > 0) {
             return $query->result();
         }
         return false;
     }
-
     // Changed by Ajith on 27-08-2024
 	public function retrieve_statetax($decodedId)
     {
@@ -208,7 +203,7 @@ public function company_info()
 		$this->db->from('company_information');
 		$this->db->where('company_id',$company_id);
 		$query = $this->db->get();
-		if ($query->num_rows() > 0) {
+ 		if ($query->num_rows() > 0) {
 			return $query->result_array();	
 		}
 		return false;
@@ -483,11 +478,11 @@ $delete = $this->db->update('company_information', $update_data);
 		$this->db->from('user_login a');
 		$this->db->join('company_information b', 'b.company_id = a.cid');
 		if (!empty($search)) {
-			$this->db->group_start(); // Start a group for OR conditions
+			$this->db->group_start(); 
 			$this->db->like('b.company_name', $search);
 			$this->db->or_like('a.username', $search);
 			$this->db->or_like('a.email_id', $search);
-			$this->db->group_end(); // End the group
+			$this->db->group_end(); 
 		}
 		$this->db->limit($limit, $offset);
 		$this->db->order_by($orderField, $orderDirection);
@@ -501,4 +496,48 @@ $delete = $this->db->update('company_information', $update_data);
 		$result = $query->result_array();
 		return $result;
 	}
+
+ 
+
+	public function getTotalCompany($search, $Id) {
+        $this->db->select('company_name,email,address,mobile,website,c_city,c_state,company_id');
+        $this->db->from('company_information');
+        if ($search != "") {
+            $this->db->or_like(array('company_name' => $search, 'address' => $search, 'mobile' => $search, 'c_city' => $search,
+                'c_state'=> $search, 'website'       => $search ,'company_id'       => $search));
+        }
+        $this->db->where('is_deleted', 0);
+        $this->db->where('create_by', $Id);
+        $query = $this->db->get();
+        return $query->num_rows();
+    }
+
+ 
+	public function getPaginatedCompany($limit, $offset, $orderField, $orderDirection, $search, $Id) {
+		$this->db->select('company_name,email,address,mobile,website,c_city,c_state,company_id');
+        $this->db->from('company_information');
+         if ($search != "") {
+            $this->db->group_start();
+            $this->db->like('company_name', $search);
+            $this->db->or_like('email', $search);
+            $this->db->or_like('address', $search);
+            $this->db->or_like('mobile', $search);
+            $this->db->or_like('website', $search);
+            $this->db->or_like('c_city', $search);
+			$this->db->or_like('c_state', $search);
+			$this->db->or_like('company_id', $search);
+            $this->db->group_end();
+        }
+        $this->db->where('is_deleted', 0);
+        $this->db->where('create_by', $Id);
+        $this->db->limit($limit, $offset);
+        // $this->db->order_by($orderField, $orderDirection);
+        $query  = $this->db->get();
+        $result = $query->result_array();
+        return $result;
+    }
+
+
+
+
 }

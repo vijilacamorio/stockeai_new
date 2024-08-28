@@ -5852,6 +5852,10 @@ AND t1.biweekly IS NULL;
         }
         echo json_encode($response);
     }
+
+
+
+    
     public function add_office_loan() {
         $CI =  & get_instance();
         $CI->load->model('Web_settings');
@@ -6780,7 +6784,9 @@ public function salespartner_update() {
                 $data_empolyee['edit_living_other']   = $other_living_tax;
             }
             $result     = $this->db->insert('employee_history', $data_empolyee);
+       
             $getEmployee_List = $this->Hrm_model->getAllEmployee($decodedId);
+          
             $employeeId       = $this->db->insert_id();
             if ($result) {$response['employee_list'] = $getEmployee_List;
                 $response['status']                                   = 'success';

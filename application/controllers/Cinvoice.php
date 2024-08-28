@@ -2457,19 +2457,57 @@ $this->db->update('bootgrid_data');
     echo json_encode($response);
     }
 
-        public function add_state_tax_id(){
-        $this->load->model('Invoices');
-        $postData = $this->input->post('new_state_tax_id');
-        $data = $this->Invoices->add_state_tax_id($postData);
-        echo json_encode($data);
+
+  // manager company changed by ajith on 28/08/2024
+    public function add_state_tax_id() {
+        $this->form_validation->set_rules('new_state_tax_id', 'New State Tax ID', 'required');
+        $response = array();
+        if ($this->form_validation->run() == FALSE) {
+            $response['status'] = 'failure';
+            $response['msg']    = validation_errors();
+        } else {
+            $postData  = $this->input->post('new_state_tax_id');
+            $decodedId = $this->input->post('decodedId');
+            $data      = $this->Invoices->add_state_tax_id($postData, $decodedId);
+            if ($data) {
+                $response['status']          = 'success';
+                $response['msg']             = 'New State Tax ID has been added successfully';
+                $response['get_statetaxid'] = $data;
+            } else {
+                $response['status'] = 'failure';
+                $response['msg']    = 'Failed to add New State Tax ID. Please try again.';
+            }
+        }
+        echo json_encode($response);
     }
-     // manage my company--->add local tax number
-     public function add_local_tax_id(){
-        $this->load->model('Invoices');
-        $postData = $this->input->post('new_local_tax_id');
-        $data = $this->Invoices->add_local_tax_id($postData);
-        echo json_encode($data);
+   // manager company changed by ajith on 28/08/2024
+    public function add_local_tax_id() {
+        $this->form_validation->set_rules('new_local_tax_id', 'New Local Tax ID', 'required');
+        $response = array();
+        if ($this->form_validation->run() == FALSE) {
+            $response['status'] = 'failure';
+            $response['msg']    = validation_errors();
+        } else {
+            $postData  = $this->input->post('new_local_tax_id');
+            $decodedId = $this->input->post('decodedId');
+            $data      = $this->Invoices->add_local_tax_id($postData, $decodedId);
+            if ($data) {
+                $response['status']          = 'success';
+                $response['msg']             = 'New Local Tax ID has been added successfully';
+                $response['get_localtaxid'] = $data;
+            } else {
+                $response['status'] = 'failure';
+                $response['msg']    = 'Failed to add New Local Tax ID. Please try again.';
+            }
+        }
+        echo json_encode($response);
     }
+ 
+
+
+
+    
+
       public function add_city_tax(){
         $this->load->model('Invoices');
         $postData = $this->input->post('new_city_tax');

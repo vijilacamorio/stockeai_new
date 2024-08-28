@@ -710,31 +710,39 @@ public function add_payment_term($postData,$id){
     $query = $this->db->get();
     return $query->result_array();
 }
-public function add_state_tax_id($postData){
-    $data=array(
+
+ 
+  // manager company changed by ajith on 28/08/2024
+  public function add_state_tax_id($postData, $decodedId) {
+    $data = array(
         'state_tax_id' => $postData,
-        'create_by' => $this->session->userdata('user_id')
+        'create_by'   => $decodedId,
     );
     $this->db->insert('state_tax_id', $data);
     $this->db->select('*');
     $this->db->from('state_tax_id');
-    $this->db->where('create_by' ,$this->session->userdata('user_id'));
+    $this->db->where('create_by', $decodedId);
     $query = $this->db->get();
     return $query->result_array();
 }
-//manage my company--->add local tax id number
-public function add_local_tax_id($postData){
+
+  
+  // manager company changed by ajith on 28/08/2024
+  public function add_local_tax_id($postData , $decodedId){
     $data=array(
         'local_tax_id' => $postData,
-        'create_by' => $this->session->userdata('user_id')
+        'create_by' => $decodedId
     );
     $this->db->insert('local_tax_id', $data);
+
     $this->db->select('*');
     $this->db->from('local_tax_id');
-    $this->db->where('create_by' ,$this->session->userdata('user_id'));
+    $this->db->where('create_by',$decodedId);
     $query = $this->db->get();
     return $query->result_array();
 }
+
+ 
 public function add_city_tax($postData){
     $data=array(
         'city_tax' => $postData,
