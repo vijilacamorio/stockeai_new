@@ -908,7 +908,7 @@ $(document).ready(function(){
 				                $('#paymenterrormessage').html('<div class="alert alert-success alert-dismissible text-left" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>' + response.msg + '</div>');
 				                $('.amt').css('display', 'table-cell');
 				                if (response.paymentData && response.paymentData.length > 0) {
-					                //$('#makepaymentId').val(response.paymentData[0]['payment_id']);
+					                $('#makepaymentId').val(response.paymentData[0]['payment_id']);
 					                $('#amount_paid').val(total_paid);
 					                $('#Balance').val(response.paymentData[0]['balance']);
 					                $('#balance').val(response.paymentData[0]['balance']);
