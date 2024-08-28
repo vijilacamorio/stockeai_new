@@ -5,6 +5,8 @@ require_once 'vendor/autoload.php';
 use Dompdf\Dompdf;
 use Dompdf\Options;
 class Cinvoice extends CI_Controller {
+    private $id;
+
     function __construct() {
         parent::__construct();
         $this->load->model('Web_settings');
@@ -21,6 +23,8 @@ class Cinvoice extends CI_Controller {
         $this->load->model('Units');
         $this->load->model('Purchases');
         $this->load->library('form_validation');
+        $encodedId = $_GET['id'];
+        $this->admin_id   = decodeBase64UrlParameter($encodedId);
     }
     public function bill_payment(){
         $CI = & get_instance();
@@ -3116,7 +3120,7 @@ public function performer_ins()
             'total_weight' => $this->input->post('total_weight', TRUE),
             'gtotal' => $this->input->post('gtotal', TRUE),
             'total' => $this->input->post('Over_all_Total', TRUE),
-            'payment_id' => $this->input->post('paymentIds', TRUE),
+            'payment_id' => $this->input->post('makepaymentId', TRUE),
             'customer_gtotal' => $this->input->post('customer_gtotal', TRUE),
             'country_goods' => $this->input->post('country_goods', TRUE),
             'country_destination' => $this->input->post('country_destination', TRUE),
@@ -3132,7 +3136,6 @@ public function performer_ins()
             'modified_by' => $this->session->userdata('unique_id')
         ];
         $existing_invoice = $this->db->where('chalan_no', $this->input->post('chalan_no', TRUE))->get('profarma_invoice')->row_array();
-        // echo $this->db->last_query(); die();
      
         $existing_purchaseid = '';
         if (!empty($existing_invoice)) {
@@ -3142,11 +3145,11 @@ public function performer_ins()
            $data['modified_date']=date('Y-m-d H:i:s');
            $existing_purchaseid = $existing_invoice['purchase_id'];
            $this->db->update('profarma_invoice', $data);
-           // echo $this->db->last_query(); die();
         } else {
             $data['purchase_id'] = $purchase_id;
             $existing_purchaseid = $purchase_id;
             $proforma_insert_id = $this->Invoices->insert_profarmainvoice($data);
+            // echo $this->db->last_query(); die();
         }
         $product_data = [
             'available_quantity' => $this->input->post('available_quantity', TRUE),
@@ -3807,5 +3810,55 @@ public function downloadQuotation()
     $dompdf->setPaper('A4', 'portrait');
     $dompdf->render();
     $dompdf->stream('proforma_invoice_' . $quotationId . '.pdf', array('Attachment' => 1));
+}
+public function customer_info_report(){ //for report - vijila - 28-08-2024
+
+    $CI = & get_instance();
+
+    $CI->load->model('Web_settings');
+
+    $data['setting_detail'] = $CI->Web_settings->retrieve_setting_editdata($this->admin_id);
+    $content = $CI->parser->parse('report/customer_info_report', $data, true);
+    $this->template->full_admin_html_view($content);
+}
+public function getCustomerDatas() { //for report - vijila - 28-08-2024
+    $encodedId      = isset($_GET['id']) ? $_GET['id'] : null;
+    $decodedId      = decodeBase64UrlParameter($encodedId);
+    $limit          = $this->input->post('length');
+    $start          = $this->input->post('start');
+    $search         = $this->input->post('search')['value'];
+    $orderField     = $this->input->post('columns')[$this->input->post('order')[0]['column']]['data'];
+    $orderDirection = $this->input->post('order')[0]['dir'];
+    $totalItems     = $this->Customers->getTotalCustomers($search, $decodedId);
+    $items          = $this->Customers->getPaginatedCustomers($limit, $start, $orderField, $orderDirection, $search, $decodedId);
+    $data           = [];
+    $i              = $start + 1;
+    foreach ($items as $item) {
+        $row = [
+            "customer_id"     => $i,
+            "customer_name"   => $item['customer_name'],
+            "customer_type"   => $item['customer_type'],
+            "billing_address" => $item['billing_address'],
+            "customer_mobile" => $item['customer_mobile'],
+            "primary_email"   => $item['primary_email'],
+            "city"            => $item['city'],
+            "state"           => $item['state'],
+            "zip"             => $item['zip'],
+            "country"         => $item['country'],
+            'created_admin'   => $decoded_admin,
+            "created_date"    => $item['created_date'],
+            "currency_type"   => $item['currency_type'],
+            "credit_limit"    => $item['credit_limit'],
+        ];
+        $data[] = $row;
+        $i++;
+    }
+    $response = [
+        "draw"            => $this->input->post('draw'),
+        "recordsTotal"    => $totalItems,
+        "recordsFiltered" => $totalItems,
+        "data"            => $data,
+    ];
+    echo json_encode($response);
 }
 }

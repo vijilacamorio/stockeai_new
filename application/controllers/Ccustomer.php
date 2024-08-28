@@ -154,7 +154,6 @@ $this->form_validation->set_message('required', 'The {field} field is required.'
         $this->form_validation->set_rules('city', 'City', 'required');
         $this->form_validation->set_rules('address2', 'Billing Address', 'required');
         $this->form_validation->set_rules('state', 'State', 'required');
-        // $this->form_validation->set_rules('customer_type', 'Customer Type', 'required');
         $this->form_validation->set_rules('payment', 'Payment Term', 'required');
         $this->form_validation->set_rules('previous_balance', 'Credit Limit', 'required');
         $this->form_validation->set_rules('tax_status', 'Sales Tax', 'required');
@@ -202,7 +201,7 @@ $this->form_validation->set_message('required', 'The {field} field is required.'
             'created_date'      =>date('Y-m-d H:i:s'),
             'is_deleted'        => 0,
         );
-        $result      = $this->db->insert('customer_information', $data);
+       $result      = $this->db->insert('customer_information', $data);
         $customer_id = $this->db->insert_id();
          if($result)
             {   $response['admin'] = $this->input->post('admin_id', TRUE);

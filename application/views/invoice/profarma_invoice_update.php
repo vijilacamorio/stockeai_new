@@ -2823,12 +2823,9 @@ var id = netheight.slice(indexLastDot + 1);
           dataType:"json",
           url:"<?php echo base_url(); ?>Cinvoice/performapayment_history",
           data:$("#histroy").serialize(),
-   
           success:function (data) {
-           console.log(data, "data");
            var gt=$('#customer_gtotal').val();
            var amtpd = data.amt_paid !== null ? data.amt_paid : 0;
-           console.log(data.amt_paid, 'amt_paid');
            var bal= $('#gtotal').val() - data.amt_paid;
            var total= "<table class='table table-striped table-bordered' id='paymentTable'><tr><td rowspan='2' style='vertical-align: middle;text-align-last: center;'><b>Grand Total :  <?php  echo $currency;  ?>"+$('#gtotal').val()+"<b></td><td class='td' style='border-right: hidden;'><b>Total Amount Paid :<b></td><td><?php  echo $currency;  ?>"+amtpd+"</td></tr></tr><td class='td' style='border-right: hidden;'><b>Balance :<b></td><td><?php  echo $currency;  ?>"+bal +"</td></tr></table>"
            var table_header = "<table class='table table-striped table-bordered'><thead style='FONT-WEIGHT:BOLD;'><tr><td>S.NO</td><td>Payment Date</td><td>Reference.NO</td><td>Bank Name</td><td>Amount Paid</td><td>Balance</td><td>Details</td></tr></thead><tbody>";

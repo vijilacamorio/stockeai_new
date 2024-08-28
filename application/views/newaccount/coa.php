@@ -1,22 +1,5 @@
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css"/>
-<script type="text/javascript" src="<?php echo base_url()?>assets/js/jquery.base64.js"></script>
-<script type="text/javascript" src="<?php echo base_url()?>assets/js/drag_drop_index_table.js"></script>
-  <script type="text/javascript" src="<?php echo base_url()?>assets/js/html2canvas.js"></script>
- <script type="text/javascript" src="<?php echo base_url()?>assets/js/jspdf.plugin.autotable"></script>
-  <script type="text/javascript" src="<?php echo base_url()?>assets/js/jspdf.umd.js"></script>
-<script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
-<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap/3/css/bootstrap.css" />
-<script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
-<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css" />
- <script type="text/javascript" src="<?php echo base_url()?>my-assets/js/tableManager.js"></script>
-<script type="text/javascript" src="https://unpkg.com/xlsx@0.15.1/dist/xlsx.full.min.js"></script>
-<script type="text/javascript" src="http://mrrio.github.io/jsPDF/dist/jspdf.debug.js"></script>
-<input type="hidden" name="<?php echo $this->security->get_csrf_token_name();?>" value="<?php echo $this->security->get_csrf_hash();?>">
-<link rel="stylesheet" type="text/css" href="<?php echo base_url()?>my-assets/css/css.css" />
-<script type="text/javascript" src="http://www.bacubacu.com/colresizable/js/colResizable-1.5.min.js"></script>
-<script type="text/javascript" src="<?php echo base_url()?>my-assets/js/profarma.js"></script>
-<?php
+
+<?php 
 include ('Class/CConManager.php');
 include ('Class/Ccommon.php');
 include ('Class/CResult.php');
@@ -31,7 +14,7 @@ include ('Class/CAccount.php');
             <h1><?php echo "Vocher Report"; ?></h1>
             <small><?php //echo "Vocher Report"; ?></small>
             <ol class="breadcrumb">
-                <li><a href="#"><i class="pe-7s-home"></i> <?php echo display('home') ?></a></li>
+                <li><a href="<?php echo base_url(); ?>"><i class="pe-7s-home"></i> <?php echo display('home') ?></a></li>
                 <li><a href="#"><?php echo "Accounts"; ?></a></li>
                 <li class="active" style="color:orange;"><?php echo "Vocher Report"; ?></li>
             </ol>
@@ -51,37 +34,11 @@ if(isset($_POST['btnSave']))
 
     $sql= $this->accounts_model->get_cash_bydate($date);
 
-  //  $oResult=$oAccount->SqlQuery($sql);
     $sql1=$this->accounts_model->get_vouchar_bydate($date);
-//echo  $sql1[0]['Narration'];
-   // $oResult=$oAccount->SqlQuery($sql1);
- //print_r( $sql1);
 }
 ?>
     <section class="content">
-        <!-- Alert Message -->
-        <?php
-        $message = $this->session->userdata('message');
-        if (isset($message)) {
-            ?>
-            <div class="alert alert-info alert-dismissable">
-                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                <?php echo $message ?>                    
-            </div>
-            <?php
-            $this->session->unset_userdata('message');
-        }
-        $error_message = $this->session->userdata('error_message');
-        if (isset($error_message)) {
-            ?>
-            <div class="alert alert-danger alert-dismissable">
-                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                <?php echo $error_message ?>                    
-            </div>
-            <?php
-            $this->session->unset_userdata('error_message');
-        }
-        ?>
+       
        
 <div class="row">
     <div class="col-sm-12 col-md-12">

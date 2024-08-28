@@ -2225,101 +2225,96 @@ function adjustDatesBasedOnNotifications_truck($delivery_date,$container_pickup_
         'adjusted_container_pickupdate_source' => $container_pickupdate_adj ? $etd_notification->notification_source : null
         ];
 }
-
+public function callback_isf_no_required($value) {
+    // Check if 'isf_field' value is 'yes' and 'isf_no' is empty
+    if ($this->input->post('isf_field') === 'yes' && empty($value)) {
+        // 'isf_no' is required
+        $this->form_validation->set_message('callback_isf_no_required', 'ISF No is required when ISF Field is yes.');
+        return FALSE;
+    }
+    return TRUE;
+}
  public function purchase_entry() {
-
-     $pur_id=$this->input->post('purchase_id',TRUE);
-      $purchase_id='';
-     if(empty($pur_id)){
-          $purchase_id = date('YmdHis');
-     }else{
-         $purchase_id =  $pur_id;
-     }
-       
-        $chalan_no =$this->input->post('invoice_no',TRUE);
+   $this->form_validation->set_rules('supplier_id', 'Supplier Name', 'required');
+    $this->form_validation->set_rules('invoice_no', 'Invoice Number', 'required');
+    $this->form_validation->set_rules('payment_terms', 'Payment Terms', 'required');
+    $this->form_validation->set_rules('bill_date', 'Bill date', 'required');
+    $this->form_validation->set_rules('payment_due_date', 'Payment Due Date', 'required');
+    $this->form_validation->set_rules("paytype_drop", "Payment Type", 'required');
+   $this->form_validation->set_rules('isf_no', 'ISF No', [
+        'callback_isf_no_required' => [
+            'rules' => 'required',
+            'label' => 'ISF No',
+            'error' => 'ISF No is required when ISF Field is yes.'
+        ]
+    ]);
+    $this->form_validation->set_rules("thickness[]", "Thickness", "required|regex_match[/^\s*\d+(\.\d+)?\s*$/]");
+    $this->form_validation->set_rules("supplier_block_no[]", "Supplier Block Number",  "required|regex_match[/^\s*\d+(\.\d+)?\s*$/]");
+    $this->form_validation->set_rules("supplier_slab_no[]", "Supplier Slab No", "required|regex_match[/^\s*\d+(\.\d+)?\s*$/]");
+    $this->form_validation->set_rules("gross_width[]", "Gross Width", "required|regex_match[/^\s*\d+(\.\d+)?\s*$/]");
+    $this->form_validation->set_rules("gross_height[]", "Gross Height", "required|regex_match[/^\s*\d+(\.\d+)?\s*$/]");
+    $this->form_validation->set_rules("bundle_no[]", "Bundle Number",  "required|regex_match[/^\s*\d+(\.\d+)?\s*$/]");
+    $this->form_validation->set_rules("net_width[]", "Net Width",  "required|regex_match[/^\s*\d+(\.\d+)?\s*$/]");
+    $this->form_validation->set_rules("net_height[]", "Net Height",  "required|regex_match[/^\s*\d+(\.\d+)?\s*$/]");
+   
+    if ($this->form_validation->run() == FALSE) {
+        $response = [
+            'status' => 'failure',
+            'msg' => validation_errors()
+        ];
+        echo json_encode($response);
+        return;
+    }
+      $purchase_id=$this->generator(10);
+      $createdby = decodeBase64UrlParameter($this->input->post('admin_company_id'));
+      $chalan_no =$this->input->post('invoice_no',TRUE);
         $p_id = $this->input->post('product_id',TRUE);
         $supplier_id = $this->input->post('supplier_id',TRUE);
         $supinfo =$this->db->select('*')->from('supplier_information')->where('supplier_id',$supplier_id)->get()->row();
-        $sup_head = $supinfo->supplier_id.'-'.$supinfo->supplier_name;
-        $sup_coa = $this->db->select('*')->from('acc_coa')->where('HeadName',$sup_head)->get()->row();
-     //   echo $this->db->last_query();
-        $receive_by=$this->session->userdata('user_id');
-        $receive_date=date('Y-m-d');
-        $createdate=date('Y-m-d H:i:s');
         $paid_amount = $this->input->post('paid_amount',TRUE);
         $due_amount = $this->input->post('due_amount',TRUE);
-        $discount = $this->input->post('discount',TRUE);
-          $bank_id = $this->input->post('bank_id',TRUE);
-        if(!empty($bank_id)){
-         $bankname = $this->db->select('bank_name')->from('bank_add')->where('bank_id',$bank_id)->get()->row()->bank_name;
-         $bankcoaid = $this->db->select('HeadCode')->from('acc_coa')->where('HeadName',$bankname)->get()->row()->HeadCode;
-       }else{
-           $bankcoaid = '';
-       }
-       if(!empty($_FILES['attachments']['name'])){
-        $config['upload_path'] = 'my-assets/productnewimg/';
-        $config['allowed_types'] = 'jpg|jpeg|png|gif';
-        $config['file_name'] = $_FILES['attachments']['name'];
-        //Load upload library and initialize here configuration
-        $this->load->library('upload',$config);
-        $this->upload->initialize($config);
-        if($this->upload->do_upload('attachments')){
-            $uploadData = $this->upload->data();
-            $profile_img = $uploadData['file_name'];
-        }else{
-            $profile_img = '';
-        }
-    }else{
-        $profile_img = '';
-    }
+
         //supplier & product id relation ship checker.
-        for ($i = 0, $n = count($p_id); $i < $n; $i++) {
-            $product_id = $p_id[$i];
-            $value = $this->product_supplier_check($product_id, $supplier_id);
-            if ($value == 0) {
-                $this->session->set_flashdata('message', display('product_and_supplier_did_not_match'));
-            }
-        }
+        // for ($i = 0, $n = count($p_id); $i < $n; $i++) {
+        //     $product_id = $p_id[$i];
+        //     $value = $this->product_supplier_check($product_id, $supplier_id);
+        //     if ($value == 0) {
+        //         $this->session->set_flashdata('message', display('product_and_supplier_did_not_match'));
+        //     }
+        // }
         $msg='';
         if($this->input->post('message_invoice',TRUE)){
-$msg=$this->input->post('message_invoice',TRUE);
+        $msg=$this->input->post('message_invoice',TRUE);
         }else{
           $msg='Product Purchased on '.$this->input->post('bill_date',TRUE);
         }
-       $data = array(
+       $purchase_data = [
            'purchase_id'        => $purchase_id,
-           'create_by'       =>  $this->session->userdata('user_id'),
+           'create_by'       =>  $createdby,
            'chalan_no'          => $this->input->post('invoice_no',TRUE),
            'supplier_id'        => $this->input->post('supplier_id',TRUE),
            'total_amt' => $this->input->post('overall_total',TRUE),
            'grand_total_amount' => $this->input->post('gtotal',TRUE),
            'g_weight'   =>$this->input->post('hidden_weight',TRUE),
-           'total_discount'     => $this->input->post('discount',TRUE),
            'purchase_date'      => $this->input->post('bill_date',TRUE),
-           'purchase_details'   => $this->input->post('purchase_details',TRUE),
-            'payment_due_date'   => $this->input->post('payment_due_date',TRUE),
+           'payment_due_date'   => $this->input->post('payment_due_date',TRUE),
            'remarks'            => $this->input->post('remark',TRUE),
            'message_invoice'    => $msg,
-            'total_tax'  =>  $this->input->post('tax_details',TRUE),
-            'packing_id' => $this->input->post('packing_id',TRUE),
+           'total_tax'  =>  $this->input->post('tax_details',TRUE),
            'etd'   => $this->input->post('etd',TRUE),
            'eta'   => $this->input->post('eta',TRUE),
            'gtotal_preferred_currency'  => $this->input->post('vendor_gtotal',TRUE),
-           'shipping_line'   => $this->input->post('shipping_line',TRUE),
-            'container_no'   => $this->input->post('container_no',TRUE),
+           'container_no'   => $this->input->post('container_no',TRUE),
            'bl_number'   => $this->input->post('bl_number',TRUE),
            'isf_filling'   => $this->input->post('isf_no',TRUE),
-            'paid_amount'    => $this->input->post('amount_paid',TRUE),
+           'paid_amount'    => $this->input->post('amount_paid',TRUE),
            'balance'    => $this->input->post('balance',TRUE),
-            'payment_id'    => $this->input->post('payment_id',TRUE),
-            'status'             => 1,
-            'bank_id'            =>  $this->input->post('bank_id',TRUE),
-            'packing_id'            =>  $this->input->post('packing_id',TRUE),
-'total_amt'  => $this->input->post('Over_all_Total',TRUE),
-          'payment_type'       =>  $this->input->post('paytype_drop',TRUE),
-'total_gross' =>  $this->input->post('total_gross',TRUE),
-'total_net' =>  $this->input->post('total_net',TRUE),
-'total_weight' => $this->input->post('total_weight',TRUE),
+            'payment_id'    => $this->input->post('payment_id',TRUE),        
+            'total_amt'  => $this->input->post('Over_all_Total',TRUE),
+            'payment_type'       =>  $this->input->post('paytype_drop',TRUE),
+            'total_gross' =>  $this->input->post('total_gross',TRUE),
+            'total_net' =>  $this->input->post('total_net',TRUE),
+            'total_weight' => $this->input->post('total_weight',TRUE),
             'payment_terms'       =>  $this->input->post('payment_terms',TRUE),
             'Port_of_discharge'       =>  $this->input->post('Port_of_discharge',TRUE),
             'amount_pay_usd'=>$this->input->post('paid_convert'),
@@ -2327,130 +2322,28 @@ $msg=$this->input->post('message_invoice',TRUE);
             'account_category'=>$this->input->post('account_category'),
             'sub_category'=>$this->input->post('sub_category'),
             'account_subcat'=>$this->input->post('account_subcat'),
-            'image'              =>  $profile_img,
-        );
-        $purchase_id_1 = $this->db->where('purchase_id',$this->input->post('purchase_id',TRUE));
-        $q=$this->db->get('product_purchase');
-        $row = $q->row_array();
-    if(!empty($row['purchase_id'])){
-        $this->session->set_userdata("purchase_1",$row['purchase_id']);
-   $this->db->where('purchase_id', $this->session->userdata("purchase_1"));
-  $this->db->delete('product_purchase');
-    // echo $this->db->last_query();echo "<br/>";
-        $this->db->insert('product_purchase', $data);
-    //   echo $this->db->last_query();echo "<br/>";
-   }
-    else{
-    $this->db->insert('product_purchase', $data);
-    //  echo $this->db->last_query();echo "<br/>";
-    }
-    $purchase_id_2 = $this->db->select('purchase_id')->from('product_purchase')->where('chalan_no',$this->input->post('invoice_no',TRUE))->get()->row()->purchase_id;
-    $this->session->set_userdata("purchase_2",$purchase_id_2);
-    // echo $this->db->last_query();
-
+           
+       ];
+       $existing_purchase = $this->db->where('chalan_no', $this->input->post('invoice_no', TRUE))
+    ->get('product_purchase')->row_array();
+    if (!empty($existing_purchase)) {
+       $this->db->where('chalan_no', $this->input->post('invoice_no', TRUE));
+       $purchase_data['modified_admin']=$this->session->userdata('unique_id');
+       $purchase_data['modified_by']=$createdby;
+       $purchase_data['modified_date']=date('Y-m-d H:i:s');
+       $this->db->update('invoice', $purchase_data);
    
-   
-   
-    $purchasecoatran = array(
-          'VNo'            =>  $purchase_id,
-          'Vtype'          =>  'Purchase',
-          'VDate'          =>  $this->input->post('bill_date',TRUE),
-          'COAID'          =>  $sup_coa->HeadCode,
-          'Narration'      =>  'Supplier .'.$supinfo->supplier_name,
-          'Debit'          =>  0,
-          'Credit'         =>  $this->input->post('grand_total_price',TRUE),
-          'IsPosted'       =>  1,
-          'CreateBy'       =>  $receive_by,
-          'CreateDate'     =>  $receive_date,
-          'IsAppove'       =>  1
-        );
-          ///Inventory Debit
-       $coscr = array(
-      'VNo'            =>  $purchase_id,
-      'Vtype'          =>  'Purchase',
-      'VDate'          =>  $this->input->post('bill_date',TRUE),
-      'COAID'          =>  10107,
-      'Narration'      =>  'Inventory Debit For Supplier '.$supinfo->supplier_name,
-      'Debit'          =>  $this->input->post('grand_total_price',TRUE),
-      'Credit'         =>  0,//purchase price asbe
-      'IsPosted'       => 1,
-      'CreateBy'       => $receive_by,
-      'CreateDate'     => $createdate,
-      'IsAppove'       => 1
-    );
-       // Expense for company
-         $expense = array(
-      'VNo'            => $purchase_id,
-      'Vtype'          => 'Purchase',
-      'VDate'          => $this->input->post('bill_date',TRUE),
-      'COAID'          => 402,
-      'Narration'      => 'Company Credit For  '.$supinfo->supplier_name,
-      'Debit'          => $this->input->post('grand_total_price',TRUE),
-      'Credit'         => 0,//purchase price asbe
-      'IsPosted'       => 1,
-      'CreateBy'       => $receive_by,
-      'CreateDate'     => $createdate,
-      'IsAppove'       => 1
-    );
-             $cashinhand = array(
-      'VNo'            =>  $purchase_id,
-      'Vtype'          =>  'Purchase',
-      'VDate'          =>  $this->input->post('bill_date',TRUE),
-      'COAID'          =>  1020101,
-      'Narration'      =>  'Cash in Hand For Supplier '.$supinfo->supplier_name,
-      'Debit'          =>  0,
-      'Credit'         =>  $paid_amount,
-      'IsPosted'       =>  1,
-      'CreateBy'       =>  $receive_by,
-      'CreateDate'     =>  $createdate,
-      'IsAppove'       =>  1
-    );
-     $supplierdebit = array(
-          'VNo'            =>  $purchase_id,
-          'Vtype'          =>  'Purchase',
-          'VDate'          =>  $this->input->post('bill_date',TRUE),
-          'COAID'          =>  $sup_coa->HeadCode,
-          'Narration'      =>  'Supplier .'.$supinfo->supplier_name,
-          'Debit'          =>  $paid_amount,
-          'Credit'         =>  0,
-          'IsPosted'       =>  1,
-          'CreateBy'       =>  $receive_by,
-          'CreateDate'     =>  $receive_date,
-          'IsAppove'       =>  1
-        );
-               // bank ledger
- $bankc = array(
-      'VNo'            =>  $purchase_id,
-      'Vtype'          =>  'Purchase',
-      'VDate'          =>  $this->input->post('bill_date',TRUE),
-      'COAID'          =>  $bankcoaid,
-      'Narration'      =>  'Paid amount for Supplier  '.$supinfo->supplier_name,
-      'Debit'          =>  0,
-      'Credit'         =>  $paid_amount,
-      'IsPosted'       =>  1,
-      'CreateBy'       =>  $receive_by,
-      'CreateDate'     =>  $createdate,
-      'IsAppove'       =>  1
-    );
-// Bank summary for credit
-       //new end
-        $this->db->insert('acc_transaction',$coscr);
-        $this->db->insert('acc_transaction',$purchasecoatran);
-        $this->db->insert('acc_transaction',$expense);
-        if($this->input->post('paytype_drop',TRUE) == 'CASH'){
-          if(!empty($paid_amount)){
-        $this->db->insert('acc_transaction',$cashinhand);
-        $this->db->insert('acc_transaction',$supplierdebit);
-        }
-        }else {
-          if(!empty($paid_amount)){
-        $this->db->insert('acc_transaction',$bankc);
-        $this->db->insert('acc_transaction',$supplierdebit);
-      }
+       $purchase_id = $existing_purchase['purchase_id'];
+    } else {
+        $purchase_data['purchase_id']=$purchase_id;
+        $this->db->insert('product_purchase', $purchase_data);
+        
+     
     }
 
-
-        $prodt                = $this->input->post('prodt',TRUE);
+    $this->db->where('purchase_id', $purchase_id);
+    $this->db->delete('product_purchase_details');
+     $prodt = $this->input->post('prodt',TRUE);
         $product_id =$this->input->post('product_id',TRUE);
   $desc =$this->input->post('description',TRUE);
   $thickness=$this->input->post('thickness',TRUE);
@@ -2473,28 +2366,22 @@ $msg=$this->input->post('message_invoice',TRUE);
                $tableid=$this->input->post('tableid',TRUE);
                  $total_amt=$this->input->post('total_amt',TRUE);
                  $total=$this->input->post('total',TRUE);
-                   $overall_gross=$this->input->post('overall_gross',TRUE);
-                   $overall_net=$this->input->post('overall_net',TRUE);
 $description =$this->input->post('description',TRUE);
-      $this->db->where('purchase_id', $this->session->userdata("purchase_1"));
-        $this->db->delete('product_purchase_details');
-//   echo $this->db->last_query();echo "<br/>";
-         for ($i = 0, $n = count($prodt); $i < $n; $i++) {
-           $data1 = array(
-                'purchase_detail_id' => $this->generator(15),
-                'purchase_id'        => $this->session->userdata("purchase_2"),
+ for ($i = 0, $n = count($prodt); $i < $n; $i++) {
+           $purchase_table2 = [
+           
+                'purchase_id'        => $purchase_id,
                 'product_id'         => $product_id[$i],
                 'thickness'             => $thickness[$i],
                 'supplier_block_no'  =>  $supplier_b_no[$i],
                 'supplier_slab_no'  => $supplier_slab_no[$i],
                 'gross_width'  => $gross_width[$i],
                 'gross_height'  => $gross_height[$i],
-                'gross_sq_ft_1'  =>$gross_sq_ft[$i],
+                'gross_sqft'  =>$gross_sq_ft[$i],
                 'bundle_no'  =>$bundle_no[$i],
                  'total'  => $total_amt[$i],        
                  'tableid'   => $tableid[$i],
                 'slab_no'  =>  $slab_no[$i],
-                 'product_name'   => $prodt[$i],
                 'net_width'  => $net_width[$i],
                 'net_height'  => $net_height[$i],
                 'net_sq_ft'  => $net_sq_ft[$i],
@@ -2505,13 +2392,12 @@ $description =$this->input->post('description',TRUE);
                 'weight'  =>   $weight[$i],
                 'origin'  =>$origin[$i],
                 'description'       => $description[$i],
-                'create_by'          =>  $this->session->userdata('user_id'),
-                'status'             => 1
-            );
-            $this->db->insert('product_purchase_details', $data1);
-          //  echo $this->db->last_query();echo "<br/>";
-$data2 = array(
-            'create_by'        => $this->session->userdata('user_id'),
+                'create_by'          => $createdby
+           ];
+            $this->db->insert('product_purchase_details', $purchase_table2);
+    
+$product_table = array(
+            'create_by'        => $createdby,
             'overall_total'         =>    $this->input->post('gtotal',TRUE),
             'product_id'         =>$product_id[$i],
             'description_table'          => $desc[$i],
@@ -2536,41 +2422,13 @@ $data2 = array(
            'status'             => 1
         );
    $this->db->where('product_id', $product_id[$i]);
-   $this->db->where('create_by', $this->session->userdata('user_id'));
+   $this->db->where('create_by', $createdby);
     $this->db->where('bundle_no', $bundle_no[$i]);
         $this->db->where('slab_no', $slab_no[$i]);
             $this->db->delete('product_details');
  
-        $this->db->insert('product_details', $data2);
-
-                     $expense_get_info4 = array(
-
-                        'product_id'         => $product_id[$i],
-                        'thickness'             => $thickness[$i],
-                        'supplier_block_no'  =>  $supplier_b_no[$i],
-                        'supplier_slab_no'  => $supplier_slab_no[$i],
-                        'g_width'  => $gross_width[$i],
-                        'g_height'  => $gross_height[$i],
-                        'bundle_no'  =>$description[$i],
-                        'slab_no'  =>$slab_no[$i],
-                        'n_width'  => $net_width[$i],
-                        'n_height'  => $net_height[$i],
-                        'net_sqft'  => $net_sq_ft[$i],
-                        'cost_sqft'  => $cost_sq_ft[$i],
-                        'cost_slab'  =>   $cost_sq_slab[$i],
-                        'sales_price_sqft ' => $sales_amt_sq_ft[$i],
-                        'sales_slab_price'   => $sales_slab_amt[$i],
-                        'weight'  =>   $weight[$i],
-                        'origin'  =>$origin[$i],
-                        'description_table'       => $bundle_no[$i],
-                        'create_by'          =>  $this->session->userdata('user_id'),
-                        'invoice_id'          => $this->input->post('invoice_no',TRUE),
-                        'status'             => 1,
-                        'expenses'           => 'expenses'
-                     );
- 
-          
-        }  
+        $this->db->insert('product_details', $product_table);
+    }  
            $eta =  date('Y-m-d', strtotime($this->input->post('eta', TRUE))); 
   $etd = date('Y-m-d', strtotime($this->input->post('etd', TRUE))); 
    $payment_due_date = date('Y-m-d', strtotime($this->input->post('payment_due_date', TRUE))); 
@@ -2643,7 +2501,14 @@ $data2 = array(
           
        } 
    
-         return $purchase_id."/".$chalan_no;
+        $response = [
+        'status' => 'success',
+        'msg' => 'Invoice processed successfully.',
+        'invoice_id' => $invoice_id,
+        'invoice_no' => $this->input->post('commercial_invoice_number', TRUE)
+    ];
+  
+    echo json_encode($response);
     }
 
 

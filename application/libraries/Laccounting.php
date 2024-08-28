@@ -15,7 +15,7 @@ class Laccounting {
         return $account;
     }
     public function tableview_form($date = null) {
-    $CI = &get_instance();
+    $CI = &get_instance(); 
     $CI->load->model('Accounts_model');
     $CI->load->model('Web_settings');
     $currency_details = $CI->Web_settings->retrieve_setting_editdata();
