@@ -474,15 +474,15 @@ th,td{
         <td colspan="5" class="text-right" style="font-weight:bold;">Total Hours :</td>
         <td style="text-align: center;"> <input  type="text"   readonly id="total_net" value="<?php echo $time_sheet_data[0]['total_hours'] ; ?>" name="total_net" />    </td>
         <?php  if($time_sheet_data[0]['total_hours'] > $extratime_info[0]['work_hour']) { ?>
-        <input  type="text"   readonly id="above_extra_beforehours"
+        <input  type="hidden"   readonly id="above_extra_beforehours"
         value="<?php
         $mins  =  $time_sheet_data[0]['total_hours'] - $extratime_info[0]['work_hour'];
         $get_value  =  $time_sheet_data[0]['total_hours'] - $mins;
         echo $get_value  ; ?>"  name="above_extra_beforehours" /> 
-        <input type="text" id="above_extra_rate" name="above_extra_rate" value="<?php echo  $employee_name[0]['hrate']; ?>" /> 
-        <input type="text" id="above_extra_sum" name="above_extra_sum" value="<?php echo  $get_value * $employee_name[0]['hrate'] ; ?>" /> 
-        <input type="text" id="above_this_hours" name="above_this_hours" value="<?php echo  $get_value; ?>" /> 
-        <input type="text" id="above_extra_ytd" name="above_extra_ytd" value="<?php echo  $get_value * $employee_name[0]['hrate'] ; ?>" />
+        <input type="hidden" id="above_extra_rate" name="above_extra_rate" value="<?php echo  $employee_name[0]['hrate']; ?>" /> 
+        <input type="hidden" id="above_extra_sum" name="above_extra_sum" value="<?php echo  $get_value * $employee_name[0]['hrate'] ; ?>" /> 
+        <input type="hidden" id="above_this_hours" name="above_this_hours" value="<?php echo  $get_value; ?>" /> 
+        <input type="hidden" id="above_extra_ytd" name="above_extra_ytd" value="<?php echo  $get_value * $employee_name[0]['hrate'] ; ?>" />
         <?php } else{ ?>
         <input type="hidden" readonly id="above_extra_beforehours"
         value="<?php   echo $time_sheet_data[0]['total_hours'];
@@ -542,17 +542,17 @@ th,td{
                                  <br>
                  
                                  <?php  if($time_sheet_data[0]['total_hours'] > $extratime_info[0]['work_hour']) { ?>
-                                 <input type="text" id="extra_hour" name="extra_hour"  value="<?php echo $weektotal; ?>"   />
-                                 <input type="text" id="extra_rate" name="extra_rate" value="<?php echo  $employee_name[0]['hrate'] * $extratime_info[0]['extra_workamount']; ?>" />
-                                 <input type="text" id="extra_thisrate" name="extra_thisrate" value="<?php echo ($weektotal) * ($employee_name[0]['hrate'] * $extratime_info[0]['extra_workamount']); ?>" />
-                                 <input type="text" id="extra_this_hour" name="extra_this_hour" value="<?php echo $weektotal;  ?>" />
-                                 <input type="text" id="extra_ytd" name="extra_ytd" value="<?php echo ($weektotal) * ($employee_name[0]['hrate'] * $extratime_info[0]['extra_workamount']); ?>"   />
+                                 <input type="hidden" id="extra_hour" name="extra_hour"  value="<?php echo $weektotal; ?>"   />
+                                 <input type="hidden" id="extra_rate" name="extra_rate" value="<?php echo  $employee_name[0]['hrate'] * $extratime_info[0]['extra_workamount']; ?>" />
+                                 <input type="hidden" id="extra_thisrate" name="extra_thisrate" value="<?php echo ($weektotal) * ($employee_name[0]['hrate'] * $extratime_info[0]['extra_workamount']); ?>" />
+                                 <input type="hidden" id="extra_this_hour" name="extra_this_hour" value="<?php echo $weektotal;  ?>" />
+                                 <input type="hidden" id="extra_ytd" name="extra_ytd" value="<?php echo ($weektotal) * ($employee_name[0]['hrate'] * $extratime_info[0]['extra_workamount']); ?>"   />
                                  <?php    } else{  ?>
-                                 <input type="text" id="extra_hour" name="extra_hour" value="<?php echo $time_sheet_data[0]['total_hours']; ?>" />
-                                 <input type="text" id="extra_rate" name="extra_rate" value="<?php echo  $employee_name[0]['hrate']; ?>" />
-                                 <input type="text" id="extra_thisrate" name="extra_thisrate" value="<?php echo ($time_sheet_data[0]['total_hours']  * $employee_name[0]['hrate']); ?>" />
-                                 <input type="text" id="extra_rate" name="extra_rate" value="<?php echo  $employee_name[0]['hrate']; ?>" />
-                                 <input type="text" id="extra_thisrate" name="extra_thisrate" value="<?php echo ($time_sheet_data[0]['total_hours']  * $employee_name[0]['hrate']); ?>" />
+                                 <input type="hidden" id="extra_hour" name="extra_hour" value="<?php echo $time_sheet_data[0]['total_hours']; ?>" />
+                                 <input type="hidden" id="extra_rate" name="extra_rate" value="<?php echo  $employee_name[0]['hrate']; ?>" />
+                                 <input type="hidden" id="extra_thisrate" name="extra_thisrate" value="<?php echo ($time_sheet_data[0]['total_hours']  * $employee_name[0]['hrate']); ?>" />
+                                 <input type="hidden" id="extra_rate" name="extra_rate" value="<?php echo  $employee_name[0]['hrate']; ?>" />
+                                 <input type="hidden" id="extra_thisrate" name="extra_thisrate" value="<?php echo ($time_sheet_data[0]['total_hours']  * $employee_name[0]['hrate']); ?>" />
                                 <?php } ?>
                                 </tfoot>
 		                    </table>
@@ -581,9 +581,16 @@ th,td{
 
             <input type="hidden" name="id"  id="id" value="<?php echo  $encodedId; ?>">
 
-          <div class="col-sm-1">
+
+            <?php if($time_sheet_data[0]['uneditable']==0)  {  ?>
+                <div class="col-sm-1">
                <a  class="btnclr client-add-btn btn" aria-hidden="true" style="color:white;"  data-toggle="modal" data-target="#add_admst" ><i class="fa fa-plus"></i></a>
                 </div>
+            <?php } ?>
+
+        
+
+
               </div>
             <div>
           </div>
@@ -652,10 +659,18 @@ th,td{
  <br>
                 <div class="col-sm-12 text-center">
                     <label for="example-text-input" class="col-sm-0 col-form-label"></label>
+
+
+                   <?php if($time_sheet_data[0]['uneditable']==0)  {  ?>
                        <div class="col-sm-12">  
                           <input type="submit"   class="btnclr btn btn-large"   value="Submit" tabindex="7" />
                           <a href="<?php echo base_url('Chrm/manage_timesheet?id='.$_GET['id']); ?>" class="btn btn-info">Cancel</a>      
                        </div>
+                  <?php  }  else { ?>
+                    <h3> <?php echo  'The timesheet has been generated and is available for viewing only.'; ?></h3>
+
+                 <?php } ?>
+
                 </div>
 <br>
             </div>    
