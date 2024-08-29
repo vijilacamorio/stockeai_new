@@ -21,9 +21,6 @@ class Cweb_setting extends CI_Controller {
          $postData = $this->input->post('new_payment_terms');
         $setting_detail = $CI->Web_settings->retrieve_setting_editdata();
         $searchall_data = $CI->Web_settings->searchalldata($postData);
-        // echo "<pre>";
-        // print_r($searchall_data); die();
-        // echo "</pre>";
         $data = array(
             'title' => 'View',
             'setting_detail' => $setting_detail,
@@ -1460,18 +1457,13 @@ echo  json_encode($get_notif);
             echo 'Error sending email: ' . $this->email->print_debugger();
         }
     }
- 
-
     // change by Ajith on 27/08/2024
     function invoice_design() {
     $encodedId                 = isset($_GET['id']) ? $_GET['id'] : null;
     $decodedId                 = decodeBase64UrlParameter($encodedId);
     $content = $this->lweb_setting->invoice_design($decodedId);
     $this->template->full_admin_html_view($content);
-
     }
-
- 
     // changed by Ajith on 27/08/2024
     function update_templates() {  
             $this->db->select('*');
@@ -1518,7 +1510,6 @@ echo  json_encode($get_notif);
 			}
 		} 
      }
- 
     // change by Ajith on 27/08/2024
     function invoice_content() {
         $encodedId                 = isset($_GET['id']) ? $_GET['id'] : null;
@@ -1526,7 +1517,6 @@ echo  json_encode($get_notif);
         $content = $this->lweb_setting->invoice_content($decodedId , $encodedId);
         $this->template->full_admin_html_view($content);
     }
-
     // change by Ajith on 27/08/2024
     function updateinvoice2() {
         $encodedId = $this->input->post('encodedId');
@@ -1558,11 +1548,6 @@ echo  json_encode($get_notif);
             exit;       
          }
     }
-    
-
-
- 
-
     public function index() {
         $content = $this->lweb_setting->setting_add_form();
         $this->template->full_admin_html_view($content);
@@ -1637,12 +1622,10 @@ public function insert_email() {
         );
         $this->template->full_admin_html_view($content);
     }
-
       public function expense_invoice_template() {
         $content = $this->lweb_setting->expense_invoice_setting();
         $this->template->full_admin_html_view($content);
     }
-
    public function web_Invoice(){
         $CI = & get_instance();
         $CI->auth->check_admin_auth();
@@ -1893,8 +1876,6 @@ public function insert_email() {
             }
         } 
         $old_logo = $this->input->post('old_logo',true);
-        // $old_invoice_logo = $this->input->post('old_invoice_logo',true);
-        // $old_favicon = $this->input->post('old_favicon',true);
         $data = array(
         'invoice_heading'          => $this->input->post('invoice_heading',true),
         'logo'              => (!empty($logo) ? $logo : $old_logo),
@@ -2102,10 +2083,8 @@ public function insert_email() {
                 redirect(base_url('Cweb_setting'));
             } else {
                 $image = $this->upload->data();
-                // $company_logo = base_url() . "my-assets/image/logo/" . $image['file_name'];
-                $logo = "my-assets/image/logo/" . $image['file_name'];
-                // print_r($logo); die();
-            }
+                 $logo = "my-assets/image/logo/" . $image['file_name'];
+             }
         }
         $old_logo = $this->input->post('old_logo',true);
         $old_invoice_logo = $this->input->post('old_invoice_logo',true);
@@ -2115,8 +2094,7 @@ public function insert_email() {
     'logo'              => (!empty($logo) ? $logo : $old_logo),
     'invoice_logo'      => (!empty($invoice_logo) ? $invoice_logo : $old_invoice_logo),
     'favicon'           => (!empty($favicon) ? $favicon : $old_favicon),
-    // 'company_logo'           => (!empty($logo) ? $logo : $old_officelogo),
-    'currency'          => $this->input->post('currency',true),
+     'currency'          => $this->input->post('currency',true),
     'currency_position' => $this->input->post('currency_position',true),
     'footer_text'       => $this->input->post('footer_text',true),
     'language'          => $this->input->post('language',true),
@@ -2250,8 +2228,7 @@ $userId = $this->session->userdata('user_id');
             'created_by'=>$this->session->userdata('user_id')
         );
          $mail_set = $this->db->select('*')->from('email_config ')->where('created_by',$this->session->userdata('user_id'))->get()->result_array();
-      //   print_r($mail_set);die();
-         if(empty($mail_set)){
+          if(empty($mail_set)){
                $this->db->insert('email_config',$mail_data);
          }else{
               $this->db->where('created_by',$this->session->userdata('user_id'))->update('email_config', $mail_data);

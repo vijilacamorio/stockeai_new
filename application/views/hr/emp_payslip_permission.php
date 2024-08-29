@@ -518,6 +518,8 @@ th,td{
                       <?php } elseif ($employee_name[0]['payroll_type'] == 'SalesCommission') { ?>
                    <?php } ?>                     
                 </tr>
+
+ 
                                     <?php 
                                     $weektotal = 0;
                                     if ($time_sheet_data[0]['week_one'] > $extratime_info[0]['work_hour']) {
@@ -538,6 +540,7 @@ th,td{
                                     $weektotal = $weekone + $weektwo + $weekthree;
                                     ?>
                                  <br>
+                 
                                  <?php  if($time_sheet_data[0]['total_hours'] > $extratime_info[0]['work_hour']) { ?>
                                  <input type="hidden" id="extra_hour" name="extra_hour"  value="<?php echo $weektotal; ?>"   />
                                  <input type="hidden" id="extra_rate" name="extra_rate" value="<?php echo  $employee_name[0]['hrate'] * $extratime_info[0]['extra_workamount']; ?>" />
@@ -578,9 +581,16 @@ th,td{
 
             <input type="hidden" name="id"  id="id" value="<?php echo  $encodedId; ?>">
 
-          <div class="col-sm-1">
+
+            <?php if($time_sheet_data[0]['uneditable']==0)  {  ?>
+                <div class="col-sm-1">
                <a  class="btnclr client-add-btn btn" aria-hidden="true" style="color:white;"  data-toggle="modal" data-target="#add_admst" ><i class="fa fa-plus"></i></a>
                 </div>
+            <?php } ?>
+
+        
+
+
               </div>
             <div>
           </div>
@@ -649,10 +659,18 @@ th,td{
  <br>
                 <div class="col-sm-12 text-center">
                     <label for="example-text-input" class="col-sm-0 col-form-label"></label>
+
+
+                   <?php if($time_sheet_data[0]['uneditable']==0)  {  ?>
                        <div class="col-sm-12">  
                           <input type="submit"   class="btnclr btn btn-large"   value="Submit" tabindex="7" />
                           <a href="<?php echo base_url('Chrm/manage_timesheet?id='.$_GET['id']); ?>" class="btn btn-info">Cancel</a>      
                        </div>
+                  <?php  }  else { ?>
+                    <h3> <?php echo  'The timesheet has been generated and is available for viewing only.'; ?></h3>
+
+                 <?php } ?>
+
                 </div>
 <br>
             </div>    

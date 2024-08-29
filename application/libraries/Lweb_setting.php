@@ -413,14 +413,11 @@ public function email_setting($view_email, $email_con) {
         'website'=>(!empty($datacontent[0]['website']) ? $datacontent[0]['website'] : '') ,   
         'address'=>(!empty($datacontent[0]['address']) ? $datacontent[0]['address'] : '') ,
         'template'=> (!empty($dataw[0]['template']) ? $dataw[0]['template'] : '') ,
-        'decodedId'=> $decodedId
+        'decodedId'=> $decodedId,
          );
          $setting = $CI->parser->parse('web_setting/invoice_design', $data, true);
         return $setting;
     }
-
-
-
     ////////////////INvoice Content/////////////
      public function invoice_content($decodedId ,$encodedId) {
         $CI = & get_instance();
@@ -446,10 +443,8 @@ public function email_setting($view_email, $email_con) {
         'setting_detail' => $setting_detail,
         'decodedId' => $decodedId,
         'encodedId' => $encodedId,
-
         );
-          print_r($setting_detail );
-        $setting = $CI->parser->parse('web_setting/invoice_content', $data, true);
+         $setting = $CI->parser->parse('web_setting/invoice_content', $data, true);
         return $setting;
     }
 }
