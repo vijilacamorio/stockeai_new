@@ -489,7 +489,7 @@
             </tr>
             <tr>
                <td colspan="2" style="vertical-align:top;text-align:center;border:none;"><b><?php echo "Overall Total" ?> :</b></td>
-               <td colspan="1" style="border:none;padding-bottom: 40px; position: relative; right: 12px;"><span class="input-symbol-euro"><input type="text" id="Over_all_Total" name="Over_all_Total"  style="width:223px;" class="form-control" value="0.00"  readonly="readonly"  /> </span></td>
+               <td colspan="1" style="border:none;padding-bottom: 40px; position: relative; right: 2px;"><span class="input-symbol-euro"><input type="text" id="Over_all_Total" name="Over_all_Total"  style="width:203px;" class="form-control" value="0.00"  readonly="readonly"  /> </span></td>
                <td colspan="4" style="width:250px;text-align:center;border:none;"><b><?php echo display('TAX DETAILS')?> :</b></td>
                <td colspan="1" style="border:none; text-align: justify;">  <span class="input-symbol-euro"> <input type="text" class="form-control" style="width:150px;"  id="tax_details" value="0.00" name="tax_details"  readonly="readonly" /></span></td>
             </tr>
@@ -1066,7 +1066,7 @@ $this->load->view('include/bootstrap_model', $modaldata);
 
              $.ajax({
               type: "POST",
-              url: "<?php echo base_url(); ?>Cinvoice/performer_ins",
+              url: "<?php echo base_url(); ?>Caccounts/tax_entry",
               data: formData,
               dataType: "json",
               processData: false,
