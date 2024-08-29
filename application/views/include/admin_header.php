@@ -631,7 +631,7 @@ $(document).ready(function() {
 				   if (trim($split[0]) == 'taxes') {
 					?>
 					<li class="treeview <?php echo ($this->uri->segment(1) == 'Caccounts') ? 'active' : ''; ?>">
-						<a href="<?php echo base_url(); ?>Caccounts/manage_tax">
+						<a href="<?php echo base_url(); ?>Caccounts/manage_tax?id=<?php echo $encode_com_id; ?>">
 							<i class="ti-bar-chart"></i><span><?php echo display('Taxes'); ?></span>
 						</a>
 					</li>
@@ -1436,7 +1436,7 @@ $(document).ready(function() {
 					  if (trim($split[0]) == 'tax') {
 					  ?>
 					<li class="treeview <?php echo ($this->uri->segment(1) == 'Caccounts') ? 'active' : ''; ?>">
-						<a href="<?php echo base_url(); ?>Caccounts/manage_tax">
+						<a href="<?php echo base_url(); ?>Caccounts/manage_tax?id=<?php echo $encode_com_id; ?>">
 							<i class="ti-bar-chart"></i><span><?php echo  display('Taxes'); ?></span>
 						</a>
 					</li>
