@@ -698,7 +698,7 @@ $(document).ready(function() {
 									</li>
 								</ul>
 							</li>
-							<li class="treeview <?php echo ($this->uri->segment(2) == 'customerReport' || $this->uri->segment(2) == 'customerSalesReport' || $this->uri->segment(2) == 'transaction_list') ? 'active' : ''; ?>">
+							<li class="treeview <?php echo ($this->uri->segment(2) == 'customerReport' || $this->uri->segment(2) == 'customerSalesReport' || $this->uri->segment(2) == 'customerTransaction') ? 'active' : ''; ?>">
 								<a href="fa fa-asl-interpreting">
 									<i class="ti-user"></i><span><?php echo "Customer" ?></span>
 								</a>
@@ -710,8 +710,8 @@ $(document).ready(function() {
 									<li class="treeview  <?php echo ($this->uri->segment(2) == 'customerSalesReport') ? 'active' : ''; ?>">
 										<a href="<?php echo base_url('Creport/customerSalesReport?id='.$encode_com_id) ?>"><?php echo 'Sales By Customer'; ?></a>
 									</li>
-									<li class="treeview  <?php echo ($this->uri->segment(2) == 'transaction_list') ? 'active' : ''; ?>">
-										<a href="<?php echo base_url('Creport/transaction_list?id='.$encode_com_id) ?>"><?php echo 'Transaction By Customer'; ?></a>
+									<li class="treeview  <?php echo ($this->uri->segment(2) == 'customerTransaction') ? 'active' : ''; ?>">
+										<a href="<?php echo base_url('Creport/customerTransaction?id='.$encode_com_id) ?>"><?php echo 'Transaction By Customer'; ?></a>
 									</li>
 								</ul>
 							</li>
