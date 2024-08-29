@@ -412,19 +412,21 @@ class Creport extends CI_Controller {
     }
     public function customerSalesReport(){
         $data['setting_detail'] = $this->Web_settings->retrieve_setting_editdata($this->admin_id);
-        
         $content = $this->parser->parse('report/customer_report', $data, true);
         $this->template->full_admin_html_view($content);
     }
     public function getCustomerSalesDatas() { //for customer sale report - vijila - 28-08-2024
        
         $this->load->model('Reports');
+        $setting_detail = $this->Web_settings->retrieve_setting_editdata($this->admin_id);
+        $currency       = $setting_detail[0]['currency'];
         $limit          = $this->input->post('length');
         $start          = $this->input->post('start');
         $search         = $this->input->post('search')['value'];
         $orderField     = $this->input->post('columns')[$this->input->post('order')[0]['column']]['data'];
         $orderDirection = $this->input->post('order')[0]['dir'];
         $totalItems     = $this->Reports->getAllCustSale($search, $this->admin_id);
+        //echo $this->db->last_query(); exit;
         $items          = $this->Reports->getAllCustSaleData($limit, $start, $orderField, $orderDirection, $search, $this->admin_id);
         $data           = [];
         $i              = $start + 1;
@@ -444,32 +446,97 @@ class Creport extends CI_Controller {
             if($item['gtotal']==$item['paid_amount'] && ($item['due_amount']=='0' || $item['due_amount']=='0.00' )){
                 $status='Paid';
                 $status_disp='<span style="color: green; font-weight: bold;">Paid</span>';
-            }else if($item['gtotal'] != $item['paid_amount'] && $item['paid_amount'] !=='0.00'  && $item['paid_amount'] !=='0' && substr($item['due_amount'], 0, 1) !== '-'){
-                $status='Partially Paid';
-                $status_disp='<span style="color: #4E11A8; font-weight: bold;">Partially Paid</span>';
-            }else if($item['gtotal'] != $item['paid_amount'] && $item['paid_amount'] =='0.00'){
+            }else if($item['gtotal'] != $item['paid_amount'] && ($item['paid_amount'] =='0.00' || $item['paid_amount'] =='' || $item['paid_amount'] =='0')){
                 $status='Not Paid';
                 $status_disp='<span style="color: red; font-weight: bold;">Not Paid</span>';
+            }else if($item['gtotal'] != $item['paid_amount'] && $item['paid_amount'] !='0.00'  && $item['paid_amount'] !='0' && substr($item['due_amount'], 0, 1) != '-'){
+                $status='Partially Paid';
+                $status_disp='<span style="color: #4E11A8; font-weight: bold;">Partially Paid</span>';
             }else if( substr($item['due_amount'], 0, 1) == '-'){
                 $status='Paid';
                 $status_disp='<span style="color: green; font-weight: bold;">Paid</span>';
             }
                 $row = [
-                    "customer_id"     => $i,
+                    "id"     => $i,
                     "commercial_invoice_number"     => $item['commercial_invoice_number'],
                     "date"                          => $item['date'],
                     "gtotal"                        => $item['gtotal'],
                     "customer_name"                 => $item['customer_name'],
                     "payment_due_date"              => $item['payment_due_date'],
                     "no_of_days"                    => ($status != 'Paid') ? $numberOfDays : '0',
-                    "paid_amount"                   => $currency.$item['paid_amount'],
-                    "due_amount"                    => $currency.$item['due_amount'],
+                    "paid_amount"                   => $currency.($item['paid_amount'] =='' ? '0.00' : $item['paid_amount']),
+                    "due_amount"                    => $currency.($item['due_amount'] =='' ? '0.00' : $item['due_amount']),
                     "status"                        => $status_disp
                 ];
             
             $data[] = $row;
             $i++;
         }
+        $response = [
+            "draw"            => $this->input->post('draw'),
+            "recordsTotal"    => $totalItems,
+            "recordsFiltered" => $totalItems,
+            "data"            => $data,
+        ];
+        echo json_encode($response);
+    }
+    public function customerTransaction(){ //for customer transaction report - vijila - 29-08-2024
+       
+        $data['setting_detail']  = $this->Web_settings->retrieve_setting_editdata($this->admin_id);
+        $content = $this->parser->parse('report/transaction_list_customer', $data, true);
+        $this->template->full_admin_html_view($content);
+      
+      
+    }
+    public function getCustomerTransactionDatas() { //for customer transaction report - vijila - 29-08-2024
+       
+        $this->load->model('Reports');
+        $setting_detail = $this->Web_settings->retrieve_setting_editdata($this->admin_id);
+        $currency       = $setting_detail[0]['currency'];
+        $limit          = $this->input->post('length');
+        $start          = $this->input->post('start');
+        $search         = $this->input->post('search')['value'];
+        $paydate        = $this->input->post('payment_date_search');
+        $orderField     = $this->input->post('columns')[$this->input->post('order')[0]['column']]['data'];
+        $orderDirection = $this->input->post('order')[0]['dir'];
+        $totalItems     = $this->Reports->getAllCustomerTransaction($search, $this->admin_id,$paydate);
+        $items          = $this->Reports->getAllCustomerTransactionData($limit, $start, $orderField, $orderDirection, $search, $this->admin_id,$paydate);
+        $data           = [];
+        $i              = $start + 1;
+        if (!empty($items)) {
+            $previousSupplierName = null;
+            $previousInvoiceNumber = null;
+            $previousPaymentID = null;
+        
+            foreach ($items as $arr) {
+                $status = '';
+        
+                if ($arr['total_amt'] == $arr['amt_paid']) {
+                    $status = 'Paid';
+                } else if ($arr['total_amt'] != $arr['amt_paid'] && $arr['amt_paid'] != '0.00' && $arr['amt_paid'] != '0' && substr($arr['due_amount'], 0, 1) != '-') {
+                    $status = 'Partially Paid';
+                } else if ($arr['total_amt'] != $arr['amt_paid'] && $arr['amt_paid'] == '0.00') {
+                    $status = 'Not Paid';
+                } else if (substr($arr['balance'], 0, 1) == '-') {
+                    $status = 'Paid';
+                }
+                $row = [
+                    "customer_id"     => $i,
+                    "customer_name"     => $arr['customer_name'],
+                    "commercial_invoice_number"   => $arr['commercial_invoice_number'],
+                    "payment_id"                  => $arr['payment_id'],
+                    "payment_date"                => $arr['payment_date'],
+                    "total_amt"                   => $currency.$arr['total_amt'],
+                    "amt_paid"                    => $currency.$arr['amt_paid'],
+                    "balance"                     => $currency.$arr['balance'],
+                    "details"                     => $arr['details'],
+                    "status"                      => $status
+                ];
+                $data[] = $row;
+                $i++;
+            }
+        }
+       
         $response = [
             "draw"            => $this->input->post('draw'),
             "recordsTotal"    => $totalItems,
