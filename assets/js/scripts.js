@@ -9,7 +9,7 @@
 
 
 $(".daterangepicker-field").daterangepicker({
-  forceUpdate: true,
+  //forceUpdate: true,
   callback: function(startDate, endDate, period){
     var title = startDate.format('YYYY-MM-DD') + ' to ' + endDate.format('YYYY-MM-DD');
     $(this).val(title)

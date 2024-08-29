@@ -153,7 +153,7 @@
                         </td>
                         <td class="search_dropdown" id="datepicker-container" style="width: 15%; color: black; padding: 5px;">
                            <div >
-                              <input type="text" class="form-control daterangepicker-field" id="daterangepicker-field" name="daterangepicker-field" style="width: 180px; margin-top:10px;border-radius: 8px; height: 35px;" />
+                              <input type="text" class="form-control daterangepicker-field" id="daterangepicker-field" name="daterangepicker-field" style="width: 180px; margin-top:10px;border-radius: 8px; height: 35px;" autocomplete="off"/>
                            </div>
                         </td>
                         <td style="width: 20px; padding: 5px;">
@@ -205,6 +205,7 @@
 
       <script>
             $(document).ready(function() {
+                $('#datepicker-container').val();
                 if ($.fn.DataTable.isDataTable('#transactionList')) {
                     $('#transactionList').DataTable().clear().destroy();
                 }
@@ -370,166 +371,6 @@
             });
             
             </script>
-      <script>
-      $(document).ready(function() {
-    $(".btnclr").click(function() {
-        $(this).siblings('.dropdown-menu').toggle();
-    });
-});
-      function generate() {
-                 var utc = new Date().toJSON().slice(0,10).replace(/-/g,'/');
-  $(".myButtonClass").hide();
-  var doc = new jsPDF("p", "pt");
-  var res = doc.autoTableHtmlToJson(document.getElementById("ProfarmaInvList"));
-  var height = doc.internal.pageSize.height;
-  //doc.text("Generated PDF", 50, 50);
-
-  doc.autoTable(res.columns, res.data, {
-    startY: doc.autoTableEndPosY() + 50,
-  });
-  doc.save("Customer_Transaction_List_"+utc+".pdf");
-}
-        function fnExcelReport()
-{
- table = $('#ProfarmaInvList').clone();
-    
-      
-    
-    var hyperLinks = table.find('a');
-    
-    var tab_text="<table border='2px'><tr bgcolor='#87AFC6'>";
-    var textRange; var j=0;
-    tab = document.getElementById('ProfarmaInvList'); // id of table
-
-    for(j = 0 ; j < tab.rows.length ; j++) 
-    {   var sp=  $(hyperLinks[j]).text();
-        tab_text=tab_text+tab.rows[j].innerHTML+"</tr>";
-        //tab_text=tab_text+"</tr>";
-          console.log(sp);
-    }
-
-    tab_text=tab_text+"</table>";
-   tab_text= tab_text.replace(/<a[^>]*>/g, "");
-    tab_text= tab_text.replace(/<A[^>]*>|<\/A>/g, "");//remove if u want links in your table
-    tab_text= tab_text.replace(/<img[^>]*>/gi,""); // remove if u want images in your table
-    tab_text= tab_text.replace(/<input[^>]*>|<\/input>/gi, ""); // reomves input params
-
-    var ua = window.navigator.userAgent;
-    var msie = ua.indexOf("MSIE "); 
-
-    if (msie > 0 || !!navigator.userAgent.match(/Trident.*rv\:11\./))      // If Internet Explorer
-    {
-        txtArea1.document.open("txt/html","replace");
-        txtArea1.document.write(tab_text);
-        txtArea1.document.close();
-        txtArea1.focus(); 
-        sa=txtArea1.document.execCommand("SaveAs",true,"");
-    }  
-    else                 //other browser not tested on IE 11
-        sa = window.open('data:application/vnd.ms-excel,' + encodeURIComponent(tab_text));  
-
-    return (sa);
-}
-         /*$(document).ready(function(){
-          $('#datepicker-container').hide();
-         }); 
-         $(document).on('change', '#payment-filter', function () {
-             var selectedValue = $(this).val().trim();
-           
-             if (selectedValue == 'Custom') {
-                 // If "custom" is selected, show the date picker and filter the table based on it
-                 $('#datepicker-container').show();
-             
-             }  else {
-                 // For other options, hide the date picker and show all table rows
-                 $('#datepicker-container').hide();
-               
-             }
-         });*/
-         
-         document.getElementById('search').addEventListener('click', function (e) {
-             e.preventDefault(); // Prevent the default form submission
-         
-             // Get selected filter values
-             var selectedCustomer = document.getElementById('customer-name-filter').value;
-             var selectedPaymentFilter = document.getElementById('payment-filter').value;
-         
-             // Get all rows in the table
-             var rows = document.querySelectorAll("table.table tbody tr");
-             var dateRange = document.getElementById('daterangepicker-field').value;
-             var dateRangeParts = dateRange.split(' to ');
-         
-             var selectedStartDate = new Date(dateRangeParts[0]);
-             var selectedEndDate = new Date(dateRangeParts[1]);
-         
-             // Check if the payment date filter is set to "Custom"
-             var isCustomDateFilter = selectedPaymentFilter === 'custom';
-         
-             // Loop through each row and check filter conditions
-             for (var i = 0; i < rows.length; i++) {
-                 var row = rows[i];
-                 var customerName = row.querySelector("td:nth-child(1)").textContent.trim();
-                 var paymentDate = row.querySelector("td:nth-child(4)").textContent.trim();
-                 var paymentDateObj = new Date(paymentDate);
-         
-                 // Check filter conditions
-                 var customerFilterMatch = (selectedCustomer === 'Any' || selectedCustomer === customerName);
-         
-                 // Check if the payment date filter is set to "Custom"
-                 if (isCustomDateFilter) {
-                     var dateFilterMatch = (paymentDateObj >= selectedStartDate && paymentDateObj <= selectedEndDate);
-                     if (customerFilterMatch && dateFilterMatch) {
-                         row.style.display = "";
-                     } else {
-                         row.style.display = "none";
-                     }
-                 } else {
-                     if (customerFilterMatch) {
-                         row.style.display = "";
-                     } else {
-                         row.style.display = "none";
-                     }
-                 }
-             }
-         });
-      </script>
-      
-      
-      <script type="text/javascript">
-         $(document).ready(function() {
-         // Function to store the visibility state of rows in localStorage
-         function storeVisibilityState() {
-            var transcationlistvisibilityStates = {};
-            $("#ProfarmaInvList tr").each(function(index, element) {
-                var row = $(element);
-                var rowID = index;
-                var isVisible = row.is(':visible');
-                transcationlistvisibilityStates[rowID] = isVisible;
-            });
-            // Store the visibility states in localStorage
-            localStorage.setItem("transcationlistvisibilityStates", JSON.stringify(transcationlistvisibilityStates));
-         }
-         // Apply the stored visibility state on page load
-         function applyVisibilityState() {
-            var storedVisibilityStates = JSON.parse(localStorage.getItem("transcationlistvisibilityStates")) || {};
-            $("#ProfarmaInvList tr").each(function(index, element) {
-                var row = $(element);
-                var rowID = index;
-                if (storedVisibilityStates.hasOwnProperty(rowID) && !storedVisibilityStates[rowID]) {
-                    row.hide();
-                } else {
-                    row.show();
-                }
-            });
-         }
-         // Event listener for row clicks to toggle row visibility
-         $(".bank_edit").on('click', function() {
-            var row = $(this);
-            row.toggle();
-            storeVisibilityState(); // Store the updated visibility state
-         });
-         applyVisibilityState(); 
-         });
-      </script>
+     
    </section>
 </div>
