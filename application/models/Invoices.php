@@ -319,16 +319,7 @@ public function additional_cost_details($invoice_no){
          return $query->result_array();
      }
 }
-    public function get_all_invoice_sale($search,$admin_id) {
-        $this->db->select('i.*,cs.*,i.payment_terms as pterms');
-        $this->db->from('invoice i');
-        $this->db->join('customer_information cs' , 'i.customer_id=cs.customer_id');
-        $this->db->where('sales_by',$admin_id);
-        $query = $this->db->get();
-        if ($query->num_rows() > 0) {
-            return $query->result_array();
-        }
-    }
+    
     public function getprofarma_data() {
         $this->db->select('*');
         $this->db->from('profarma_invoice i');
