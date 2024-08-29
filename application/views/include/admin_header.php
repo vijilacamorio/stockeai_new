@@ -1052,7 +1052,7 @@ $(document).ready(function() {
 				   if (trim($split[0]) == 'setting') {
 				?>
 					<li class="treeview  <?php echo ($this->uri->segment(2) == 'calender_view') ? 'active' : ''; ?>">
-						<a href="<?php echo base_url(); ?>Cweb_setting/calender_view">
+						<a href="<?php echo base_url(); ?>Cweb_setting/calender_view?id=<?php echo $encode_com_id; ?>">
 							<i class="ti-calendar"></i><span><?php echo 'Calendar'; ?></span>
 						</a>
 					</li>

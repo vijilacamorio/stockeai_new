@@ -225,20 +225,63 @@ public function savenotification() {
     }
  echo json_encode($response);
 }
- public function calender_view()
-    {
-        $CI = &get_instance();
-        $CI->auth->check_admin_auth();
-        $insertdata = $CI->Web_settings->insertDateforSchedule();
-        $alldata = $CI->Web_settings->insertDateforScheduleStatus();
-        $data = array(
-            'title' => 'Calendar',
-            'insertdata' => json_encode($insertdata),
-            'allData' => $alldata
+
+// Calander - Madhu
+public function calender_view()
+{
+    $this->auth->check_admin_auth();
+    $admin_comp_id = decodeBase64UrlParameter($this->input->get('id'));
+    $insertdata = $this->Web_settings->insertDateforSchedule($admin_comp_id);
+    $alldata = $this->Web_settings->insertDateforScheduleStatus($admin_comp_id);
+    $data = array(
+        'title' => 'Calendar',
+        'insertdata' => json_encode($insertdata),
+        'allData' => $alldata
+    );
+    $content = $this->load->view('web_setting/calendar_views', $data, true);
+    $this->template->full_admin_html_view($content);
+}
+
+ // Add Reminder - Madhu
+public function add_reminder()
+{
+   $this->auth->check_admin_auth();
+   $adminid = $this->input->post('adminid');
+   $admin_comp_id = decodeBase64UrlParameter($adminid);
+   $title = $this->input->post('title');
+   $description = $this->input->post('description');
+   $start = $this->input->post('start');
+   $end = $this->input->post('end');
+
+   $start_date = str_replace('T', ' ', $start);
+   $end_date = str_replace('T', ' ', $end);
+
+   $data = array(
+     'title' => $title,
+     'description' => $description,
+     'start' => $start_date,
+     'end' => $end_date,
+     'source' => 'CALENDER',
+     'created_by' => $admin_comp_id
+   );
+   $result = $this->db->insert('schedule_list', $data);
+    if ($result) {
+        $response = array(
+            'status' => 'success',
+            'msg' => 'Reminder has been added successfully.',
         );
-        $content = $this->load->view('web_setting/calendar_views', $data, true);
-        $this->template->full_admin_html_view($content);
+    } else {
+        $response = array(
+            'status' => 'error',
+            'msg' => 'Failed to add reminder.',
+        );
     }
+
+    echo json_encode($response);
+}
+
+
+
 public function calender_alert(){
 $CI = & get_instance();
 $CI->auth->check_admin_auth();
@@ -246,26 +289,7 @@ $get_notif = $CI->Web_settings->calender_alert();
 //print_r($get_notif);die();
 echo json_encode($get_notif); 
 }
-    // Add Reminder
-    public function add_reminder()
-    {
-       $CI = & get_instance();
-       $CI->auth->check_admin_auth();
-       $title = $this->input->post('title');
-       $description = $this->input->post('description');
-       $start = $this->input->post('start');
-       $end = $this->input->post('end');
-       $data = array(
-         'title' => $title,
-         'description' => $description,
-         'start' => $start,
-         'end' => $end,
-         'created_by' => $this->session->userdata('user_id')
-       );
-       $this->db->insert('schedule_list', $data);
-       // echo $this->db->last_query(); die();
-       redirect(base_url('Cweb_setting/calender_view'));
-    }
+   
     public function setting_for_notification(){
 $CI = & get_instance();
 $CI->auth->check_admin_auth();
