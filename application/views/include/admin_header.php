@@ -631,7 +631,7 @@ $(document).ready(function() {
 				   if (trim($split[0]) == 'taxes') {
 					?>
 					<li class="treeview <?php echo ($this->uri->segment(1) == 'Caccounts') ? 'active' : ''; ?>">
-						<a href="<?php echo base_url(); ?>Caccounts/manage_tax">
+						<a href="<?php echo base_url(); ?>Caccounts/manage_tax?id=<?php echo $encode_com_id; ?>">
 							<i class="ti-bar-chart"></i><span><?php echo display('Taxes'); ?></span>
 						</a>
 					</li>
@@ -650,7 +650,7 @@ $(document).ready(function() {
 				   $split = explode('-', $admtest);
 				   if (trim($split[0]) == 'report') {
 					?>
-					<li class="treeview  <?php echo ($this->uri->segment(2) == 'customer_info_report' || $this->uri->segment(2) == 'customerSalesReport' || $this->uri->segment(2) == 'transaction_list') ? 'active' : ''; ?>">
+					<li class="treeview  <?php echo ($this->uri->segment(1) == 'Creport') ? 'active' : ''; ?>">
 						<a href="#">
 							<i class="ti-book"></i><span><?php echo display('report'); ?></span>
 							<span class="pull-right-container">
@@ -698,20 +698,20 @@ $(document).ready(function() {
 									</li>
 								</ul>
 							</li>
-							<li class="treeview <?php echo ($this->uri->segment(2) == 'customer_info_report' || $this->uri->segment(2) == 'customerSalesReport' || $this->uri->segment(2) == 'transaction_list') ? 'active' : ''; ?>">
+							<li class="treeview <?php echo ($this->uri->segment(2) == 'customerReport' || $this->uri->segment(2) == 'customerSalesReport' || $this->uri->segment(2) == 'transaction_list') ? 'active' : ''; ?>">
 								<a href="fa fa-asl-interpreting">
 									<i class="ti-user"></i><span><?php echo "Customer" ?></span>
 								</a>
 								<ul class="treeview-menu">
-									<li class="treeview  <?php echo ($this->uri->segment(2) == 'customer_info_report') ? 'active' : ''; ?>">
-										<a href="<?php echo base_url('Cinvoice/customer_info_report?id='.$encode_com_id) ?>" <?php echo ($this->uri->segment(2) == 'customer_info_report') ? 'active' : ''; ?>><?php echo 'Customer Information'; ?>
+									<li class="treeview  <?php echo ($this->uri->segment(2) == 'customerReport') ? 'active' : ''; ?>">
+										<a href="<?php echo base_url('Creport/customerReport?id='.$encode_com_id) ?>" <?php echo ($this->uri->segment(2) == 'customerReport') ? 'active' : ''; ?>><?php echo 'Customer Information'; ?>
 										</a>
 									</li>
 									<li class="treeview  <?php echo ($this->uri->segment(2) == 'customerSalesReport') ? 'active' : ''; ?>">
-										<a href="<?php echo base_url('Cinvoice/customerSalesReport?id='.$encode_com_id) ?>"><?php echo 'Sales By Customer'; ?></a>
+										<a href="<?php echo base_url('Creport/customerSalesReport?id='.$encode_com_id) ?>"><?php echo 'Sales By Customer'; ?></a>
 									</li>
 									<li class="treeview  <?php echo ($this->uri->segment(2) == 'transaction_list') ? 'active' : ''; ?>">
-										<a href="<?php echo base_url('Ccustomer/transaction_list?id='.$encode_com_id) ?>"><?php echo 'Transaction By Customer'; ?></a>
+										<a href="<?php echo base_url('Creport/transaction_list?id='.$encode_com_id) ?>"><?php echo 'Transaction By Customer'; ?></a>
 									</li>
 								</ul>
 							</li>
@@ -1436,7 +1436,7 @@ $(document).ready(function() {
 					  if (trim($split[0]) == 'tax') {
 					  ?>
 					<li class="treeview <?php echo ($this->uri->segment(1) == 'Caccounts') ? 'active' : ''; ?>">
-						<a href="<?php echo base_url(); ?>Caccounts/manage_tax">
+						<a href="<?php echo base_url(); ?>Caccounts/manage_tax?id=<?php echo $encode_com_id; ?>">
 							<i class="ti-bar-chart"></i><span><?php echo  display('Taxes'); ?></span>
 						</a>
 					</li>

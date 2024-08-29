@@ -6,10 +6,13 @@ if (!defined('BASEPATH'))
 class Creport extends CI_Controller {
 
     function __construct() {
-        parent::__construct();
+        parent::__construct(); 
         $this->db->query('SET SESSION sql_mode = ""');
         $CI = & get_instance();
         $CI->load->model('Web_settings');
+        $this->auth->check_admin_auth();
+        $encodedId = $_GET['id'];
+        $this->admin_id   = decodeBase64UrlParameter($encodedId);
     }
 
   public function index()
@@ -360,5 +363,119 @@ class Creport extends CI_Controller {
            $file_name = 'stock_report'.$time.'.pdf';
             force_download(FCPATH.'assets/data/pdf/'.$file_name, null);
     }
+    public function customerReport(){ //for report - vijila - 28-08-2024
 
+        $data['setting_detail'] = $this->Web_settings->retrieve_setting_editdata($this->admin_id);
+        $content = $this->parser->parse('report/customer_info_report', $data, true);
+        $this->template->full_admin_html_view($content);
+    }
+    public function getCustomerDatas() { //for report - vijila - 28-08-2024
+        $encodedId      = isset($_GET['id']) ? $_GET['id'] : null;
+        $decodedId      = decodeBase64UrlParameter($encodedId);
+        $this->load->model('Customers');
+        $limit          = $this->input->post('length');
+        $start          = $this->input->post('start');
+        $search         = $this->input->post('search')['value'];
+        $orderField     = $this->input->post('columns')[$this->input->post('order')[0]['column']]['data'];
+        $orderDirection = $this->input->post('order')[0]['dir'];
+        $totalItems     = $this->Customers->getTotalCustomers($search, $decodedId);
+        $items          = $this->Customers->getPaginatedCustomers($limit, $start, $orderField, $orderDirection, $search, $decodedId);
+        $data           = [];
+        $i              = $start + 1;
+        foreach ($items as $item) {
+            $row = [
+                "customer_id"     => $i,
+                "customer_name"   => $item['customer_name'],
+                "customer_type"   => $item['customer_type'],
+                "billing_address" => $item['billing_address'],
+                "customer_mobile" => $item['customer_mobile'],
+                "primary_email"   => $item['primary_email'],
+                "city"            => $item['city'],
+                "state"           => $item['state'],
+                "zip"             => $item['zip'],
+                "country"         => $item['country'],
+                'created_admin'   => $decoded_admin,
+                "created_date"    => $item['created_date'],
+                "currency_type"   => $item['currency_type'],
+                "credit_limit"    => $item['credit_limit'],
+            ];
+            $data[] = $row;
+            $i++;
+        }
+        $response = [
+            "draw"            => $this->input->post('draw'),
+            "recordsTotal"    => $totalItems,
+            "recordsFiltered" => $totalItems,
+            "data"            => $data,
+        ];
+        echo json_encode($response);
+    }
+    public function customerSalesReport(){
+        $data['setting_detail'] = $this->Web_settings->retrieve_setting_editdata($this->admin_id);
+        
+        $content = $this->parser->parse('report/customer_report', $data, true);
+        $this->template->full_admin_html_view($content);
+    }
+    public function getCustomerSalesDatas() { //for customer sale report - vijila - 28-08-2024
+       
+        $this->load->model('Reports');
+        $limit          = $this->input->post('length');
+        $start          = $this->input->post('start');
+        $search         = $this->input->post('search')['value'];
+        $orderField     = $this->input->post('columns')[$this->input->post('order')[0]['column']]['data'];
+        $orderDirection = $this->input->post('order')[0]['dir'];
+        $totalItems     = $this->Reports->getAllCustSale($search, $this->admin_id);
+        $items          = $this->Reports->getAllCustSaleData($limit, $start, $orderField, $orderDirection, $search, $this->admin_id);
+        $data           = [];
+        $i              = $start + 1;
+        foreach ($items as $item) {
+            $numberOfDays='';
+            $date_now = date("Y-m-d");
+            if($item['payment_due_date'] !=='' && ($item['payment_due_date'] < $date_now)){
+                
+                $dateStr1=$arr['payment_due_date'];
+                $dateStr2=date('Y-m-d');
+                $date1 = new DateTime($dateStr1);
+                $date2 = new DateTime($dateStr2);
+                $interval = $date1->diff($date2);
+                $numberOfDays = $interval->days;
+            }
+            $status='';
+            if($item['gtotal']==$item['paid_amount'] && ($item['due_amount']=='0' || $item['due_amount']=='0.00' )){
+                $status='Paid';
+                $status_disp='<span style="color: green; font-weight: bold;">Paid</span>';
+            }else if($item['gtotal'] != $item['paid_amount'] && $item['paid_amount'] !=='0.00'  && $item['paid_amount'] !=='0' && substr($item['due_amount'], 0, 1) !== '-'){
+                $status='Partially Paid';
+                $status_disp='<span style="color: #4E11A8; font-weight: bold;">Partially Paid</span>';
+            }else if($item['gtotal'] != $item['paid_amount'] && $item['paid_amount'] =='0.00'){
+                $status='Not Paid';
+                $status_disp='<span style="color: red; font-weight: bold;">Not Paid</span>';
+            }else if( substr($item['due_amount'], 0, 1) == '-'){
+                $status='Paid';
+                $status_disp='<span style="color: green; font-weight: bold;">Paid</span>';
+            }
+                $row = [
+                    "customer_id"     => $i,
+                    "commercial_invoice_number"     => $item['commercial_invoice_number'],
+                    "date"                          => $item['date'],
+                    "gtotal"                        => $item['gtotal'],
+                    "customer_name"                 => $item['customer_name'],
+                    "payment_due_date"              => $item['payment_due_date'],
+                    "no_of_days"                    => ($status != 'Paid') ? $numberOfDays : '0',
+                    "paid_amount"                   => $currency.$item['paid_amount'],
+                    "due_amount"                    => $currency.$item['due_amount'],
+                    "status"                        => $status_disp
+                ];
+            
+            $data[] = $row;
+            $i++;
+        }
+        $response = [
+            "draw"            => $this->input->post('draw'),
+            "recordsTotal"    => $totalItems,
+            "recordsFiltered" => $totalItems,
+            "data"            => $data,
+        ];
+        echo json_encode($response);
+    }
 }

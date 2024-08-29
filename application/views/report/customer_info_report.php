@@ -77,7 +77,7 @@
                         [10, 25, 50, 100]
                     ],
                     "ajax": {
-                        "url": "<?php echo base_url('CInvoice/getCustomerDatas?id='); ?>" +
+                        "url": "<?php echo base_url('Creport/getCustomerDatas?id='); ?>" +
                             encodeURIComponent('<?php echo $_GET['id']; ?>'),
                         "type": "POST",
                         "data": function(d) {
