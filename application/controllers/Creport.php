@@ -526,9 +526,9 @@ class Creport extends CI_Controller {
                     "commercial_invoice_number"   => $arr['commercial_invoice_number'],
                     "payment_id"                  => $arr['payment_id'],
                     "payment_date"                => $arr['payment_date'],
-                    "total_amt"                   => $currency.$arr['total_amt'],
-                    "amt_paid"                    => $currency.$arr['amt_paid'],
-                    "balance"                     => $currency.$arr['balance'],
+                    "total_amt"                   => $currency.($arr['total_amt'] =='' ? '0.00' : $arr['total_amt']),
+                    "amt_paid"                    => $currency.($arr['amt_paid'] =='' ? '0.00' : $arr['amt_paid']),
+                    "balance"                     => $currency.($arr['balance'] =='' ? '0.00' : $arr['balance']),
                     "details"                     => $arr['details'],
                     "status"                      => $status
                 ];
@@ -544,5 +544,55 @@ class Creport extends CI_Controller {
             "data"            => $data,
         ];
         echo json_encode($response);
+    }
+    public function vendorList() {
+        $this->load->model('Web_settings');
+        $this->load->model('Reports');
+        $this->load->model('Suppliers');
+        $vendor = $this->Reports->suppliers_list();
+        $setting_detail = $this->Web_settings->retrieve_setting_editdata();
+
+        $currency_details = $this->Web_settings->retrieve_setting_editdata();
+        $data['currency']          = $currency_details[0]['currency'];
+        $data['total_supplier']    = $this->Suppliers->count_supplier();
+
+       
+        $data['vendor_data']=$vendor;
+                $data['setting_detail']=$setting_detail;
+
+        $data['company_info']      = $this->Suppliers->retrieve_company();
+
+
+        $data['getsupplier']      = $this->Suppliers->get_all_supplier();
+
+
+              $content = $this->parser->parse('report/vendor_info_report', $data, true);
+        $this->template->full_admin_html_view($content);
+
+    }
+    public function vendorListData() {
+        $this->load->model('Suppliers');
+
+        $this->load->model('Web_settings');
+        $vendor = $this->Suppliers->suppliers_list();
+        $setting_detail = $this->Web_settings->retrieve_setting_editdata();
+
+        $currency_details = $this->Web_settings->retrieve_setting_editdata();
+        $data['currency']          = $currency_details[0]['currency'];
+        $data['total_supplier']    = $this->Suppliers->count_supplier();
+
+       
+        $data['vendor_data']=$vendor;
+                $data['setting_detail']=$setting_detail;
+
+        $data['company_info']      = $this->Suppliers->retrieve_company();
+
+
+        $data['getsupplier']      = $this->Suppliers->get_all_supplier();
+
+
+              $content = $this->parser->parse('report/vendor_info_report', $data, true);
+        $this->template->full_admin_html_view($content);
+
     }
 }
