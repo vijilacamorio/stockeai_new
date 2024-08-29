@@ -2686,6 +2686,7 @@ $this->db->update('bootgrid_data');
         $CI->load->model('Web_settings');
         $CA->load->model('invoice_design');
         $CC->load->model('invoice_content');
+        
          $invoice_detail = $CI->Invoices->invoice_pdf($invoice_id);
          $all_invoice = $CI->Invoices->all_invoice($invoice_id);
          $setting=  $CI->Web_settings->retrieve_setting_editdata(); 
