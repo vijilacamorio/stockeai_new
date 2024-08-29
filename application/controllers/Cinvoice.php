@@ -332,39 +332,45 @@ public function insertPayment()
         'status'        => 'Paid',
         'create_by'     => $admin_comp_id,
     );
-    $paymentid = $this->Customers->payments_entry($data);
-    if ($paymentid) {
+   
         $upload_success = true;
+        $paymentid      = '';
         if (!empty($_FILES['payment_attachement']['name'])) {
             $upload_data = file_upload('payment_attachement', 'payment', PAYMENT_IMG_PATH);
             if (isset($upload_data['upload_data']['file_name'])) {
-                $update_data = array('attachement' => $upload_data['upload_data']['file_name']);
-                $this->Customers->update_payments($update_data, $paymentid);
+                //$update_data = array('attachement' => $upload_data['upload_data']['file_name']);
+                $data['attachement'] = $upload_data['upload_data']['file_name'];
+                //$this->Customers->update_payments($update_data, $paymentid);
+                
             } else {
                 $upload_success = false;
                 $upload_error = $upload_data['error'];
             }
         }
-        $paymentData = $this->Customers->fetchpaymentdata($paymentid, $admin_comp_id);
-        if ($upload_success) {
-            $response = array(
-                'status' => 'success',
-                'msg' => 'Payment has been added successfully.',
-                'paymentData' => $paymentData
-            );
+        if($upload_success ==true){
+            $paymentid = $this->Customers->payments_entry($data);
+        }
+        if ($paymentid!="") {
+            $paymentData = $this->Customers->fetchpaymentdata($paymentid, $admin_comp_id);
+            if ($upload_success) {
+                $response = array(
+                    'status' => 'success',
+                    'msg' => 'Payment has been added successfully.',
+                    'paymentData' => $paymentData
+                );
+            } else {
+                $response = array(
+                    'status' => 'partial_success',
+                    'msg' => 'File upload failed: ' . $upload_error,
+                    'paymentData' => $paymentData
+                );
+            }
         } else {
             $response = array(
-                'status' => 'partial_success',
-                'msg' => 'Payment added, but file upload failed: ' . $upload_error,
-                'paymentData' => $paymentData
+                'status' => 'error',
+                'msg' => 'Failed to add payment. Please try again.'
             );
         }
-    } else {
-        $response = array(
-            'status' => 'error',
-            'msg' => 'Failed to add payment. Please try again.'
-        );
-    }
     echo json_encode($response);
 }
     
@@ -3850,6 +3856,53 @@ public function getCustomerDatas() { //for report - vijila - 28-08-2024
             "currency_type"   => $item['currency_type'],
             "credit_limit"    => $item['credit_limit'],
         ];
+        $data[] = $row;
+        $i++;
+    }
+    $response = [
+        "draw"            => $this->input->post('draw'),
+        "recordsTotal"    => $totalItems,
+        "recordsFiltered" => $totalItems,
+        "data"            => $data,
+    ];
+    echo json_encode($response);
+}
+public function customerSalesReport(){
+    $data['setting_detail'] = $this->Web_settings->retrieve_setting_editdata($this->admin_id);
+    
+    $content = $this->parser->parse('report/customer_report', $data, true);
+    $this->template->full_admin_html_view($content);
+}
+public function getCustomerSalesDatas() { //for customer sale report - vijila - 28-08-2024
+    $encodedId      = isset($_GET['id']) ? $_GET['id'] : null;
+    $decodedId      = decodeBase64UrlParameter($encodedId);
+    $limit          = $this->input->post('length');
+    $start          = $this->input->post('start');
+    $search         = $this->input->post('search')['value'];
+    $orderField     = $this->input->post('columns')[$this->input->post('order')[0]['column']]['data'];
+    $orderDirection = $this->input->post('order')[0]['dir'];
+    $totalItems     = $this->Invoices->get_all_invoice_sale($search, $decodedId);
+    $items          = $this->Invoices->getPaginatedCustomers($limit, $start, $orderField, $orderDirection, $search, $decodedId);
+    $data           = [];
+    $i              = $start + 1;
+    foreach ($items as $item) {
+        $row = [
+            "customer_id"     => $i,
+            "customer_name"   => $item['customer_name'],
+            "customer_type"   => $item['customer_type'],
+            "billing_address" => $item['billing_address'],
+            "customer_mobile" => $item['customer_mobile'],
+            "primary_email"   => $item['primary_email'],
+            "city"            => $item['city'],
+            "state"           => $item['state'],
+            "zip"             => $item['zip'],
+            "country"         => $item['country'],
+            'created_admin'   => $decoded_admin,
+            "created_date"    => $item['created_date'],
+            "currency_type"   => $item['currency_type'],
+            "credit_limit"    => $item['credit_limit'],
+        ];
+        
         $data[] = $row;
         $i++;
     }
