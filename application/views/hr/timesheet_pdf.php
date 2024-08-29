@@ -75,7 +75,7 @@ th{
    if($template==2)
           {
           ?>
-        <div class="brand-section"  style="background-color:<?php echo $color; ?>">
+        <div class="brand-section"  style="background-color:<?php echo '#' .$color; ?>">
      <div class="row" >
      <div class="col-sm-2"><img src="<?php echo  base_url().$logo; ?>"   style='width: 100%;'  /></div>
 <div class="col-sm-6 text-center" style="color:white;"><h3><?php  echo "Time Sheet"; ?></h3></div>
@@ -168,7 +168,7 @@ th{
 elseif($template==1)   
 { 
 ?>  
-    <div class="brand-section"  style="background-color:<?php echo $color; ?>">
+    <div class="brand-section"  style="background-color:<?php echo  '#' .$color; ?>">
 <div class="row" >
 <div class="col-sm-4" id='company_info' style="color:white;">
      <b> <?php echo display('Company name') ?> : </b><?php echo $company; ?><br>
@@ -524,7 +524,7 @@ th,td{
                                     <div class="table-outer">
                                         <table class="default-table invoice-table" border="1" cellpadding="0" cellspacing="0">
          <tbody>
- <tr style="font-weight:bold;text-align:center;background-color:<?php  echo $color; ?>;color:white;">
+ <tr style="font-weight:bold;text-align:center;background-color:<?php  echo '#' .$color; ?>;color:white;">
     <td style="color:white;text-align:center;font-size: 12px;" ><strong>S.NO</strong></td><td style="color:white;"><strong>Date</strong></td><td style="color:white;"><strong>Day</strong></td><?php if(!$time_sheet[0]['present'] ='present' || !$time_sheet[0]['present']='absent'){ ?><td style="color:white;"><strong>Start Time(HH:MM)</strong></td> <?php } ?>
    <?php if(!$time_sheet[0]['present'] ='present' || !$time_sheet[0]['present']='absent'){ ?><td style="color:white;"><strong>End Time(HH:MM)</strong></td>  <td style="color:white;"><strong>Hours</strong></td><?php } ?>
       <?php if($time_sheet[0]['present'] ='present' || $time_sheet[0]['present']='absent'){ ?><td style="color:white;"><strong> </strong></td> <?php  } ?>

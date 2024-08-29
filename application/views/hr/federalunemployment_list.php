@@ -116,7 +116,7 @@ tbody tr td:first-child:before
               <td class="paddin5ps"><input  type="text" class="form-control" id="married_to" value="<?php if($tax['married']){ $split=explode('-',$tax['married']); if($split[1]){ echo $split[1];}else{echo "0";}} ?>"  name="married_to[]"  required/></td>
              <td class="paddin5ps"><input  type="text" class="form-control" id="head_household_from" value="<?php if($tax['head_household']){ $split=explode('-',$tax['head_household']); if($split[0]){ echo $split[0];}else{echo "0";}} ?>"  name="head_household_from[]"  required/></td>
               <td class="paddin5ps"><input  type="text" class="form-control" id="head_household_to" value="<?php if($tax['head_household']){ $split=explode('-',$tax['head_household']); if($split[1]){ echo $split[1];}else{echo "0";}} ?>"  name="head_household_to[]"  required/></td>
- <td class="paddin5ps"><button type="button" id="delPOIbutton" class="btn btn-danger getDataRow"  value="Delete" onclick="deleteTaxRow(this)"><i class="fa fa-trash"></i></button></td>
+ <td class="paddin5ps"><button type="button" id="delPOIbutton" class="btn btnclr getDataRow"  value="Delete" onclick="deleteTaxRow(this)"><i class="fa fa-trash"></i></button></td>
             <td class="paddin5ps"><button type="button" id="addmorePOIbutton" style="color:white;" class="btnclr btn"  value="Add More POIs" onclick="TaxinsRow()"><i class="fa fa-plus-circle"></button></td>
         </tr>
        <?php $s++; }}else{  ?>
@@ -133,7 +133,7 @@ tbody tr td:first-child:before
                 <td><input  type="text" class="form-control" id="rate"   name="married_to[]" required /></td>
                 <td><input  type="text" class="form-control" id="rate"   name="head_household_from[]"  required /></td>
                 <td class="paddin5ps"><input  type="text" class="form-control" id="rate"   name="head_household_to[]" required /></td>
-            <td class="paddin5ps"><button type="button" id="delPOIbutton" class="btn "  value="Delete" onclick="deleteTaxRow(this)"><i class="fa fa-trash"></i></button></td>
+            <td class="paddin5ps"><button type="button" id="delPOIbutton" class="btn btnclr"  value="Delete" onclick="deleteTaxRow(this)"><i class="fa fa-trash"></i></button></td>
             <td class="paddin5ps"><button type="button" id="addmorePOIbutton" style="color:white;" class="btn btnclr" value="Add More POIs" onclick="TaxinsRow()"><i class="fa fa-plus-circle"></button></td>
         </tr>
                <?php $s++; }   ?>
