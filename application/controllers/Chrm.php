@@ -49,7 +49,7 @@ class Chrm extends CI_Controller {
             $profile = '<a href="' . base_url('Chrm/employee_details?id=' . $encodedId . '&employee=' . $item['id']) . '" class="btnclr btn m-b-5 m-r-2"><i class="fa fa-user"></i></a>';
             $empinv  = '<a href="' . base_url('Chrm/timesheed_inserted_data?id=' . $encodedId . '&employee=' . $item['id']) . '" class="btnclr btn m-b-5 m-r-2"><i class="fa fa-download" aria-hidden="true"></i></a>';
             $edit    = '<a href="' . base_url('Chrm/employee_update_form?id=' . $encodedId . '&employee=' . $item['id']) . '" class="btnclr btn m-b-5 m-r-2" data-toggle="tooltip" data-placement="left" title="' . display('update') . '"><i class="fa fa-pencil" aria-hidden="true"></i></a>';
-            $delete  = '<a href="' . base_url('Chrm/employee_delete?id=' . $encodedId . '&employee=' . $item['id']) . '" class="btn btn-danger" style="margin-bottom: 5px;"  onclick="return confirm(\'' . display('are_you_sure') . '\')" data-toggle="tooltip" data-placement="right" title="' . display('delete') . '"><i class="fa fa-trash-o" aria-hidden="true"></i></a>';
+            $delete  = '<a href="' . base_url('Chrm/employee_delete?id=' . $encodedId . '&employee=' . $item['id']) . '" class="btnclr btn" style="margin-bottom: 5px;"  onclick="return confirm(\'' . display('are_you_sure') . '\')" data-toggle="tooltip" data-placement="right" title="' . display('delete') . '"><i class="fa fa-trash-o" aria-hidden="true"></i></a>';
             $row     = [
                 "id"                     => $i,
                 "first_name"             => $item['first_name'] . ' ' . $item['middle_name'] . ' ' . $item['last_name'],
@@ -94,7 +94,7 @@ class Chrm extends CI_Controller {
             $admin        = '<a href="' . base_url('Chrm/employee_payslip_permission?id=' . $encodedId . '&timesheetid=' . trim($item['timesheet_id'])) . '" class="btnclr btn m-b-5 m-r-2"><i class="fas fa-user-tie" aria-hidden="true"></i></a>';
             $timesheetinv = '<a href="' . base_url('Chrm/time_sheet_pdf?id=' . $encodedId . '&timesheetid=' . trim($item['timesheet_id'])) . '" class="btnclr btn m-b-5 m-r-2"><i class="fa fa-download" aria-hidden="true"></i></a>';
             $edit         = '<a href="' . base_url('Chrm/edit_timesheet?id=' . $encodedId . '&timesheetid=' . trim($item['timesheet_id'])) . '" class="btnclr btn m-b-5 m-r-2" data-toggle="tooltip" data-placement="left" title="' . display('update') . '"><i class="fa fa-pencil" aria-hidden="true"></i></a>';
-            $delete       = '<a href="' . base_url('Chrm/timesheet_delete?id=' . $encodedId . '&timesheetid=' . trim($item['timesheet_id'])) . '"  class="btn btn-danger" style="margin-bottom: 5px;"  data-toggle="tooltip"     onclick="return confirm(\'' . display('are_you_sure') . '\')"                data-placement="left" title="' . display('delete') . '"><i class="fa fa-trash-o" aria-hidden="true"></i></a>';
+            $delete       = '<a href="' . base_url('Chrm/timesheet_delete?id=' . $encodedId . '&timesheetid=' . trim($item['timesheet_id'])) . '"  class="btn btnclr" style="margin-bottom: 5px;"  data-toggle="tooltip"     onclick="return confirm(\'' . display('are_you_sure') . '\')"                data-placement="left" title="' . display('delete') . '"><i class="fa fa-trash-o" aria-hidden="true"></i></a>';
             $row          = [
                 "id"           => $i,
                 "first_name"   => $item['first_name'] . ' ' . $item['middle_name'] . ' ' . $item['last_name'],

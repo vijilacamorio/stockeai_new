@@ -1,6 +1,5 @@
 <link rel="stylesheet" type="text/css" href="<?php echo base_url()?>my-assets/css/css.css" /> 
-<input type="hidden" name="<?php echo $this->security->get_csrf_token_name();?>" value="<?php echo $this->security->get_csrf_hash();?>">
-<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css" />
+ <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js" integrity="sha512-CryKbMe7sjSCDPl18jtJI5DR5jtkUWxPXWaLCst6QjH8wxDexfRJic2WRmRXmstr2Y8SxDDWuBO6CQC6IE4KTA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
@@ -278,7 +277,7 @@
                 </div>
                </div>
         </form>
-    </section>
+     </section>
 </div>
 <div class="modal fade" id="myModal1" role="dialog" >
     <div class="modal-dialog">
@@ -464,6 +463,8 @@ $('#insert_daily_break').submit(function(e){
      }
       });
   });
+
+
  var csrfName = '<?php echo $this->security->get_csrf_token_name();?>';
 var csrfHash = '<?php echo $this->security->get_csrf_hash();?>';
     $(document).on('select change'  ,'#templ_name', function () {
@@ -495,6 +496,7 @@ var data = {
 if(isset($_POST['btnSearch'])){
     $s = $_REQUEST["daterangepicker-field"];
 }
+ 
 $prev_month = date('Y-m-d', strtotime('first day of january this year'));
 $current=date('Y-m-d');
 $dat2= $prev_month."to". $current;
@@ -502,27 +504,31 @@ $searchdate =(!empty($s)?$s:$dat2);
     $dat = str_replace(' ', '', $searchdate);
     $split=explode("to",$dat);
 ?>
-var csrfName = '<?php echo $this->security->get_csrf_token_name();?>';
-var csrfHash = '<?php echo $this->security->get_csrf_hash();?>';
-$(function() {
-    var start = moment().startOf('isoWeek'); 
-    var end = moment().endOf('isoWeek'); 
-    var startOfLastWeek = moment().subtract(1, 'week').startOf('week');
-    var endOfLastWeek = moment().subtract(1, 'week').endOf('week').add(1, 'day'); 
-    function cb(start, end) {
-    $('#reportrange').val(start.format('DD/MM/YYYY') + ' - ' + end.format('DD/MM/YYYY'));
-    }
-    $('#reportrange').daterangepicker({
-    startDate: start,
-    endDate: end,
-    ranges: {
-       'Last Week Before': [moment().subtract(2,  'week').startOf('week') , moment().subtract(2, 'week').endOf('week')],
-       'Last Week': [startOfLastWeek, endOfLastWeek],
-       'This Week': [moment().startOf('week'), moment().endOf('week')],
-       'This Month': [moment().startOf('month'), moment().endOf('month')],
-       'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
-    }
-    }, cb);
+    var csrfName = '<?php echo $this->security->get_csrf_token_name();?>';
+    var csrfHash = '<?php echo $this->security->get_csrf_hash();?>';
+    $(function() {
+            var start = moment().startOf('isoWeek');  
+            var end = moment().endOf('isoWeek');  
+            var startOfLastWeek = moment().subtract(1, 'week').startOf('isoWeek');  
+            var endOfLastWeek = moment().subtract(1, 'week').endOf('isoWeek');  
+            var previousWeekStart = moment().subtract(1, 'week').startOf('isoWeek');  
+            var currentWeekEnd = moment().endOf('isoWeek');  
+            function cb(start, end) {
+                $('#reportrange').val(start.format('DD/MM/YYYY') + ' - ' + end.format('DD/MM/YYYY'));
+            }
+            moment.updateLocale('en', {
+                week: { dow: 1 }
+            });
+            $('#reportrange').daterangepicker({
+                startDate: start,
+                endDate: end,
+                ranges: {
+                    'Last Week': [startOfLastWeek, endOfLastWeek],
+                    'This Week': [start, end],
+                    'Biweekly': [previousWeekStart, currentWeekEnd],
+                    'This Month': [moment().startOf('month'), moment().endOf('month')]
+                }
+            }, cb);
   $('#reportrange').on('apply.daterangepicker', function(ev, picker) {
            var data= {
                     selectedDate: $('#reportrange').val(),
@@ -633,7 +639,7 @@ if(count == 0){
             </tr>`);
         $('#tFoot').append(`
             <tr style="text-align:end">
-                <td colspan="5" class="text-right" style="font-weight:bold;">Total Hours:</td> 
+                <td colspan="5" class="text-right" style="font-weight:bold;">Overall Total Hours:</td> 
                 <td><input type="text" id="total_net" class="sumOfDays" name="total_net" /></td>
             </tr>`);
     } else if (response.includes('SalesCommission')) {
@@ -643,13 +649,23 @@ if(count == 0){
                 <td><input type="text" id="total_net"  value="0.00" name="total_net"  readonly /></td>
             </tr>`);
     }
-for (let i = 0; i <= Days; i++) { 
-    let newDate = new Date(validDate.getTime()); 
-    newDate.setDate(validDate.getDate() + i); 
+
+
+
+
+  let weeklyTotalHours = 0;
+  let j=1;
+  let weekCounter = 1;
+  let weeklyCount = 1;
+
+
+  for (let i = 0; i <= Days; i++) { 
+    let newDate = new Date(validDate.getTime());  
+    newDate.setDate(validDate.getDate() + i);  
     let dayString = weekDays[newDate.getDay()].slice(0, 10);
-let day = ("0" + newDate.getDate()).slice(-2); 
-let month = ("0" + (newDate.getMonth() + 1)).slice(-2); 
-let dateString = `${day}/${month}/${newDate.getFullYear()}`;
+    let day = ("0" + newDate.getDate()).slice(-2);  
+    let month = ("0" + (newDate.getMonth() + 1)).slice(-2); 
+    let dateString = `${day}/${month}/${newDate.getFullYear()}`;
     if (response.includes('salary') || response.includes('Salaried-weekly') || response.includes('Salaried-BiWeekly') || response.includes('Salaried-Monthly')  || response.includes('Salaried-BiMonthly'  )) {
         $('#tBody').append(`
             <tr>
@@ -659,55 +675,133 @@ let dateString = `${day}/${month}/${newDate.getFullYear()}`;
                 <td class="day" id="day_${i}">
                     <input type="hidden" value="${dayString}" name="day[]"/>${dayString}
                 </td>
-                <td style="display:none;" class="start-time_`+i+`">    <input    id="startTime${monStartWeekDays[i]}"  name="start[]"  class="hasTimepicker start" type="time"   /></td>
-                <td style="display:none;"  class="finish-time_`+i+`">   <input    id="finishTime${monStartWeekDays[i]}"   name="end[]" class="hasTimepicker end"   type="time"   /></td> 
+                    <td style="display:none;" class="start-time_`+i+`">    <input    id="startTime${monStartWeekDays[i]}"  name="start[]"  class="hasTimepicker start" type="time"   /></td>
+                    <td style="display:none;"  class="finish-time_`+i+`">   <input    id="finishTime${monStartWeekDays[i]}"   name="end[]" class="hasTimepicker end"   type="time"   /></td> 
                  <td class="hours-worked_`+i+`"> 
                  <label class="switch" style="width:100px;">
-      <input type="checkbox" class="present checkbox switch-input"  value=""  id="blockcheck_`+i+`" name="present[]">
-      <span class="switch-label" data-on="Present" data-off="Absent"></span>
-      <span class="switch-handle"></span>
-    </label>
-              <input type="hidden" name="block[]"   id="block_`+i+`" />              
+                    <input type="checkbox" class="present checkbox switch-input"  value=""  id="blockcheck_`+i+`" name="present[]">
+                    <span class="switch-label" data-on="Present" data-off="Absent"></span>
+                <span class="switch-handle"></span>
+                 </label>
+                 <input type="hidden" name="block[]"   id="block_`+i+`" />                                      
                  </td>
-            </tr>`);
-    } else if (response.includes('Hourly')) {
-        $('#tBody').append(`
-         <tr > <td  class="date" id="date_`+i+`"><input type="hidden" value="${dateString}" name="date[]"   />`+`${dateString}</td>
-            <td  class="day" id="day_`+i+`"><input type="hidden" value="`+`${weekDays[newDate.getDay()].slice(0,10)}" name="day[]"   />`+`${weekDays[newDate.getDay()].slice(0,10)}</td>
-          <td style="text-align:center;" class="daily-break_${i}">
-            <select name="dailybreak[]" id="dailybreak" class="form-control datepicker dailybreak" style="width: 100px;margin: auto; display: block;">
-            <?php foreach ($dailybreak as $dbd) { ?>
-            <option value="<?php echo $dbd['dailybreak_name']; ?>"><?php echo $dbd['dailybreak_name']; ?></option>
-            <?php } ?>  </select>  </td>
-            <td class="start-time_`+i+`">    <input    id="startTime${monStartWeekDays[i]}"  name="start[]"  class="hasTimepicker start" type="time"   /></td>
-            <td class="finish-time_`+i+`">   <input    id="finishTime${monStartWeekDays[i]}"   name="end[]" class="hasTimepicker end"   type="time"   /></td></td>
-            <td class="hours-worked_`+i+`">  <input    id="hoursWorked${monStartWeekDays[i]}"  name="sum[]" class="timeSum"      readonly       type="text"   /></td>
-            <td>
-            <a style="color:white;" class="delete_day btnclr btn  m-b-5 m-r-2"><i class="fa fa-trash" aria-hidden="true"></i> </a>
-         </td>  </tr> ` );
-    } else if (response.includes('SalesCommission')) {
-        $('#tBody').append(`
-        <tr > 
-            <td  style="display:none;"  class="date" id="date_`+i+`"><input type="hidden" value="`+`${newDate.getDate()}/${newDate.getMonth() + 1}/${newDate.getFullYear()}" name="date[]"   />`+`${newDate.getDate()} / ${newDate.getMonth() + 1} / ${newDate.getFullYear()}</td>
-            <td style="display:none;"     class="day" id="day_`+i+`"><input type="hidden" value="`+`${weekDays[newDate.getDay()].slice(0,10)}" name="day[]"   />`+`${weekDays[newDate.getDay()].slice(0,10)}</td>
-            <td style="display:none;"     class="start-time_`+i+`">    <input    id="startTime${monStartWeekDays[i]}"  name="start[]"  class="hasTimepicker start" type="time"   /></td>
-            <td style="display:none;"     class="finish-time_`+i+`">   <input    id="finishTime${monStartWeekDays[i]}"   name="end[]" class="hasTimepicker end"   type="time"   /></td></td>
-            <td style="display:none;"     class="hours-worked_`+i+`">  <input    id="hoursWorked${monStartWeekDays[i]}"  name="sum[]" class="timeSum"    value="0"  readonly       type="text"   /></td>
-            <td style="display:none;>
-            <a style="color:white;" class="delete_day btnclr btn  m-b-5 m-r-2"><i class="fa fa-trash" aria-hidden="true"></i> </a>
-         </td>  </tr> ` );
+                </tr>`);
+            }
+            else if (response.includes('Hourly')) {
+     let dayOfWeek = weekDays[newDate.getDay()].slice(0, 10);
+     let html = `<tr>
+                    <td class="date">
+                        <input type="hidden" id ="date_${i}" value="${dateString}" name="date[]" />${dateString}
+                    </td>
+                    <td class="day">
+                        <input type="hidden" value="${dayOfWeek}" name="day[]" />${dayOfWeek}
+                    </td>
+                    <td class="daily-break">
+                        <select name="dailybreak[]" class="form-control datepicker dailybreak" style="width: 100px; margin: auto; display: block;">
+                            <?php foreach ($dailybreak as $dbd) { ?>
+                                <option value="<?php echo $dbd['dailybreak_name']; ?>"><?php echo $dbd['dailybreak_name']; ?></option>
+                            <?php } ?>
+                        </select>
+                    </td>
+                    <td class="start-time">
+                        <input class="hasTimepicker start"  name="start[]"    type="time" id="${weeklyCount}"/>
+                    </td>
+                    <td class="finish-time">
+                        <input class="hasTimepicker end"    name="end[]"  type="time" id="${weeklyCount}"/>
+                    </td>
+                    <td class="hours-worked">
+                        <input class="timeSum weekly_${weeklyCount}"  name="sum[]"  type="text" />
+                    </td>
+                    <td>
+                        <a style="color:white;" id="${weeklyCount}" class="delete_day btnclr btn m-b-5 m-r-2"><i class="fa fa-trash" aria-hidden="true"></i></a>
+                    </td>
+                </tr>`;
+     $('#tBody').append(html);
+     $('#tBody').on('change', '.start-time input, .finish-time input', function() {
+        calculateHoursAndTotal($(this).closest('tr'));
+    });
+    function calculateHoursAndTotal(row) {
+        let startTime = row.find('.start-time input').val();
+        let finishTime = row.find('.finish-time input').val();
+        if (startTime && finishTime) {
+            let start = moment(startTime, 'HH:mm');
+            let end = moment(finishTime, 'HH:mm');
+             let duration = end.diff(start, 'hours', true);
+             row.find('.hours-worked input').val(duration.toFixed(2));
+             if (dayOfWeek === 'Sunday') {
+                updateWeeklyTotalHours(row.closest('tbody'));
+            }
+        }
+    }
+     function updateWeeklyTotalHours(tbody) {
+         let totalHours = 0;
+        tbody.find('tr').each(function() {
+            let hours = parseFloat($(this).find('.hours-worked input').val());
+            if (!isNaN(hours)) {
+                totalHours += hours;
+            }
+        });
+        let $sundayRow = tbody.find('tr.day input[value="Sunday"]').closest('tr');
+        if ($sundayRow.length > 0) {
+        let weekIdentifier = 'week_' + weekCounter;
+        console.log('week iden'+totalHours);
+        $('.'+weekIdentifier).val(totalHours.toFixed(2));
+        console.log('toatkk:'+totalHours.toFixed(2));
+        let totalHoursRow = `<tr class="total-row" style="text-align:end;">
+                                <td colspan="5" class="text-right" style="font-weight:bold;">Weekly Total Hoursdss:</td>
+                                <td><input type="text" class="total-net ${weekIdentifier}" value="`+totalHours.toFixed(2)+`" name="total_net[]" readonly /></td>
+                            </tr>`;
+                            console.log('weekiden:'+weekIdentifier);
+        $sundayRow.after(totalHoursRow);
+        weekCounter++;  
+    }
+    weeklyCount++;
+    } 
+     if (dayOfWeek === 'Sunday') {
+        let tableBody = $('#tBody');  
+        let calculatedTotal = updateWeeklyTotalHours(tableBody);
+        if (calculatedTotal === undefined || calculatedTotal === null) {
+            calculatedTotal = 0.00;  
+        }
+        let weekIdentifier = 'week_'+j;
+        let totalHoursRow = `<tr class="total-row" style="text-align:end;">
+                                <td colspan="5" class="text-right" style="font-weight:bold;">Weekly Total Hours:</td>
+                                <td><input type="text" class="total-net ${weekIdentifier}" value="${calculatedTotal}" name="week_total_net[]" readonly /></td>
+                            </tr>`;
+        $('#tBody').append(totalHoursRow);
+        j=j+1;
     }
 }
-        },
-                error: function(xhr, status, error) {
-                }
+    else if (response.includes('SalesCommission')) {
+            $('#tBody').append(`
+            <tr > 
+            <td  style="display:none;" class="date" id="date_`+i+`"><input type="hidden" value="`+`${newDate.getDate()}/${newDate.getMonth() + 1}/${newDate.getFullYear()}" name="date[]"   />`+`${newDate.getDate()} / ${newDate.getMonth() + 1} / ${newDate.getFullYear()}</td>
+            <td style="display:none;" class="day" id="day_`+i+`"><input type="hidden" value="`+`${weekDays[newDate.getDay()].slice(0,10)}" name="day[]"   />`+`${weekDays[newDate.getDay()].slice(0,10)}</td>
+            <td style="display:none;" class="start-time_`+i+`">    <input    id="startTime${monStartWeekDays[i]}"  name="start[]"  class="hasTimepicker start" type="time"   /></td>
+            <td style="display:none;" class="finish-time_`+i+`">   <input    id="finishTime${monStartWeekDays[i]}"   name="end[]" class="hasTimepicker end"   type="time"   /></td></td>
+            <td style="display:none;" class="hours-worked_`+i+`">  <input    id="hoursWorked${monStartWeekDays[i]}"  name="sum[]" class="timeSum"    value="0"  readonly       type="text"   /></td>
+            <td style="display:none;>
+            <a style="color:white;" class="delete_day btnclr btn  m-b-5 m-r-2"><i class="fa fa-trash" aria-hidden="true"></i> </a>
+            </td>  </tr> ` );
+            }
+            }
+            },
+            error: function(xhr, status, error) {
+            }
             });
-});
+        });
+
+
+
+
+
+
+
 $(document).ready(function() {
     function updateCounter() {
-        var sumOfDays = 0; 
-        sumOfDays = $('input[type="checkbox"].present:checked').length;
-        $('#total_net').val(sumOfDays);
+         var sumOfDays = 0;  
+         sumOfDays = $('input[type="checkbox"].present:checked').length;
+         $('#total_net').val(sumOfDays);
     }
     $(document).on('change', 'input[type="checkbox"].present', function() {
         updateCounter();
@@ -722,32 +816,48 @@ function parseTime(s) {
     return Math.floor(parseInt(s) / 60) + "." + parseInt(s) % 60
 }
 $(document).on('select change'  ,'.end','.dailybreak', function () {
+    debugger;
  var $begin = $(this).closest('tr').find('.start').val();
     var $end = $(this).closest('tr').find('.end').val();
-    let valuestart = moment($begin, "HH:mm");
+     let valuestart = moment($begin, "HH:mm");
     let valuestop = moment($end, "HH:mm");
     let timeDiff = moment.duration(valuestop.diff(valuestart));
-    var dailyBreakValue = parseInt($(this).closest('tr').find('.dailybreak').val()) || 0;
-    var totalMinutes = timeDiff.asMinutes() - dailyBreakValue;
-    var hours = Math.floor(totalMinutes / 60);
+     var dailyBreakValue = parseInt($(this).closest('tr').find('.dailybreak').val()) || 0;
+     var totalMinutes = timeDiff.asMinutes() - dailyBreakValue;
+     var hours = Math.floor(totalMinutes / 60);
     var minutes = totalMinutes % 60;
-    var formattedTime = hours.toString().padStart(2, '0') + '.' + minutes.toString().padStart(2, '0');
+     var formattedTime = hours.toString().padStart(2, '0') + '.' + minutes.toString().padStart(2, '0');
     $(this).closest('tr').find('.timeSum').val(formattedTime);
-debugger;
-var total_net = 0;
+    var total_net = 0;
+     function getDynamicClass(staticClass, element) {
+        const classes = $(element).attr('id');
+        return classes;
+    }
+    function getWeeklyValue(weekvalcls) {
+    let weeklyHours = 0;
+    $('.weekly_' + weekvalcls).each(function() {
+        weeklyHours += parseFloat($(this).val()) || 0;
+    });
+    let formattedHours = weeklyHours.toFixed(2);
+    $('.week_' + weekvalcls).val(formattedHours);
+}
 $('.table').each(function () {
     var tableTotal = 0;
     $(this).find('.timeSum').each(function () {
         var precio = $(this).val();
         if (!isNaN(precio) && precio.length !== 0) {
             var [hours, minutes] = precio.split('.').map(parseFloat);
-            tableTotal += hours + minutes / 100; 
+            tableTotal += hours + minutes / 100;  
         }
     });
-    total_net += tableTotal;
+    var formattedTotal = tableTotal.toFixed(2);
+    total_net += parseFloat(formattedTotal);
 });
-var hours = Math.floor(total_net);
-var minutes = Math.round((total_net % 1) * 100);
+ const dynamicClass = getDynamicClass('timeSum', this);
+console.log('dynamic:'+dynamicClass);
+getWeeklyValue(dynamicClass);
+ var hours = Math.floor(total_net);
+var minutes = Math.round((total_net % 1) * 100);  
 if (minutes === 100) {
     hours += 1;
     minutes = 0;
@@ -757,34 +867,49 @@ $('#total_net').val(hours.toString().padStart(2, '0') + '.' + minutes.toString()
 $(document).on('select change'  ,'.start','.dailybreak', function () {
  var $begin = $(this).closest('tr').find('.start').val();
     var $end = $(this).closest('tr').find('.end').val();
-    let valuestart = moment($begin, "HH:mm");
+     let valuestart = moment($begin, "HH:mm");
     let valuestop = moment($end, "HH:mm");
     let timeDiff = moment.duration(valuestop.diff(valuestart));
-    var dailyBreakValue = parseInt($(this).closest('tr').find('.dailybreak').val()) || 0;
-    var totalMinutes = timeDiff.asMinutes() - dailyBreakValue;
-    var hours = Math.floor(totalMinutes / 60);
+     var dailyBreakValue = parseInt($(this).closest('tr').find('.dailybreak').val()) || 0;
+     var totalMinutes = timeDiff.asMinutes() - dailyBreakValue;
+     var hours = Math.floor(totalMinutes / 60);
     var minutes = totalMinutes % 60;
-    var formattedTime = hours.toString().padStart(2, '0') + '.' + minutes.toString().padStart(2, '0');
+     var formattedTime = hours.toString().padStart(2, '0') + '.' + minutes.toString().padStart(2, '0');
 if (isNaN(parseFloat(formattedTime))) {
      $(this).closest('tr').find('.timeSum').val('00.00');
 }else{
     $(this).closest('tr').find('.timeSum').val(formattedTime);
 }
-debugger;
-var total_net = 0;
+ var total_net = 0;
+  function getDynamicClass(staticClass, element) {
+    const classes = $(element).attr('id');
+    return classes;
+}
+function getWeeklyValue(weekvalcls){
+    console.log('inside weekly cal:'+weekvalcls);
+        let weeklyHours = 0;
+        $('.weekly_' + weekvalcls).each(function() {
+             weeklyHours += parseFloat($(this).val()) || 0;
+        });
+        $('.week_'+weekvalcls).val(weeklyHours);
+    }
 $('.table').each(function () {
     var tableTotal = 0;
     $(this).find('.timeSum').each(function () {
         var precio = $(this).val();
         if (!isNaN(precio) && precio.length !== 0) {
             var [hours, minutes] = precio.split('.').map(parseFloat);
-            tableTotal += hours + minutes / 100; 
+            tableTotal += hours + minutes / 100;  
         }
     });
-    total_net += tableTotal;
+    var formattedTotal = tableTotal.toFixed(2);
+    total_net += parseFloat(formattedTotal);
 });
+const dynamicClass = getDynamicClass('timeSum', this);
+getWeeklyValue(dynamicClass);
+console.log('dsafsd1:'+total_net);
 var hours = Math.floor(total_net);
-var minutes = Math.round((total_net % 1) * 100); 
+var minutes = Math.round((total_net % 1) * 100);  
 if (minutes === 100) {
     hours += 1;
     minutes = 0;
@@ -809,10 +934,10 @@ function sumHours () {
     } else {
       $input.val(''); 
     }
-}
+ }
+
 $('#total_net').on('keyup',function(){
-    debugger;
-    var value=$(this).val();
+     var value=$(this).val();
    if($(this).val() == ''){
 $(".hasTimepicker").prop("readonly", false);
           $('#tBody .hasTimepicker').prop('defaultValue');  
@@ -821,7 +946,7 @@ $(".hasTimepicker").prop("readonly", false);
     }
 });
 $(document).on('click','.delete_day',function(){
-$(this).closest('tr').remove();
+ $(this).closest('tr').remove();
  var total_net=0;
  $('.table').each(function() {
     $(this).find('.timeSum').each(function() {
@@ -831,14 +956,28 @@ $(this).closest('tr').remove();
         }
       });
   });
+  function getDynamicClass(staticClass, element) {
+    const classes = $(element).attr('id');
+    return classes;
+}
+function getWeeklyValue(weekvalcls){
+    console.log('inside weekly cal:'+weekvalcls);
+        let weeklyHours = 0;
+        $('.weekly_' + weekvalcls).each(function() {
+             weeklyHours += parseFloat($(this).val()) || 0;
+        });
+        $('.week_'+weekvalcls).val(weeklyHours);
+    }
+    const dynamicClass = getDynamicClass('timeSum', this);
+    getWeeklyValue(dynamicClass);
 $('#total_net').val(total_net.toFixed(2)).trigger('change');
-  var firstDate = $('.date input').first().val();
-    var lastDate = $('.date input').last().val(); 
+  var firstDate = $('.date input').first().val();  
+    var lastDate = $('.date input').last().val();  
     function convertDateFormat(dateStr) {
         const [day, month, year] = dateStr.split('/');
         return `${month}/${day}/${year}`;
     }
-    var firstDateMDY = convertDateFormat(firstDate);
+     var firstDateMDY = convertDateFormat(firstDate);
     var lastDateMDY = convertDateFormat(lastDate);
   $('#reportrange').val(firstDateMDY + ' - ' + lastDateMDY);
 });
@@ -850,17 +989,18 @@ $(function() {
                 method: 'POST',
                 data: {
                     selectedDate: date,
-                    employeeId: $('#templ_name').val() 
+                    employeeId: $('#templ_name').val()  
                 },
                 success: function(response) {
-                    console.log(response); 
+                     console.log(response);  
                 },
                 error: function(xhr, status, error) {
-                }
+                 }
             });
         }
     });
 });
+ 
 document.getElementById('create_timesheet').addEventListener('submit', function(event) {
     var checkboxes = document.querySelectorAll('.checkbox.switch-input');
     checkboxes.forEach(function(checkbox) {
@@ -873,11 +1013,7 @@ document.getElementById('create_timesheet').addEventListener('submit', function(
         }
     });
 });
-
-
-
-
-
+ 
  $(document).ready(function(){
   var succalert = '<div class="alert alert-success alert-dismissible" role="alert">';
   var failalert = '<div class="alert alert-danger alert-dismissible" role="alert">';

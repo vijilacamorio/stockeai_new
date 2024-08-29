@@ -231,14 +231,35 @@
                            <select class="selectpicker countrypicker form-control"
                                         style="width:100%;border: 2px solid #d7d4d6;" data-live-search="true"
                                         data-default="United States" name="country" id="country" value="<?php echo $employee_data[0]['country'];?>" >
-                     </select>
+                           </select>
                            </div>
                         </div>
-                        <div class="form-group row" id="employee_type">
-                           <label for="employee_type" class="col-sm-4 col-form-label">
-                           Add Employee Type <i class="text-danger">*</i>
-                           </label>
+
+ 
+
+                        <div class="form-group row">
+                           <label for="emergencycontact" class="col-sm-4 col-form-label"> <?php echo "Emergency Contact Person" ?> </label>
                            <div class="col-sm-8">
+                              <input class="form-control" name="emergencycontact" id="emergencycontact" type="text"  style="border:2px solid #D7D4D6;"   placeholder="Emergency Contact Person" value="<?php echo html_escape($employee_data[0]['emergencycontact'])?>"  oninput="limitAlphabetical(this, 20)">
+                           </div>
+                        </div>
+
+
+
+                        <div class="form-group row">
+                           <label for="emergencycontactnum" class="col-sm-4 col-form-label"> <?php echo "Emergency Contact Number" ?> </label>
+                           <div class="col-sm-8">
+                              <input class="form-control" name="emergencycontactnum" id="emergencycontactnum" type="number"  style="border:2px solid #D7D4D6;"   placeholder="Emergency Contact Number" value="<?php echo html_escape($employee_data[0]['emergencycontactnum'])?>"  oninput="exitnumbers(this, 10)">
+                           </div>
+                        </div>
+                     </div>
+
+                     <!-- Right Side -->
+  
+                     <div class="col-sm-6">
+                        <div class="form-group row" id="payment_from">
+                        <label for="employee_type" class="col-sm-4 col-form-label">Employee Type <i class="text-danger">*</i></label>
+                        <div class="col-sm-8">
                               <select  name="employee_type" id="emp_type" class=" form-control" >
                                  <option value="<?php echo html_escape($employee_data[0]['employee_type'])?>"><?php echo html_escape($employee_data[0]['employee_type'])?></option>
                                  <option value="Full Time (W4)">Full Time (W4)</option>
@@ -250,27 +271,15 @@
                               </select>
                            </div>
                         </div>
+
+
                         <div class="form-group row">
-                           <label for="emergencycontact" class="col-sm-4 col-form-label"> <?php echo "Emergency Contact Person" ?> </label>
-                           <div class="col-sm-8">
-                              <input class="form-control" name="emergencycontact" id="emergencycontact" type="text"  style="border:2px solid #D7D4D6;"   placeholder="Emergency Contact Person" value="<?php echo html_escape($employee_data[0]['emergencycontact'])?>"  oninput="limitAlphabetical(this, 20)">
-                           </div>
+                        <label for="city" class="col-sm-4 col-form-div"><?php echo  ('Sales Commission') ?></label>
+                        <div class="col-sm-8">
+                        <input name="sc" class="form-control" type="text" value="<?php echo html_escape($employee_data[0]['sc']);?>" placeholder="<?php echo 'Sales Commission' ?>"  oninput="exitsalecommission(this, 2)">
                         </div>
-                        <div class="form-group row">
-                           <label for="emergencycontactnum" class="col-sm-4 col-form-label"> <?php echo "Emergency Contact Number" ?> </label>
-                           <div class="col-sm-8">
-                              <input class="form-control" name="emergencycontactnum" id="emergencycontactnum" type="number"  style="border:2px solid #D7D4D6;"   placeholder="Emergency Contact Number" value="<?php echo html_escape($employee_data[0]['emergencycontactnum'])?>"  oninput="exitnumbers(this, 10)">
-                           </div>
                         </div>
-                     </div>
-                     <!-- Right Side -->
-                     <div class="col-sm-6">
-                        <div class="form-group row" id="payment_from">
-                           <label for="city" class="col-sm-4 col-form-div"><?php echo  ('Sales Commission') ?></label>
-                           <div class="col-sm-8">
-                              <input name="sc" class="form-control" type="text" value="<?php echo html_escape($employee_data[0]['sc']);?>" placeholder="<?php echo 'Sales Commission' ?>"  oninput="exitsalecommission(this, 2)">
-                           </div>
-                        </div>
+               
                      <div class="form-group row" id="payment_from">
                            <label for="payroll_type" class="col-sm-4 col-form-label"> Payroll Type <i class="text-danger">*</i></label>
                            <div class="col-sm-8">
@@ -288,12 +297,14 @@
                               </select>
                            </div>
                         </div>
+ 
                         <div class="form-group row">
                            <label for="hour_rate_or_salary"  id="cost" class="col-sm-4 col-form-div">Pay Rate(<?php echo $currency; ?>)  <i class="text-danger">*</i></label>
                            <div class="col-sm-8">
                               <input name="hrate" class="form-control" type="text" placeholder="<?php echo "Pay Rate" ?>" id="hrate" value="<?php echo html_escape($employee_data[0]['hrate'])?>" oninput="validateInput(this)">
                            </div>
                         </div>
+ 
                         <div class="form-group row" id="payment_from">
                            <label for="paytype" class="col-sm-4 col-form-label"> Payment Type </label>
                            <div class="col-sm-8">
@@ -626,6 +637,12 @@
                      </div>
                   </div>
                </div>
+
+
+
+
+
+
                 <div class="col-sm-6">
                   <div class="form-group row" id="payment_from">
                      <label for="city" class="col-sm-4 col-form-div"><?php echo  ('Sales Commission') ?></label>
