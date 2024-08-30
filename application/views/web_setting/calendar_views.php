@@ -81,10 +81,10 @@
                      <tbody>
                      <?php 
                      $status1 = 'Scheduled';
-                     if(!empty($allData)){ $s=1; foreach ($allData as $key => $value) { ?>
+                     if(!empty($allData)){ $s=1; foreach ($allData as $value) { ?>
                         <tr>
                            <td><?php echo $s; ?></td>
-                           <td><b><?php echo $value->name_id; ?></b></td>
+                           <td><b><?php echo $value->invoice_id; ?></b></td>
                            <td><?php echo $value->title; ?></td>
                            <td><?php echo date('Y-m-d H:i:A',strtotime($value->start)); ?></td>
                            <td>
