@@ -72,7 +72,9 @@
                      <thead>
                        <tr>
                            <th class="color_text">S.No</th>
+                           <?php if($allData->invoice_id > 0){ ?>
                            <th class="color_text">ID</th>
+                           <?php } ?>
                            <th class="color_text">Name</th>
                            <th class="color_text">Date / Time</th>
                            <th class="color_text">Status</th>
@@ -81,10 +83,12 @@
                      <tbody>
                      <?php 
                      $status1 = 'Scheduled';
-                     if(!empty($allData)){ $s=1; foreach ($allData as $key => $value) { ?>
+                     if(!empty($allData)){ $s=1; foreach ($allData as $value) { ?>
                         <tr>
                            <td><?php echo $s; ?></td>
-                           <td><b><?php echo $value->name_id; ?></b></td>
+                           <?php if($value->invoice_id > 0){ ?>
+                           <td><b><?php echo $value->invoice_id; ?></b></td>
+                           <?php } ?>
                            <td><?php echo $value->title; ?></td>
                            <td><?php echo date('Y-m-d H:i:A',strtotime($value->start)); ?></td>
                            <td>
