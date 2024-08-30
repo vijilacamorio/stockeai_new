@@ -262,6 +262,7 @@ public function add_reminder()
      'start' => $start_date,
      'end' => $end_date,
      'source' => 'CALENDER',
+     'schedule_status' => '1',
      'created_by' => $admin_comp_id
    );
    $result = $this->db->insert('schedule_list', $data);
