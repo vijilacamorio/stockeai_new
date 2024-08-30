@@ -81,7 +81,7 @@
                      <tbody>
                      <?php 
                      $status1 = 'Scheduled';
-                     if(!empty($allData)){ $s=1; foreach ($allData as $value) { print_r($value); ?>
+                     if(!empty($allData)){ $s=1; foreach ($allData as $value) { ?>
                         <tr>
                            <td><?php echo $s; ?></td>
                            <td><b><?php echo $value->invoice_id; ?></b></td>
