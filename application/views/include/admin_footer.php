@@ -392,7 +392,7 @@ function updateTableTotals(tableId) {
 }
 // To calculate the overall total
 function updateOverallTotals(includeGross = false) {
-  debugger;
+
     var totalNet = calculateSum('.table', '.net_sq_ft');
     $('#total_net').val(totalNet.toFixed(2)).trigger('change');
 
@@ -406,10 +406,6 @@ function updateOverallTotals(includeGross = false) {
     }
    
   var gtotal = parseFloat($('#gtotal').val()) || 0; 
-   var paid_amount =parseFloat($('#amount_paid').val()) || 0;
-       var balance_amount= gtotal- paid_amount;
-    $('#balance').val(balance_amount);
-
  var overall_total = parseFloat($('#Over_all_Total').val()) || 0;
 
           if($('#product_tax').val()) {
@@ -451,12 +447,13 @@ if(num <= 0){
     
        var balance_amount= gtotal- paid_amount;
     $('#balance').val(balance_amount);
+
  var custo_amt = parseFloat($('.custocurrency_rate').val()) || 1;
         var customer_prefered_currency = gtotal * custo_amt;
         $('#customer_gtotal').val(customer_prefered_currency.toFixed(2));
-    
-   
-    debugger;
+        $('#balance_customer_currency').val((balance_amount*custo_amt).toFixed(2));
+      $('#paid_customer_currency').val((paid_amount*custo_amt).toFixed(2));
+
  
    
      var lc_cost=0;

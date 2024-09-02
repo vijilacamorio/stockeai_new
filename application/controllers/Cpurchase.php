@@ -167,12 +167,25 @@ class Cpurchase extends CI_Controller {
         $items          = $this->Purchases->getPaginatedPurchases($limit, $start, $orderField, $orderDirection, $search, $decodedId,$date);
         $data           = [];
         $i              = $start + 1;
+       
         foreach ($items as $item) {
-            $edit   = '<a href="' . base_url('Cpurchase/invoice_update_form?id=' . $encodedId. '&invoice_id=' . $item['invoice_id']) . '" class="btnclr btn btn-sm" style="margin-right: 5px;"><i class="fa fa-pencil" aria-hidden="true"></i></a>';
-            $delete = '<a style="margin-right: 5px;" onClick=deleteInvoicedata('.$item["invoice_id"].') class="btnclr btn btn-sm" ><i class="fa fa-trash" aria-hidden="true"></i></a>' ;
-            //$mail = '<a href="' . base_url('Cinvoice/invoice_update_form?id=' . $encodedId. '&invoice_id=' . $item['invoice_id']) . '" class="btn btn-sm btn-danger" ><i class="fa fa-trash" aria-hidden="true"></i></a>';
-            $mail = '<a data-toggle="modal" data-target="#sendemailmodal" onClick=sendEmailproforma('.$item["invoice_id"].') class="btnclr btn btn-sm" style="margin-right: 5px;"><i class="fa fa-envelope" aria-hidden="true"></i></a>';
-            $download = '<a href="' . base_url('Cinvoice/invoice_inserted_data?id=' . $encodedId. '&invoice_id=' . $item['invoice_id']) . '" class="btnclr btn btn-sm" ><i class="fa fa-download" aria-hidden="true"></i></a>';
+            if($item['invoice_id'] != ''){
+            $edit   = '<a href="' . base_url('Cpurchase/invoice_update_form?id=' . $encodedId. '&invoice_id=' . $item['purchase_id']) . '" class="btnclr btn btn-sm" style="margin-right: 5px;"><i class="fa fa-pencil" aria-hidden="true"></i></a>';
+            }else{
+            $edit   = '<a href="' . base_url('Cpurchase/serviceprovider_update_form?id=' . $encodedId. '&invoice_id=' . $item['purchase_id']) . '" class="btnclr btn btn-sm" style="margin-right: 5px;"><i class="fa fa-pencil" aria-hidden="true"></i></a>';
+            }
+             if($item['invoice_id'] != ''){
+            $delete = '<a style="margin-right: 5px;" onClick=deleteInvoicedata('.$item["purchase_id"].') class="btnclr btn btn-sm" ><i class="fa fa-trash" aria-hidden="true"></i></a>' ;
+             }else{
+            $delete = '<a style="margin-right: 5px;" onClick=deleteInvoicedata('.$item["purchase_id"].') class="btnclr btn btn-sm" ><i class="fa fa-trash" aria-hidden="true"></i></a>' ;
+            }
+            //serviceprovider_update_form $mail = '<a href="' . base_url('Cinvoice/invoice_update_form?id=' . $encodedId. '&invoice_id=' . $item['invoice_id']) . '" class="btn btn-sm btn-danger" ><i class="fa fa-trash" aria-hidden="true"></i></a>';
+            $mail = '<a data-toggle="modal" data-target="#sendemailmodal" onClick=sendEmailproforma('.$item["purchase_id"].') class="btnclr btn btn-sm" style="margin-right: 5px;"><i class="fa fa-envelope" aria-hidden="true"></i></a>';
+           if($item['invoice_id'] != ''){
+            $download = '<a href="' . base_url('Cinvoice/invoice_inserted_data?id=' . $encodedId. '&invoice_id=' . $item['purchase_id']) . '" class="btnclr btn btn-sm" ><i class="fa fa-download" aria-hidden="true"></i></a>';
+           }else{
+              $download = '<a href="' . base_url('Cinvoice/invoice_inserted_data?id=' . $encodedId. '&invoice_id=' . $item['purchase_id']) . '" class="btnclr btn btn-sm" ><i class="fa fa-download" aria-hidden="true"></i></a>';
+           }
             $row = [
                 'sl'               => $i,
                 "purchase_id"   => $item['purchase_id'],
@@ -565,41 +578,25 @@ class Cpurchase extends CI_Controller {
     
     
     public function purchase_delete_the_payment(){
-        $CI = & get_instance();
-        $CI->load->model('Purchases');
+      
         $payment_id = $this->input->post('payment_id');
         $bal = $this->input->post('bal');
         $paid_amt = $this->input->post('paid_amt');
         // Call the delete_pay_info method with sanitized input values
-        $payinfo = $CI->Purchases->purchase_delete_pay_info($payment_id, $bal, $paid_amt);
+        $payinfo = $this->Purchases->purchase_delete_pay_info($payment_id, $bal, $paid_amt);
         // Output JSON response
         $this->output->set_content_type('application/json');
         echo json_encode($payinfo);
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    public function payment_history_purchase(){
-    $CI = & get_instance();
-
-    $CI->auth->check_admin_auth();
-
-    $CI->load->model('Purchases');
-     $CI->load->model('Invoices');
+     public function payment_history_purchase(){
+   
     $payment_id=$this->input->post('payment_id');
      $customer_id=$this->input->post('supplier_id_payment');
           $current_in_id=$this->input->post('current_in_id');
-$overall_payment = $CI->Purchases->get_cust_payment_overall_info($customer_id);
-  $get_cust_payment = $CI->Purchases->get_cust_payment_info($customer_id,$current_in_id);
+$overall_payment = $this->Purchases->get_cust_payment_overall_info($customer_id);
+  $get_cust_payment = $this->Purchases->get_cust_payment_info($customer_id,$current_in_id);
  // print_r($get_cust_payment);
-    $payment_get = $CI->Invoices->get_payment_info($payment_id);
+    $payment_get = $this->Invoices->get_payment_info($payment_id);
 
     $amt_paid = $this->db->select('sum(amt_paid) as amt_paid')->from('payment')->where('payment_id',$payment_id)->get()->row()->amt_paid;
   // echo $this->db->last_query();
@@ -614,36 +611,29 @@ $overall_payment = $CI->Purchases->get_cust_payment_overall_info($customer_id);
 echo json_encode($data);//die();
 
 }
+
+//To Make the Payment for Service Provider - Surya
       public function bulk_payment_ser_pro(){
-        $CI = & get_instance();
-
-        $CI->auth->check_admin_auth();
-
-        $CI->load->model('Purchases');
+        
         $payment_id=$this->input->post('payment_id');
- $payment = $CI->Purchases->bulk_payment_ser_provider_unique($payment_unique);
-        $payment = $CI->Purchases->bulk_payment_ser_provider();
+ $payment = $this->Purchases->bulk_payment_ser_provider_unique($payment_unique);
+        $payment = $this->Purchases->bulk_payment_ser_provider();
       
      echo json_encode($payment);
 
   }
  public function payment_history_purchase_serv_provider(){
-    $CI = & get_instance();
-
-    $CI->auth->check_admin_auth();
-
-    $CI->load->model('Purchases');
-     $CI->load->model('Invoices');
+    
     $payment_id=$this->input->post('payment_id');
      $customer_id=$this->input->post('supplier_id_payment');
               $current_in_id=$this->input->post('current_in_id');
-$overall_payment = $CI->Purchases->get_cust_payment_overall_info_ser_pro($customer_id);
-  $get_cust_payment = $CI->Purchases->get_cust_payment_info_ser_provider($customer_id,$current_in_id);
- // print_r($get_cust_payment);
-    $payment_get = $CI->Invoices->get_payment_info($payment_id);
+$overall_payment = $this->Purchases->get_cust_payment_overall_info_ser_pro($customer_id);
+  $get_cust_payment =$this->Purchases->get_cust_payment_info_ser_provider($customer_id,$current_in_id);
+
+    $payment_get = $this->Invoices->get_payment_info($payment_id);
 
     $amt_paid = $this->db->select('sum(amt_paid) as amt_paid')->from('payment')->where('payment_id',$payment_id)->get()->row()->amt_paid;
-  // echo $this->db->last_query();
+
   
     $data=array(
         'overall'  => $overall_payment,
@@ -1004,7 +994,7 @@ $CI = & get_instance();
        $setting_detail = $this->Web_settings->retrieve_setting_editdata();
        $currency_details = $this->Web_settings->retrieve_setting_editdata(); 
        $curn_info_default = $this->db->select('*')->from('currency_tbl')->where('icon',$currency_details[0]['currency'])->get()->result_array();
-        $all_product_list = $this->Products->get_all_products();
+        $all_product_list = $this->Products->get_all_products(decodeBase64UrlParameter($_GET['id']));
         $payment_type_dropdown = $this->Invoices->payment_type();;
       $payment_terms_dropdown = $this->Suppliers->payment_terms_dropdown();
      //  $sale_costpersqft_per = $this->Invoices->sales_cost_permission();
@@ -1067,12 +1057,28 @@ $CI = & get_instance();
     }
 
 
-    //Manage purchase
-public function serviceprovider_update_form($serviceprovider_id) {
-        $CI = & get_instance();
-        $CI->auth->check_admin_auth();
-        $CI->load->library('lpurchase');
-        $content = $CI->lpurchase->servprovider_edit_data($serviceprovider_id);
+    //MaService Provider Passing Data to Edit Page  - Surya
+public function serviceprovider_update_form() {
+   $purchase_detail = $this->Purchases->retrieve_supplier_data(decodeBase64UrlParameter($_GET['id']));
+   $all_product_list = $this->Products->get_all_products(decodeBase64UrlParameter($_GET['id']));
+   $setting_detail = $this->Web_settings->retrieve_setting_editdata();
+   $currency_details = $this->Web_settings->retrieve_setting_editdata();
+$curn_info_default = $this->db->select('*')->from('currency_tbl')->where('icon',$currency_details[0]['currency'])->get()->result_array();
+ $info_service= $this->Purchases->service_provider($_GET['invoice_id'],decodeBase64UrlParameter($_GET['id']));
+        $tax = $this->Purchases->expense_tax(decodeBase64UrlParameter($_GET['id']));
+ $data = array(
+       
+        'curn_info_default' =>$curn_info_default[0]['currency_name'],
+        'currency' => $currency_details[0]['currency'],
+        'product_list'  => $all_product_list,
+       'supplier_info'   => $purchase_detail,
+        'info_service' => $info_service,
+         'expense_tax' => $tax,
+        'setting_detail' => $setting_detail
+
+ );
+ 
+    $content = $this->load->view('purchase/edit_serviceprovider_form', $data, true);
         $this->template->full_admin_html_view($content);
     }
      public function manage_purchase_dummmy() {
