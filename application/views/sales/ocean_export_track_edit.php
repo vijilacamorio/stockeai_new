@@ -449,7 +449,7 @@
                         <input type="hidden" name="admin_company_id" id="admin_company_id" value="<?php echo $_GET['id']; ?>">
                         <label for="example-text-input" class="col-sm-0 col-form-label"></label>
                         <div class="col-sm-12 text-center">
-                            <input type="submit" id="update_oceantrack" class="btnclr btn btn-large" name="update_oceantrack" value="Submit" tabindex="7" />
+                            <input type="submit" id="update_oceantrack" class="btnclr btn btn-large" name="update_oceantrack" value="Update" tabindex="7" />
                             <a href="<?php echo base_url('sales/oceanExportTracking?id='.$_GET['id']); ?>" class="btn btn-info">Cancel</a>
                         </div>
                     </div>

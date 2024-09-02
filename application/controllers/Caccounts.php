@@ -195,41 +195,22 @@ if ($this->db->field_exists($txd, 'quotation_taxinfo')) {
 
 
 
-    /*new tax setting satyam*/
-     public function add_taxes()
+    // Add Taxes - Madhu
+    public function add_taxes()
     {
+        $this->auth->check_admin_auth();
 
-        $CI = & get_instance();
-
-
-        $CI->load->model('Web_settings');
-
-        $setting_detail = $CI->Web_settings->retrieve_setting_editdata();
-
-
-
-         $data=array(
-            
+        $adminId = $this->input->get('id');
+        $admin_comp_id = decodeBase64UrlParameter($adminId);
+        $setting_detail = $this->Web_settings->retrieve_setting_editdata();
+        $data=array(
             'title'=>display('add_tax'),
             'setting_detail' => $setting_detail
         );
-        
-    //   print_r($setting_detail);
 
-        $content = $this->parser->parse('taxes/add_tax',$data,true);
+        $content = $this->load->view('taxes/add_tax',$data,true);
         $this->template->full_admin_html_view($content);   
     }
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -412,62 +393,66 @@ if ($this->db->field_exists($txd, 'quotation_taxinfo')) {
 
     #==============TAX Entry==============#
     public function tax_entry()
-    {
-        $data=array('title'=>display('accounts_tax_form'));
+    {  
+       $admin_comp_id = decodeBase64UrlParameter($this->input->post('admin_company_id'));
+       $this->form_validation->set_rules('enter_tax', 'Tax Name', 'required|numeric');
+       $this->form_validation->set_rules('state', 'State', 'required');
+       $this->form_validation->set_rules('tax_agency', 'Tax Agency', 'required');
+       $this->form_validation->set_rules('account', 'Account', 'required');
+       $this->form_validation->set_rules('show_taxonreturn', 'Tax on Return', 'required');
+       $this->form_validation->set_rules('status_type', 'Status Type', 'required');
+       $this->form_validation->set_error_delimiters('', '<br/>');
+        $response = array();
+        if ($this->form_validation->run() == FALSE) {
+            $response['status'] = 'failure';
+            $response['msg']    = validation_errors();
+        } else {
+            $data = array(
+                'tax_id' => $this->auth->generator(10),
+                'tax' => $this->input->post('enter_tax',TRUE),
+                'description' => $this->input->post('description',TRUE),
+                'state' => $this->input->post('state',TRUE),
+                'tax_agency' => $this->input->post('tax_agency',TRUE),
+                'account' => $this->input->post('account',TRUE),
+                'show_taxonreturn' => $this->input->post('show_taxonreturn',TRUE),
+                'status_type' => $this->input->post('status_type',TRUE),
+                'created_by' => $admin_comp_id,
+                'modified_admin' => $this->session->userdata('unique_id'),
+                'status' => 1
+            );
 
-          $tax['tax_id'] = $this->auth->generator(10);
-          $tax['tax'] = $this->input->post('enter_tax',TRUE);
-          $tax['description'] =$this->input->post('description',TRUE);
-          $tax['state'] =$this->input->post('state',TRUE);
-          $tax['tax_agency'] =$this->input->post('tax_agency',TRUE);
-          $tax['account'] =$this->input->post('account',TRUE);
-          $tax['show_taxonreturn'] =$this->input->post('show_taxonreturn',TRUE);
-          $tax['status_type'] =$this->input->post('status_type',TRUE);
+            $result = $this->Accounts->tax_entry('tax_information', $data);
 
+            if ($result) {
+                $response['status'] = 'success';
+                $response['msg']    = 'Tax information has been added successfully.';
+            } else {
+                $response['status'] = 'failure';
+                $response['msg']    = 'Failed to add tax information';
+            }
+       }
 
-
-          $tax['created_by'] = $this->session->userdata('user_id');
-
-          $tax['status'] = 1;
-
-        $result = $this->Accounts->tax_entry($tax);
-
-        redirect('Caccounts/manage_tax');
-
-        // if ($result == true) {
-        //    $this->session->set_userdata(array('message'=>display('successfully_inserted')));
-        //    redirect('Caccounts/manage_tax');
-        // }else{
-        //     $this->session->set_userdata(array('error_message'=>display('already_exists')));
-        //      redirect('Caccounts/manage_tax');
-        // }
+       echo json_encode($response);
     }
-    #==============Manage TAX==============#
-      public function manage_tax()
-    {
-        $CI = & get_instance();
-        $CI->load->model('Web_settings');
 
-
-
+    #==============Manage TAX - Madhu==============#
+    public function manage_tax()
+    { 
+       $this->auth->check_admin_auth();
        $tax_list = $this->db->select('*')->from('tax_information')->where('created_by', $this->session->userdata('user_id'))->get()->result();
        $company_info = $this->db->select('*')->from('company_information')->where('create_by', $this->session->userdata('user_id'))->get()->result();
        $gettax_info     = $this->Accounts->gettax_info(); 
-       $setting_detail = $CI->Web_settings->retrieve_setting_editdata();
-
+       $setting_detail = $this->Web_settings->retrieve_setting_editdata();
 
         $data=array(
-                'title'=>display('manage_tax'),
-                'tax_list'=>$tax_list,
-                'company_info'=>$company_info,
-                 'gettax_info'=>$gettax_info,  
-                 'setting_detail' => $setting_detail
-
-            );
-       
-
+            'title'=>display('manage_tax'),
+            'tax_list'=>$tax_list,
+            'company_info'=>$company_info,
+            'gettax_info'=>$gettax_info,  
+            'setting_detail' => $setting_detail
+        );
  
-        $content = $this->parser->parse('accounts/manage_tax',$data,true);
+        $content = $this->load->view('taxes/manage_tax',$data,true);
         $this->template->full_admin_html_view($content);   
         
     }
@@ -515,88 +500,86 @@ if ($this->db->field_exists($txd, 'quotation_taxinfo')) {
 
 
 
-    #==============TAX Edit==============#
-    public function tax_edit($tax_id)
-    {
-        
-                $CI = & get_instance();
+    #==============TAX Edit - Madhu==============#
+    public function tax_edit()
+    {  
+        $admin_id = decodeBase64UrlParameter($_GET['id']);
+        $tax_id = $this->input->get('tax_id');
+        $this->auth->check_admin_auth();
 
-        $CI->load->model('Web_settings');
+        $edittaxdata = $this->Accounts->getTaxsingledata($admin_id, $tax_id); 
+        $data = array(
+            'page_title' => 'Edit Tax',
+            'getTaxdata' => $edittaxdata
+        );
 
-        $setting_detail = $CI->Web_settings->retrieve_setting_editdata();
-        
-        $tax_info = $this->db->select('*')->from('tax_information')->where('tax_id',$tax_id)->where('created_by', $this->session->userdata('user_id'))->get()->result_array();
-
-
-         $data=array(
-                'title'=>display('accounts_tax_edit'),
-                'tax_id'=>$tax_info[0]['tax_id'],
-                'tax'=>$tax_info[0]['tax'],
-                 'description'=>$tax_info[0]['description'],
-                 'tax_agency'=>$tax_info[0]['tax_agency'],
-                 'state'=>$tax_info[0]['state'],
-                 'account'=>$tax_info[0]['account'],
-                 'show_taxonreturn'=>$tax_info[0]['show_taxonreturn'],
-                 'status_type'=>$tax_info[0]['status_type'],
-                 'setting_detail' => $setting_detail
-
-            );
-            
-        
-        $content = $this->parser->parse('accounts/tax_edit',$data,true);
+        $content = $this->load->view('taxes/tax_edit',$data,true);
         $this->template->full_admin_html_view($content);   
         
     }
-    #==============TAX Update==============#
-    public function update_tax($id)
+    #==============TAX Update - Madhu ==============#
+    public function updatetaxentry()
     {
-         $CI = & get_instance();
-       
-    $CI->load->model('Web_settings');
-        $data=array('title'=>display('accounts_tax_edit'));
-        $tax['tax'] = $this->input->post('enter_tax',TRUE);
-        $tax['description'] = $this->input->post('description',TRUE);
-         $setting_detail = $CI->Web_settings->retrieve_setting_editdata();
-        $tax['state'] = $this->input->post('state',TRUE);
-        $tax['tax_agency'] = $this->input->post('tax_agency',TRUE);
-        $tax['account'] = $this->input->post('account',TRUE);
-        $tax['show_taxonreturn'] = $this->input->post('show_taxonreturn',TRUE);
-        $tax['status_type'] = $this->input->post('status_type',TRUE);
-
-        $result = $this->Accounts->update_tax_data($tax,$id);
-        if ($result == true) {
-           $this->session->set_userdata(array('message'=>display('successfully_updated')));
-        }
-        $tax_list = $this->db->select('*')
-                    ->from('tax_information')
-                    ->where('created_by', $this->session->userdata('user_id'))
-                    ->get()
-                    ->result();
-
-        $data=array(
-                'title'=> display('tax_edit'),
-                'tax_list'=>$tax_list,
-                 'setting_detail' => $setting_detail
+       $admin_comp_id = decodeBase64UrlParameter($this->input->post('admin_company_id'));
+       $this->form_validation->set_rules('enter_tax', 'Tax Name', 'required|numeric');
+       $this->form_validation->set_rules('state', 'State', 'required');
+       $this->form_validation->set_rules('tax_agency', 'Tax Agency', 'required');
+       $this->form_validation->set_rules('account', 'Account', 'required');
+       $this->form_validation->set_rules('show_taxonreturn', 'Tax on Return', 'required');
+       $this->form_validation->set_rules('status_type', 'Status Type', 'required');
+       $this->form_validation->set_error_delimiters('', '<br/>');
+        $response = array();
+        if ($this->form_validation->run() == FALSE) {
+            $response['status'] = 'failure';
+            $response['msg']    = validation_errors();
+        } else {
+            $taxid = $this->input->post('taxId',TRUE);
+            $data = array(
+                'tax_id' => $this->auth->generator(10),
+                'tax' => $this->input->post('enter_tax',TRUE),
+                'description' => $this->input->post('description',TRUE),
+                'state' => $this->input->post('state',TRUE),
+                'tax_agency' => $this->input->post('tax_agency',TRUE),
+                'account' => $this->input->post('account',TRUE),
+                'show_taxonreturn' => $this->input->post('show_taxonreturn',TRUE),
+                'status_type' => $this->input->post('status_type',TRUE),
+                'created_by' => $admin_comp_id,
+                'modified_admin' => $this->session->userdata('unique_id'),
+                'status' => 1
             );
-    //   print_r($data);
 
-        $content = $this->parser->parse('accounts/manage_tax',$data,true);
-        $this->template->full_admin_html_view($content);   
-        
+            $result = $this->Accounts->updatetaxdata($taxid, $data, 'tax_information');
+
+            if ($result) {
+                $response['status'] = 'success';
+                $response['msg']    = 'Tax information has been updated successfully.';
+            } else {
+                $response['status'] = 'failure';
+                $response['msg']    = 'Failed to add tax information';
+            }
+       }
+
+       echo json_encode($response);
     }
 
-    #==============TAX Update==============#
-    public function tax_delete($id)
+    #==============TAX Update - Madhu ==============#
+    public function taxdelete()
     {
-        $tax['tax'] = $this->input->post('enter_tax',TRUE);
-        
-        $result = $this->db->delete('tax_information', array('tax_id' => $id)); 
-       // print_r( $result);
-
-        if ($result == true) {
-           $this->session->set_userdata(array('message'=>display('successfully_delete')));
+        $taxid = $this->input->post('id');
+        $data = array('is_deleted' => 1);
+        $result = $this->Accounts->updatetaxdata($taxid, $data, 'tax_information');
+        if ($result) {
+            $response = array(
+                'status' => 'success',
+                'msg'    => 'Tax information has been deleted successfully!'
+            );
+        } else {
+            $response = array(
+                'status' => 'failure',
+                'msg'    => 'Sorry !! Unable to delete the tax information. Please try again!'
+            );
         }
-        redirect('Caccounts/manage_tax');
+        echo json_encode($response);
     }
 
     #==============Closing reports==========#
@@ -894,4 +877,55 @@ if ($this->db->field_exists($txd, 'quotation_taxinfo')) {
         $content = $this->parser->parse('accounts/invoice_wise_tax_report',$data,true);
         $this->template->full_admin_html_view($content);      
     }
+
+    // Taxes Index Page - Madhu
+public function getTaxesData() 
+{   
+    $this->auth->check_admin_auth();
+    $encodedId     = isset($_GET["id"]) ? $_GET["id"] : null;
+    $decodedId     = decodeBase64UrlParameter($encodedId);
+    $limit         = $this->input->post("length");
+    $start         = $this->input->post("start");
+    $search        = $this->input->post("search")["value"];
+    $orderField    = $this->input->post("columns")[$this->input->post("order")[0]["column"]]["data"];
+    $orderDirection = $this->input->post("order")[0]["dir"];
+    $date           = $this->input->post("date");
+    $items          = $this->Accounts->getPaginatedTaxes($limit,$start,$orderField,$orderDirection,$search,$decodedId,$date);
+    $totalItems     = $this->Accounts->getTotalTaxes($search, $decodedId, $date);
+    $data          = [];
+    $i             = $start + 1;
+    $edit          = "";
+    $delete        = "";
+    foreach ($items as $item) {
+        $edit =
+        '<a href="' . base_url("Caccounts/tax_edit?id=" . $encodedId . "&tax_id=" . $item["id"]) .
+            '" class="btnclr btn btn-sm" style="background-color:#424f5c; margin-right: 5px;"><i class="fa fa-pencil" aria-hidden="true"></i></a>';
+
+        $delete = '<a onClick=deleteTaxdata('.$item["id"].') class="btnclr btn btn-sm" style="background-color:#424f5c; margin-right: 5px;"><i class="fa fa-trash" aria-hidden="true"></i></a>';
+
+        $row = [
+            'id'                  => $i,
+            "tax_id"              => $item["tax_id"],
+            "tax"                 => $item["tax"],
+            "description"         => $item["description"],
+            "tax_agency"          => $item["tax_agency"],
+            "account"             => $item["account"],
+            "show_taxonreturn"    => $item["show_taxonreturn"],
+            "status_type"         => $item["status_type"],
+            'created_date'        => date('Y-m-d',strtotime($item['created_date'])),
+            "action"              => $edit . $delete,
+        ];
+        $data[] = $row;
+        $i++;
+    }
+    $response = [
+        "draw"            => $this->input->post("draw"),
+        "recordsTotal"    => $totalItems,
+        "recordsFiltered" => $totalItems,
+        "data"            => $data,
+    ];
+    echo json_encode($response);
+}
+
+
 }

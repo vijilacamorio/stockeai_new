@@ -185,7 +185,7 @@ tfoot tr{
                                <?php /* <a href="#" class="client-add-btn btn  btnclr " aria-hidden="true" data-toggle="modal" data-target="#payment_modal">Payment History</a> */ ?>
                             </div> 
                             <div class="Column" style="float: right;">
-                                <a   href="<?php echo base_url('sales/roadTransport?id='.$_GET['id']); ?>" class="btnclr btn  m-b-5 m-r-2"><i class="ti-align-justify"> </i> <?php echo "Manage Trucking" ?> </a>
+                                <a   href="<?php echo base_url('sales/roadTransport?id='.$_GET['id']); ?>" class="btnclr btn  m-b-5 m-r-2"><i class="ti-align-justify"> </i> <?php echo "Manage Road Transports" ?> </a>
 
 
                             </div>    
@@ -250,7 +250,7 @@ tfoot tr{
                                 </label>
                                 <div class="col-sm-8">
                                     <?php //print_r($get_supplier); ?>
-                                    <select name="shipment_company" id="shipment_company" class="form-control " required=""  style="border:2px solid #d7d4d6;"  tabindex="1"> 
+                                    <select name="supplier_id" id="supplier_id" class="form-control " required=""  style="border:2px solid #d7d4d6;"  tabindex="1"> 
                                         <?php 
                                         foreach($get_supplier as $supplier_data) { 
                                             $select_supp    = $purchase_info[0]['shipment_company'] ==$supplier_data['supplier_id'] ? 'selected' : '';
@@ -440,7 +440,7 @@ tfoot tr{
                                        </td>
 
                                        <td class="text-right">
-                                        <select name="pro_no[]" id="invoice_no" class="form-control" required="" tabindex="1">
+                                        <select name="pro_no[]" id="invoice_no_<?php echo $cnt; ?>" class="form-control" required="" tabindex="1">
                                         
                                            <?php foreach($invoice as $inv){ 
                                                 $selec_pre = $pf['pro_no_reference'] ==$inv['commercial_invoice_number'] ? 'selected' : ''; 
@@ -1238,7 +1238,7 @@ $this->load->view('include/bootstrap_model', $modaldata);
             delivery_to: {
                required: true,
             },
-            shipment_company: {
+            supplier_id: {
                required: true,
             },
             delivery_date: {
@@ -1258,7 +1258,7 @@ $this->load->view('include/bootstrap_model', $modaldata);
             bill_to: "Please choose a customer from the list",
             invoice_date: "Please choose the date for the invoice",
             delivery_to: "Please choose a delivery to",
-            shipment_company: "Please choose a shipping company",
+            supplier_id: "Please choose a shipping company",
             delivery_date: "Please choose a delivery date",
             delivery_time_from: "delivery from time",
             delivery_time_to: "delivery to time",

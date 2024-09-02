@@ -44,7 +44,7 @@ class Sales extends CI_Controller {
                 $button .='<a href="'.base_url().'sales/oceanExportTrackingEdit/'.$record->id.'?id='.$encodedId.'" class="btnclr btn btn-xs"  data-placement="left" title="'. display('update').'"><i class="fa fa-edit"></i></a> ';
            // }
           // if($this->permission1->method('manage_supplier','delete')->access()){
-                 $button .='<a href="#" onclick="deleteOceanExpTrac('.$record->id.','.$decodedId.')" class="btn btn-danger btn-xs" onclick="'.$jsaction.'" ><i class="fa fa-trash"></i></a>';
+                 $button .='<a href="#" onclick="deleteOceanExpTrac('.$record->id.','.$decodedId.')" class="btn btnclr btn-xs" onclick="'.$jsaction.'" ><i class="fa fa-trash"></i></a>';
           // }
             $data[] = array( 
                 'sl'               	=> $sl,
@@ -365,7 +365,7 @@ public function getTruckingInvoice(){
         $button .= '<a class="btnclr btn btn-sm" href="' . base_url() . 'sales/trucking_details_data/' . $record->trucking_id. '?id='.$_GET['id'].'"><i class="fa fa-download" aria-hidden="true"></i></a>';
         //$button .= ' <a class="btnclr btn btn-sm get_truckingid" data-toggle="modal" data-target="#emailmodal" onclick="truckingmail(' . $record->trucking_id. ', \'sale_trucking\', \'trucking_id\')"><i class="fa fa-envelope" aria-hidden="true"></i></a>';
         $button .= ' <a class="btnclr btn btn-sm trucking-edit" href="' . base_url() . 'sales/UpdateRoadTransport/' . $record->trucking_id . '?id='.$_GET['id'].'"><i class="fa fa-pencil" aria-hidden="true"></i></a>';
-        $button .= ' <a class="btn btn-sm btn-danger" onclick="deleteRoadTrans('. $record->id.','.$decodedId.')" href="#"><i class="fa fa-trash-o" aria-hidden="true"></i></a>';
+        $button .= ' <a class="btn btn-sm btnclr" onclick="deleteRoadTrans('. $record->id.','.$decodedId.')" href="#"><i class="fa fa-trash-o" aria-hidden="true"></i></a>';
     
 
         $data[] = array( 
@@ -376,7 +376,7 @@ public function getTruckingInvoice(){
              'trucking_id'      => html_escape($record->trucking_id),
             'container_pickup_date'   	=> html_escape($record->container_pickup_date),
             'delivery_date'         => html_escape($record->delivery_date),
-            'shipment_company'      => html_escape($record->shipment_company),
+            'shipment_company'      => html_escape($record->supplier_name),
             'delivery_time_from'    => html_escape($record->delivery_time_from),
             'delivery_time_to'     	=> html_escape($record->delivery_time_to),
             'truck_no'              => html_escape($record->truck_no),
@@ -526,7 +526,7 @@ public function createRoadTrans(){
             'invoice_no'            => $this->input->post('invoice_no',TRUE),
             'invoice_date'          => $this->input->post('invoice_date',TRUE),
             'bill_to'               => $this->input->post('bill_to',TRUE),
-            'shipment_company'      => $this->input->post('shipment_company',TRUE),
+            'shipment_company'      => $this->input->post('supplier_id',TRUE),
             'container_pickup_date' => $this->input->post('container_pick_up_date',TRUE),
             'delivery_date'         => $this->input->post('delivery_date',TRUE),
             'total_amt'             => $this->input->post('total',TRUE),

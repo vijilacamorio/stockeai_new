@@ -102,7 +102,7 @@
       </div>
    </div>
    <section class="content">
-     
+   <div class ="error_display"></div>
       <!-- Purchase report -->
 		<div class="row">
 			<div class="col-sm-12">

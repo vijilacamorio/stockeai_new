@@ -1,403 +1,322 @@
-
-
-<style>
-     .logo-9 i{
-    font-size:80px;
-    position:absolute;
-    z-index:0;
-    text-align:center;
-    width:100%;
-    left:0;
-    top:-10px;
-    color:#34495e;
-    -webkit-animation:ring 2s ease infinite;
-    animation:ring 2s ease infinite;
-}
-.logo-9 h1{
-    font-family: 'Lora', serif;
-    font-weight:600;
-    text-transform:uppercase;
-    font-size:40px;
-    position:relative;
-    z-index:1;
-    color:#e74c3c;
-    text-shadow: 3px 3px 0 #fff, -3px -3px 0 #fff, 3px -3px 0 #fff, -3px 3px 0 #fff;
-}
-   
-   
-  
-   .logo-9{
-    position:relative;
-} 
-   
-   /*//side*/
-   
-.bar {
-  float: left;
-  width: 25px;
-  height: 3px;
-  border-radius: 4px;
-  background-color: #4b9cdb;
-}
-
-
-.load-10 .bar {
-  animation: loadingJ 2s cubic-bezier(0.17, 0.37, 0.43, 0.67) infinite;
-}
-
-
-@keyframes loadingJ {
-  0%,
-  100% {
-    transform: translate(0, 0);
-  }
-
-  50% {
-    transform: translate(80px, 0);
-    background-color: #f5634a;
-    width: 180px;
-  }
-
-</style>
-
- 
-
-<!-- Cheaque Manager Start -->
-
+<script type="text/javascript" src="<?php echo base_url(); ?>assets/js/jquery.min.js"></script>
+<script type="text/javascript" src="<?php echo base_url(); ?>assets/js/moment.min.js"></script>
+<script type="text/javascript" src="<?php echo base_url(); ?>assets/js/daterangepicker.min.js"></script>
+<link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/css/daterangepicker.css" />
 <div class="content-wrapper">
-
-	<section class="content-header">
-
-	    <div class="header-icon">
-
-	   <figure class="one">
-               <img src="<?php echo base_url()  ?>asset/images/road.png"  class="headshotphoto" style="height:50px;" />      </div>
-   
- 
-	     
-	          <div class="header-title">
+    <section class="content-header">
+       <div class="header-icon">
+          <figure class="one">
+          <img src="<?php echo base_url() ;?>asset/images/tax.png" class="headshotphoto" style="height:50px;" />
+       </div>
+       <div class="header-title">
           <div class="logo-holder logo-9">
-	        <h1><?php echo display('manage_tax') ?></h1>
-       </div>
-	     
-	     
-	     
-	     
-	        <small><?php echo display('manage_tax') ?></small>
-
-	        <ol class="breadcrumb">
-
-	            <li><a href="#"><i class="pe-7s-home"></i> <?php echo display('home') ?></a></li>
-
-	            <li><a href="#"><?php echo display('accounts') ?></a></li>
-
-	            <li class="active"><?php echo display('manage_tax') ?></li>
-
- <div class="load-wrapp">
-       <div class="load-10">
-         <div class="bar"></div>
-       </div>
-       </div>
-	           </ol>
-
-	    </div>
-
-	</section>
-
-
-
-	<section class="content">
-
-
-
-		<!-- Alert Message -->
-
-	    <?php
-
-	        $message = $this->session->userdata('message');
-
-	        if (isset($message)) {
-
-	    ?>
-
-	    <div class="alert alert-info alert-dismissable">
-
-	        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-
-	        <?php echo $message ?>                    
-
-	    </div>
-
-	    <?php 
-
-	        $this->session->unset_userdata('message');
-
-	        }
-
-	        $error_message = $this->session->userdata('error_message');
-
-	        if (isset($error_message)) {
-
-	    ?>
-
-	    <div class="alert alert-danger alert-dismissable">
-
-	        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-
-	        <?php echo $error_message ?>                    
-
-	    </div>
-
-	    <?php 
-
-	        $this->session->unset_userdata('error_message');
-
-	        }
-
-	    ?>
-
-
-
-
-
-        <div class="row">
-
-            <div class="col-sm-12">
-
-                <div class="column">
-
-           <?php if($this->permission1->method('add_tax','create')->access()){ ?>
-
-                  <a href="<?php echo base_url('Caccounts/add_taxes')?>" class="btn btn-success m-b-5 m-r-2"><i class="ti-plus"> </i>  <?php echo display('add_tax')?> </a>
-
-
-                   <a href="<?php echo base_url('Caccounts/tax_list')?>" class="btn btn-success m-b-5 m-r-2"><i class="ti-plus"> </i>  Taxes List </a>
-
-              <?php }?>
-
-
-
+             <h1><?php echo display('manage_tax') ?></h1>
+          </div>
+          <small></small>
+          <ol class="breadcrumb" style="border: 3px solid #d7d4d6;">
+             <li><a href="#"><i class="pe-7s-home"></i> <?php echo display('home') ?></a></li>
+             <li><a href="#"><?php echo 'Taxes' ?></a></li>
+             <li class="active" style="color:orange;"><?php echo display('manage_tax') ?></li>
+             <div class="load-wrapp">
+                <div class="load-10">
+                   <div class="bar"></div>
                 </div>
-
+             </div>
+          </ol>
+       </div>
+    </section>
+    <section class="content">
+      <div class="panel panel-bd lobidrag">
+         <div class="panel-heading" style="height: 60px;border: 3px solid #D7D4D6;">
+            <div class="col-sm-12">
+             <div class="col-sm-6" style="display: flex; align-items: left; ">
+               <a href="<?php echo base_url('Caccounts/add_taxes?id=' . $_GET['id']); ?>" class="btnclr btn btn-default dropdown-toggle" style="height: fit-content;"><i class="far fa-file-alt"></i> <?php echo display('create'); ?> <?php echo display('taxes'); ?></a>
+               </div>
+               <div class="col-md-6 col-sm-6">
+                    <div class="search">
+                      <span class="fa fa-search"></span>
+                      <input class="dateSearch" placeholder="Search term" id="reportrange">
+                    </div>
+               </div>
+            </div>   
+         </div>
+         <div class="row">
+            <div class="col-sm-12">
+               <div class="panel panel-bd lobidrag">
+                <br>
+                <div class="error_display"></div>
+                <br>
+                  <div class="panel-body" style="border: 3px solid #D7D4D6;">
+                     <table class="table table-bordered" cellspacing="0" width="100%" id="tax_list">
+                        <thead>
+                           <tr class="btnclr">
+                              <th><?php echo 'S.No'; ?></th>
+                              <th><?php echo 'Tax ID'; ?></th>
+                              <th><?php echo 'Tax'; ?></th>
+                              <th><?php echo 'Description'; ?></th>
+                              <th><?php echo 'Tax Agency'; ?></th>
+                              <th><?php echo 'Account'; ?></th>
+                              <th><?php echo 'Show Tax On Return Line'; ?></th>
+                              <th><?php echo 'Type'; ?></th>
+                              <th><?php echo 'Date'; ?></th>
+                              <th><?php echo display('Action'); ?></th>
+                           </tr>
+                        </thead>
+                     </table>
+                  </div>
+               </div>     
             </div>
-
-        </div>
-
-
-
-		<!-- Manage TAX -->
-
-		<div class="row">
-
-		    <div class="col-sm-12">
-
-		        <div class="panel panel-bd lobidrag">
-
-		            <div class="panel-heading">
-
-		                <div class="panel-title">
-
-		                    <h4><?php echo display('manage_tax') ?> </h4>
-
-		                </div>
-
-		            </div>
-
-		            <div class="panel-body">
-
-		                <div class="table-responsive">
-
-		                    <table id="dataTableExample3" class="table table-bordered table-striped table-hover">
-
-			           			<thead>
-
-									<tr>
-
-										<th><?php echo display('sl') ?></th>
-
-										<th><?php echo display('tax') ?></th>
-
-										<th><?php echo display('action') ?></th>
-
-									</tr>
-
-								</thead>
-
-								<tbody>
-
-								<?php
-
-									if ($tax_list) {
-
-										$i=1;
-
-								foreach ($tax_list as $tax) {
-
-								?>
-
-									<tr>
-
-										<td><?php echo $i?></td>
-
-										<td><?php echo $tax->tax?> %</td>
-
-						                <td>
-
-						                    <center>
-
-						                    	 <?php if($this->permission1->method('manage_tax','update')->access()){ ?>
-
-					                            <a href="<?php echo base_url().'Caccounts/tax_edit/'.$tax->tax_id; ?>" class="btn btn-warning btn-sm" data-toggle="tooltip" data-placement="right" title="" data-original-title="<?php echo display('update') ?>"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
-
-					                        <?php }?>
-
-                   <?php if($this->permission1->method('manage_tax','delete')->access()){ ?>
-
-					                            <a href="<?php echo base_url().'Caccounts/tax_delete/'.$tax->tax_id; ?>" class="btn btn-danger btn-sm" data-toggle="tooltip" data-placement="right" title="" data-original-title="<?php echo display('delete') ?>"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
-
-					                            <?php }?>
-
-						                    </center>
-
-						                </td>
-
-									</tr>
-
-								<?php
-
-								$i++;
-
-									}
-
-								}else{
-
-								?>
-								<tr><td style="text-align:center;" colspan="9">No Records Found</td></tr>
-<?php   }  ?>
-								</tbody>
-
-		                    </table>
-
-		                </div>
-
-		            </div>
-
-		        </div>
-
-		    </div>
-
-		</div>
-		<script src="<?php echo base_url()?>assets/js/jquery.bootgrid.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.5/jspdf.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.0.0-alpha.1/jspdf.plugin.autotable.js"></script>
-<div id="myModal_colSwitch"  name="mytaxName"    class="modal_colSwitch" >
-   <div class="modal-content_colSwitch" style="width:25%;height:20%;">
-      <span class="close_colSwitch" style="margin-right:20px">&times;</span>
-      <div class="col-sm-1" ></div>
-      <div class="col-sm-3" >
-         <br>
-         <div class="form-group row"  > 
-            <br><input type="checkbox"  data-control-column="1"   class="1" value="1"/> &nbsp;<?php echo display('S.No') ?><br>
-            <!-- <br><input type="checkbox"  data-control-column="2" checked="checked"   class="2" value="2"/>&nbsp;<?php echo display('Tax');?><br> -->
-            <br><input type="checkbox"  data-control-column="3"     class="3 " value="3  "/>&nbsp;<?php  echo  display('Tax ID');?> <br>
-          
          </div>
-      </div>
-      <div class="col-sm-4" >
-         <br>
-         <div class="form-group row"  >
-         <br><input type="checkbox"  data-control-column="4"       class="4" value="4"/>&nbsp;<?php  echo  display('Description');?><br>
-         <!-- <br><input type="checkbox"  data-control-column="5" checked="checked"   class="5" value="5"/>&nbsp;<?php  echo  display('Tax Agency');?><br> -->
-            <br><input type="checkbox"  data-control-column="6"     class="6" value="6"/>&nbsp;<?php  echo  display('Account');?><br>
-
-           
-         </div>
-      </div>
-      <div class="col-sm-3"  >
-      <br>
-         <div class="form-group row"  >
-         <!-- <br><input type="checkbox"  data-control-column="7"  checked="checked"  class="7" value="7"/>&nbsp;<?php echo display('Show Tax on Return Line');?><br> -->
-         <!-- <br><input type="checkbox"  data-control-column="9"  checked="checked"   class="9" value="9"/>&nbsp;<?php echo display('Action');?><br> -->
-            <br><input type="checkbox"  data-control-column="8"     class="8" value="8"/>&nbsp;Type<br>
-            
-         </div>
-      </div>
-   </div>
+       </div>
+    </section>
 </div>
-</section>
-</div>
-<script type="text/javascript" src="<?php echo base_url()?>my-assets/js/profarma.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
 
-	</section>
-
-</div>
-<script>
-    $(document).ready(function() {
-       var localStorageName = "mytaxName"; // Set your desired localStorage name
-      $("input:checkbox").each(function() {
-          var columnValue = $(this).attr("value");
-          var columnSelector = ".table ." + columnValue;
-        //   var isChecked = localStorage.getItem(columnSelector) === "true";
-                    var isChecked = localStorage.getItem(localStorageName  + columnSelector) === "true";
-          // Check if the checkbox is checked or the stored state is true
-          if (isChecked || $(this).prop("checked")) {
-              $(columnSelector).show(); // Show the column
-          } else {
-              $(columnSelector).hide(); // Hide the column
-          }
-          $(this).prop("checked", isChecked);
-      });
-      // When a checkbox is clicked, update localStorage and toggle column visibility
-      $("input:checkbox").click(function() {
-          var columnValue = $(this).attr("value");
-          var columnSelector = ".table ." + columnValue; // Corrected class name construction
-          var isChecked = $(this).is(":checked");
-        //   localStorage.setItem(columnSelector, isChecked); // Store checkbox state in localStorage
-                    localStorage.setItem(localStorageName + columnSelector, isChecked); // Store checkbox state in localStorage
-          // Toggle column visibility based on the checkbox state
-          if (isChecked) {
-              $(columnSelector).show(); // Show the column
-          } else {
-              $(columnSelector).hide(); // Hide the column
-          }
-      });
-});
+<script type="text/javascript">
+var taxDataTable;
 $(document).ready(function() {
-            // Function to store the visibility state of rows in localStorage
-            function storeVisibilityState() {
-                var manageTaxDetails = {};
-                $("#ProfarmaInvList tr").each(function(index, element) {
-                    var row = $(element);
-                    var rowID = index;
-                    var isVisible = row.is(':visible');
-                    manageTaxDetails[rowID] = isVisible;
-                });
-                // Store the visibility states in localStorage
-                localStorage.setItem("manageTaxDetails", JSON.stringify(manageTaxDetails));
+$(".sidebar-mini").addClass('sidebar-collapse') ;
+    if ($.fn.DataTable.isDataTable('#tax_list')) {
+        $('#tax_list').DataTable().clear().destroy();
+    }
+    var csrfName = '<?php echo $this->security->get_csrf_token_name(); ?>';
+    var csrfHash = '<?php echo $this->security->get_csrf_hash(); ?>';
+    taxDataTable = $('#tax_list').DataTable({
+        "processing": true,
+        "serverSide": true,
+        "lengthMenu": [
+            [10, 25, 50, 100],
+            [10, 25, 50, 100]
+        ],
+        "ajax": {
+            "url": "<?php echo base_url('Caccounts/getTaxesData?id='); ?>" +
+                encodeURIComponent('<?php echo $_GET['id']; ?>'),
+            "type": "POST",
+            "data": function(d) {
+                d['<?php echo $this->security->get_csrf_token_name(); ?>'] =
+                    '<?php echo $this->security->get_csrf_hash(); ?>';
+                d.date = $('.dateSearch').val();
+            },
+            "dataSrc": function(json) {
+               csrfHash = json[
+                    '<?php echo $this->security->get_csrf_token_name(); ?>'];
+                return json.data;
             }
-            // Apply the stored visibility state on page load
-            function applyVisibilityState() {
-                var storedVisibilityStates = JSON.parse(localStorage.getItem("manageTaxDetails")) || {};
-                $("#ProfarmaInvList tr").each(function(index, element) {
-                    var row = $(element);
-                    var rowID = index;
-                    if (storedVisibilityStates.hasOwnProperty(rowID) && !storedVisibilityStates[rowID]) {
-                        row.hide();
+        },
+         "columns": [
+         { "data": "id" },
+         { "data": "tax_id" },
+         { "data": "tax" },
+         { "data": "description" },
+         { "data": "tax_agency" },
+         { "data": "account" },
+         { "data": "show_taxonreturn" },
+         { "data": "status_type" },
+         { "data": "created_date" },
+         { "data": "action" }
+         ],
+        "columnDefs": [{
+            "orderable": false,
+            "targets": [0, 9],
+            searchBuilder: {
+                defaultCondition: '='
+            },
+            "initComplete": function() {
+                this.api().columns().every(function() {
+                    var column = this;
+                    var select = $(
+                            '<select><option value=""></option></select>'
+                        )
+                        .appendTo($(column.footer()).empty())
+                        .on('change', function() {
+                            var val = $.fn.dataTable.util
+                                .escapeRegex(
+                                    $(this).val()
+                                );
+                            column.search(val ? '^' + val + '$' :
+                                '', true, false).draw();
+                        });
+                    column.data().unique().sort().each(function(d, j) {
+                        select.append('<option value="' + d +
+                            '">' + d + '</option>')
+                    });
+                });
+            },
+        }],
+        "pageLength": 10,
+        "colReorder": true,
+        "stateSave": true,
+        "stateSaveCallback": function(settings, data) {
+            localStorage.setItem('taxes', JSON.stringify(data));
+        },
+        "stateLoadCallback": function(settings) {
+            var savedState = localStorage.getItem('taxes');
+            return savedState ? JSON.parse(savedState) : null;
+        },
+        "dom": "<'row'<'col-sm-4'l><'col-sm-4 text-center'B><'col-sm-4'f>>" +
+            "<'row'<'col-sm-12'tr>>" + "<'row'<'col-sm-6'i><'col-sm-6'p>>",
+        "buttons": [{
+                "extend": "copy",
+                "className": "btn-sm",
+                "exportOptions": {
+                    "columns": ':visible'
+                }
+            },
+            {
+                "extend": "csv",
+                "title": "Report",
+                "className": "btn-sm",
+                "exportOptions": {
+                    "columns": ':visible'
+                }
+            },
+            {
+                "extend": "pdf",
+                "title": "Report",
+                "className": "btn-sm",
+                "exportOptions": {
+                    "columns": ':visible'
+                }
+            },
+            {
+                "extend": "print",
+                "className": "btn-sm",
+                "exportOptions": {
+                    "columns": ':visible'
+                },
+                "customize": function(win) {
+                    $(win.document.body)
+                        .css('font-size', '10pt')
+                        .prepend(
+                            '<div style="text-align:center;"><h3>Manage Taxes</h3></div>'
+                        )
+                        .append(
+                            '<div style="text-align:center;"><h4>amoriotech.com</h4></div>'
+                        );
+                    $(win.document.body).find('table')
+                        .addClass('compact')
+                        .css('font-size', 'inherit');
+                    var rows = $(win.document.body).find('table tbody tr');
+                    rows.each(function() {
+                        if ($(this).find('td').length === 0) {
+                            $(this).remove();
+                        }
+                    });
+                    $(win.document.body).find('div:last-child')
+                        .css('page-break-after', 'auto');
+                    $(win.document.body)
+                        .css('margin', '0')
+                        .css('padding', '0');
+                }
+            },
+            {
+               "extend": "colvis",
+               "className": "btn-sm"
+            }
+        ]
+    });
+    
+    $('.dateSearch').on('change', function() {
+        taxDataTable.ajax.reload();
+    });
+});
+
+
+// Delete Tax Data - Madhu
+function deleteTaxdata(id) 
+{
+    var csrfName = '<?php echo $this->security->get_csrf_token_name(); ?>';
+    var csrfHash = '<?php echo $this->security->get_csrf_hash(); ?>';
+
+    var succalert = '<div class="alert alert-success alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>';
+    
+    var failalert = '<div class="alert alert-danger alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>';
+    if (id !== "") {
+        var confirmDelete = confirm("Are you sure you want to delete this tax information?");
+    
+        if (confirmDelete) {
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "<?php echo base_url(); ?>Caccounts/taxdelete",
+                data: {[csrfName]: csrfHash, id: id},
+                success: function(response) {
+                    console.log(response, "response");
+                    if (response.status === 'success') {
+                        $('.error_display').html(succalert + response.msg + '</div>');
+                        window.setTimeout(function() {
+                            taxDataTable.ajax.reload(null, false);
+                            $('.error_display').html('');
+                        }, 2500);
                     } else {
-                        row.show();
+                        $('.error_display').html(failalert + response.msg + '</div>'); 
                     }
-                });
-            }
-            // Event listener for row clicks to toggle row visibility
-            $(".managetax_edit").on('click', function() {
-                var row = $(this);
-                // row.toggle();
-                storeVisibilityState(); // Store the updated visibility state
+                },
+                error: function() {
+                    $('.error_display').html(failalert + 'An unexpected error occurred. Please try again.' + '</div>');
+                }
             });
-            applyVisibilityState(); // Apply the stored visibility state on page load
-        });
+        }
+    }
+}
+
+
+// Date Picker - Madhu
+$(function() {
+    var start = moment().subtract(29, 'days');
+    var end = moment();
+
+    function cb(start, end) {
+        $('#reportrange span').html(start.format('YYYY-MM-DD') + ' - ' + end.format('YYYY-MM-DD'));
+    }
+
+    $('#reportrange').daterangepicker({
+        startDate: start,
+        endDate: end,
+        ranges: {
+           'Today': [moment(), moment()],
+           'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+           'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+           'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+           'This Month': [moment().startOf('month'), moment().endOf('month')],
+           'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+        },
+
+        locale: {
+            format: 'YYYY-MM-DD'
+        }
+    }, cb);
+
+    cb(start, end);
+});
+
 </script>
-<!-- Cheaque Manager End -->
+
+<style type="text/css">
+.search {
+position: relative;
+color: #aaa;
+font-size: 16px;
+}
+
+.search {display: inline-block;}
+
+.search input {
+  width: 260px;
+  height: 34px;
+
+  background: #fff;
+  border: 1px solid #fff;
+  border-radius: 5px;
+  box-shadow: 0 0 3px #ccc, 0 10px 15px #fff inset;
+  color: #000;
+}
+
+.search input { text-indent: 32px;}
+.search .fa-search { 
+  position: absolute;
+  top: 8px;
+  left: 10px;
+}
+
+.search .fa-search {left: auto; right: 10px;}
+</style>

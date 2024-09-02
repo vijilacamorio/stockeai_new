@@ -523,7 +523,7 @@ $(document).ready(function() {
 				foreach ($this->session->userdata('admin_data') as $admtest) {
 				   $split = explode('-', $admtest);
 				   if (trim($split[0]) == 'sale') { ?>
-					<li class="treeview  <?php echo ($this->uri->segment(1) == 'Cinvoice') ? 'active' : ''; ?>">
+					<li class="treeview  <?php echo ($this->uri->segment(1) == 'Cinvoice' || $this->uri->segment(1) == 'sales') ? 'active' : ''; ?>">
 						<a href="#">
 							<i class="fa fa-balance-scale"></i><span><?php echo display('invoice'); ?></span>
 							<span class="pull-right-container">
@@ -539,7 +539,7 @@ $(document).ready(function() {
 							<li class="treeview  <?php echo ($this->uri->segment(2) == 'oceanExportTracking') ? 'active' : ''; ?>">
 								<a href="<?php echo base_url(); ?>sales/oceanExportTracking?id=<?php echo $encode_com_id; ?>"><?php echo display('Ocean Export Tracking'); ?></a>
 							</li>
-							<li class="treeview  <?php echo ($this->uri->segment(2) == 'manage_trucking') ? 'active' : ''; ?>">
+							<li class="treeview  <?php echo ($this->uri->segment(2) == 'roadTransport') ? 'active' : ''; ?>">
 								<!-- <a href="<?php //echo base_url(); ?>sales/manage_trucking"><?php echo display('Road Transport'); ?></a> -->
 						
 								<a href="<?php echo base_url(); ?>sales/roadTransport?id=<?php echo $encode_com_id; ?>"><?php echo display('Road Transport'); ?></a>
@@ -631,7 +631,7 @@ $(document).ready(function() {
 				   if (trim($split[0]) == 'taxes') {
 					?>
 					<li class="treeview <?php echo ($this->uri->segment(1) == 'Caccounts') ? 'active' : ''; ?>">
-						<a href="<?php echo base_url(); ?>Caccounts/manage_tax">
+						<a href="<?php echo base_url(); ?>Caccounts/manage_tax?id=<?php echo $encode_com_id; ?>">
 							<i class="ti-bar-chart"></i><span><?php echo display('Taxes'); ?></span>
 						</a>
 					</li>
@@ -650,7 +650,7 @@ $(document).ready(function() {
 				   $split = explode('-', $admtest);
 				   if (trim($split[0]) == 'report') {
 					?>
-					<li class="treeview  <?php echo ($this->uri->segment(1) == 'accounts') ? 'active' : ''; ?>">
+					<li class="treeview  <?php echo ($this->uri->segment(1) == 'Creport') ? 'active' : ''; ?>">
 						<a href="#">
 							<i class="ti-book"></i><span><?php echo display('report'); ?></span>
 							<span class="pull-right-container">
@@ -658,7 +658,7 @@ $(document).ready(function() {
 							</span>
 						</a>
 						<ul class="treeview-menu">
-							<li class="treeview">
+							<li class="treeview ">
 								<a href="fa fa-asl-interpreting">
 									<i class="ti-user"></i><span><?php echo "Accounts" ?></span>
 								</a>
@@ -698,30 +698,30 @@ $(document).ready(function() {
 									</li>
 								</ul>
 							</li>
-							<li class="treeview">
+							<li class="treeview <?php echo ($this->uri->segment(2) == 'customerReport' || $this->uri->segment(2) == 'customerSalesReport' || $this->uri->segment(2) == 'customerTransaction') ? 'active' : ''; ?>">
 								<a href="fa fa-asl-interpreting">
 									<i class="ti-user"></i><span><?php echo "Customer" ?></span>
 								</a>
 								<ul class="treeview-menu">
-									<li class="treeview">
-										<a href="<?php echo base_url('Cinvoice/customer_info_report?id='.$encode_com_id) ?>"><?php echo 'Customer Information'; ?>
+									<li class="treeview  <?php echo ($this->uri->segment(2) == 'customerReport') ? 'active' : ''; ?>">
+										<a href="<?php echo base_url('Creport/customerReport?id='.$encode_com_id) ?>" <?php echo ($this->uri->segment(2) == 'customerReport') ? 'active' : ''; ?>><?php echo 'Customer Information'; ?>
 										</a>
 									</li>
-									<li class="treeview">
-										<a href="<?php echo base_url('Cinvoice/customer_report_data?id='.$encode_com_id) ?>"><?php echo 'Sales By Customer'; ?></a>
+									<li class="treeview  <?php echo ($this->uri->segment(2) == 'customerSalesReport') ? 'active' : ''; ?>">
+										<a href="<?php echo base_url('Creport/customerSalesReport?id='.$encode_com_id) ?>"><?php echo 'Sales By Customer'; ?></a>
 									</li>
-									<li class="treeview">
-										<a href="<?php echo base_url('Ccustomer/transaction_list?id='.$encode_com_id) ?>"><?php echo 'Transaction By Customer'; ?></a>
+									<li class="treeview  <?php echo ($this->uri->segment(2) == 'customerTransaction') ? 'active' : ''; ?>">
+										<a href="<?php echo base_url('Creport/customerTransaction?id='.$encode_com_id) ?>"><?php echo 'Transaction By Customer'; ?></a>
 									</li>
 								</ul>
 							</li>
-							<li class="treeview">
+							<li class="treeview <?php echo ($this->uri->segment(2) == 'vendorList') ? 'active' : ''; ?>">
 								<a href="fa fa-asl-interpreting">
 									<i class="ti-user"></i><span><?php echo "Vendor" ?></span>
 								</a>
 								<ul class="treeview-menu">
-									<li class="treeview">
-										<a href="<?php echo base_url('Csupplier/supplier_list') ?>"><?php echo 'Vendor Information'; ?>
+									<li class="treeview <?php echo ($this->uri->segment(2) == 'vendorList') ? 'active' : ''; ?>">
+										<a href="<?php echo base_url('Creport/vendorList?id='.$encode_com_id) ?>"><?php echo 'Vendor Information'; ?>
 										</a>
 									</li>
 									<li class="treeview">
@@ -1052,7 +1052,7 @@ $(document).ready(function() {
 				   if (trim($split[0]) == 'setting') {
 				?>
 					<li class="treeview  <?php echo ($this->uri->segment(2) == 'calender_view') ? 'active' : ''; ?>">
-						<a href="<?php echo base_url(); ?>Cweb_setting/calender_view">
+						<a href="<?php echo base_url(); ?>Cweb_setting/calender_view?id=<?php echo $encode_com_id; ?>">
 							<i class="ti-calendar"></i><span><?php echo 'Calendar'; ?></span>
 						</a>
 					</li>
@@ -1436,7 +1436,7 @@ $(document).ready(function() {
 					  if (trim($split[0]) == 'tax') {
 					  ?>
 					<li class="treeview <?php echo ($this->uri->segment(1) == 'Caccounts') ? 'active' : ''; ?>">
-						<a href="<?php echo base_url(); ?>Caccounts/manage_tax">
+						<a href="<?php echo base_url(); ?>Caccounts/manage_tax?id=<?php echo $encode_com_id; ?>">
 							<i class="ti-bar-chart"></i><span><?php echo  display('Taxes'); ?></span>
 						</a>
 					</li>

@@ -230,12 +230,13 @@
                               <i class="text-danger">*</i>
                               </label>
                               <div class="col-sm-7">
-                                 <select name="shipment_company" id="supplier_id" class="form-control " required="" style="border:2px solid #d7d4d6;"  tabindex="1">
-                                    <option value=""><?php echo display('select_one') ?></option>
-                                    {all_supplier}
-                                    <option value="{supplier_name}">{supplier_name}</option>
-                                    {/all_supplier}
-                                 </select>
+                                 <select name="supplier_id" id="supplier_id" class="form-control " required=""  style="border:2px solid #d7d4d6;"  tabindex="1"> 
+                                        <?php 
+                                        foreach($all_supplier as $supplier_data) { 
+                                            ?>
+                                        <option <?php echo $select_supp; ?> value="<?php echo $supplier_data['supplier_id']; ?>"><?php echo $supplier_data['supplier_name']; ?></option>
+                                        <?php } ?>
+                                    </select>
                               </div>
                               <?php //if($this->permission1->method('add_supplier','create')->access()){ ?>
                               <div class="col-sm-1 mobilewidth_view">
@@ -375,7 +376,7 @@
                            </thead>
                            <tbody id="addPurchaseItem_1">
                               <tr>
-                                 <td class="span3 supplier">
+                                 <td class="span3 supplier"> 
                                     <?php $date = date('Y-m-d'); ?>
                                     <input type="date" required tabindex="2" class="form-control " name="trucking_date[]" value="<?php echo $date; ?>" id="date"/>
                                  </td>
@@ -389,7 +390,7 @@
                                    <input type="text" name="product_rate[]" required="" style="width:100%;" class="productrate form-control mobile_inputview"  id="product_rate_1"  placeholder="0.00" value="" min="0" tabindex="7"/>
                                  </td>
                                  <td class="text-right">
-                                    <select name="pro_no[]" id="invoice_no_1" class="form-control" tabindex="1">
+                                    <select name="pro_no[]" id="invoice_no_1" class="form-control" tabindex="1" required="">
                                        <option value=""><?php echo display('select_one') ?></option>
                                        <?php foreach($invoice as $inv){ ?>
                                        <option value="<?php echo $inv['commercial_invoice_number'] ; ?>"><?php echo $inv['commercial_invoice_number'] ; ?></option>
@@ -1218,7 +1219,7 @@ var csrfHash = '<?php echo $this->security->get_csrf_hash(); ?>';
             delivery_to: {
                required: true,
             },
-            shipment_company: {
+            supplier_id: {
                required: true,
             },
             delivery_date: {
@@ -1238,7 +1239,7 @@ var csrfHash = '<?php echo $this->security->get_csrf_hash(); ?>';
             bill_to: "Please choose a customer from the list",
             invoice_date: "Please choose the date for the invoice",
             delivery_to: "Please choose a delivery to",
-            shipment_company: "Please choose a shipping company",
+            supplier_id: "Please choose a shipping company",
             delivery_date: "Please choose a delivery date",
             delivery_time_from: "delivery from time",
             delivery_time_to: "delivery to time",

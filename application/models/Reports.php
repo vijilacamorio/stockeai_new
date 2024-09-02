@@ -1371,44 +1371,44 @@ public function overall_admins() {
         return false;
  }
  public function sales_due(){
-  $this->db->select("sum(due_amount_usd) as totaldue");
+        $this->db->select("sum(due_amount_usd) as totaldue");
         $this->db->from('invoice');
         $this->db->where('sales_by',$this->session->userdata('user_id'));
- $query = $this->db->get();
- if ($query->num_rows() > 0) {
+        $query = $this->db->get();
+        if ($query->num_rows() > 0) {
          return $query->row()->totaldue;
         }
-       }
+    }
   public function exp_paid(){
-  $this->db->select("sum(amount_pay_usd) as totalpaid");
-        $this->db->from('product_purchase');
-        $this->db->where('create_by',$this->session->userdata('user_id'));
- $query = $this->db->get();
- if ($query->num_rows() > 0) {
-           return $query->row()->totalpaid;
-        }
-        return false;
+    $this->db->select("sum(amount_pay_usd) as totalpaid");
+    $this->db->from('product_purchase');
+    $this->db->where('create_by',$this->session->userdata('user_id'));
+    $query = $this->db->get();
+    if ($query->num_rows() > 0) {
+        return $query->row()->totalpaid;
+    }
+    return false;
  }
   public function today_ex_due(){
-       $today = date('Y-m-d');
-  $this->db->select("sum(due_amount_usd) as due_amount_usd");
-        $this->db->from('product_purchase');
-        $this->db->where('create_by',$this->session->userdata('user_id'));
-      $this->db->where('purchase_date',$today);
- $query = $this->db->get();
- if ($query->num_rows() > 0) {
-           return $query->row()->due_amount_usd;
-        }
-        return false;
+    $today = date('Y-m-d');
+    $this->db->select("sum(due_amount_usd) as due_amount_usd");
+    $this->db->from('product_purchase');
+    $this->db->where('create_by',$this->session->userdata('user_id'));
+    $this->db->where('purchase_date',$today);
+    $query = $this->db->get();
+    if ($query->num_rows() > 0) {
+        return $query->row()->due_amount_usd;
+    }
+    return false;
  }
   public function today_ex_paid(){
-       $today = date('Y-m-d');
-  $this->db->select("sum(amount_pay_usd) as amount_pay_usd");
+        $today = date('Y-m-d');
+        $this->db->select("sum(amount_pay_usd) as amount_pay_usd");
         $this->db->from('product_purchase');
         $this->db->where('create_by',$this->session->userdata('user_id'));
-      $this->db->where('purchase_date',$today);
- $query = $this->db->get();
- if ($query->num_rows() > 0) {
+        $this->db->where('purchase_date',$today);
+        $query = $this->db->get();
+        if ($query->num_rows() > 0) {
            return $query->row()->amount_pay_usd;
         }
         return false;
@@ -1429,4 +1429,238 @@ public function overall_admins() {
     (SELECT SUM(total_discount) FROM invoice_details a JOIN invoice b ON b.invoice_id = a.invoice_id WHERE a.invoice_id = '" . $invoice_id . "' AND 'create_by' = '".$this->session->userdata('user_id')."' AND b.customer_id = '" . $customer_id . "') as total_discount";
     return $sql;
     }
+
+    public function getAllCustSale($searchValue,$admin_id) { //for customer sale report - 28-08-2024 /Vijila
+        if($searchValue != ''){
+            $searchQuery = "(
+                a.commercial_invoice_number LIKE '%" . $searchValue . "%' OR
+                a.date LIKE '%" . $searchValue . "%' OR
+                a.gtotal LIKE '%" . $searchValue . "%' OR
+                b.customer_name LIKE '%" . $searchValue . "%' OR
+                a.payment_due_date LIKE '%" . $searchValue . "%' OR
+                a.paid_amount LIKE '%" . $searchValue . "%' OR
+                a.due_amount LIKE '%" . $searchValue . "%'
+            )";         
+        }
+        $this->db->select('a.id');
+        $this->db->from('invoice a');
+        $this->db->join('customer_information b' , 'a.customer_id=b.customer_id','left');
+        $this->db->where('a.sales_by',$admin_id);
+        $this->db->where('a.is_deleted',0);
+        $this->db->where('b.create_by ',$admin_id);
+        $this->db->where('b.is_deleted',0);
+        if($searchValue != ''){
+            $this->db->where($searchQuery);
+        }
+        $query = $this->db->get();
+        return $query->num_rows();
+    }
+    public function getAllCustSaleData($limit, $start, $orderField, $orderDirection, $searchValue, $adminId) {
+        $searchQuery = "";
+        if($searchValue != ''){
+            $searchQuery = "(
+                a.commercial_invoice_number LIKE '%" . $searchValue . "%' OR
+                a.date LIKE '%" . $searchValue . "%' OR
+                a.gtotal LIKE '%" . $searchValue . "%' OR
+                b.customer_name LIKE '%" . $searchValue . "%' OR
+                a.payment_due_date LIKE '%" . $searchValue . "%' OR
+                a.paid_amount LIKE '%" . $searchValue . "%' OR
+                a.due_amount LIKE '%" . $searchValue . "%'
+            )";         
+        }
+        $this->db->select('a.commercial_invoice_number,a.date,a.gtotal, b.customer_name, a.payment_due_date,a.paid_amount,a.due_amount');
+        $this->db->from('invoice a');
+        $this->db->join('customer_information b', 'b.customer_id = a.customer_id', 'left');
+        $this->db->where('a.sales_by',$adminId);
+        $this->db->where('a.is_deleted',0);
+        $this->db->where('b.create_by ',$adminId);
+        $this->db->where('b.is_deleted',0);
+
+        if($searchValue != ''){
+            $this->db->where($searchQuery);
+        }
+        $this->db->order_by($orderField, $orderDirection);
+        $this->db->limit($limit, $start);
+        $records = $this->db->get()->result_array();
+        return $records;
+    }
+    public function getAllCustomerTransaction($searchValue,$adminId,$paydate){
+        $searchQuery = "";
+        if($searchValue != ''){
+            $searchQuery = "(
+                p.commercial_invoice_number LIKE '%" . $searchValue . "%' OR
+                p.date LIKE '%" . $searchValue . "%' OR
+                p.gtotal LIKE '%" . $searchValue . "%' OR
+                s.customer_name LIKE '%" . $searchValue . "%' OR
+                p.payment_due_date LIKE '%" . $searchValue . "%' OR
+                p.paid_amount LIKE '%" . $searchValue . "%' OR
+                p.due_amount LIKE '%" . $searchValue . "%'
+            )";         
+        }
+       
+        $this->db->select('s.customer_id');
+        $this->db->from('customer_information s');
+        $this->db->join('invoice p','s.customer_id=p.customer_id','left');
+        $this->db->join('payment py','p.payment_id=py.payment_id','left');
+        $this->db->where('s.create_by',$adminId);
+        /*if($supplier){
+            $this->db->where('s.customer_id', $supplier_id);
+        }*/   
+        if(trim($paydate)!="") {
+            $split=explode(' to ',$paydate);
+            $start =  $split[0];
+            $end = $split[1];
+            $this->db->where('py.payment_date >=',$start);
+            $this->db->where('py.payment_date <=',$end);
+        }
+        if($searchValue != ''){
+            $this->db->where($searchQuery);
+        }
+        $query = $this->db->get();
+        return $query->num_rows();
+
+
+    }
+    public function getAllCustomerTransactionData($limit, $start, $orderField, $orderDirection, $searchValue, $adminId,$paydate){
+        $searchQuery = "";
+        if($searchValue != ''){
+            $searchQuery = "(
+                p.commercial_invoice_number LIKE '%" . $searchValue . "%' OR
+                p.date LIKE '%" . $searchValue . "%' OR
+                p.gtotal LIKE '%" . $searchValue . "%' OR
+                s.customer_name LIKE '%" . $searchValue . "%' OR
+                p.payment_due_date LIKE '%" . $searchValue . "%' OR
+                p.paid_amount LIKE '%" . $searchValue . "%' OR
+                p.due_amount LIKE '%" . $searchValue . "%'
+            )";         
+        }
+        
+
+        $this->db->select('s.customer_id,s.customer_name, p.commercial_invoice_number, p.date, p.gtotal, s.customer_name, p.payment_due_date, p.paid_amount, p.due_amount,py.total_amt,py.amt_paid,py.payment_id,py.payment_date,py.balance,py.details,py.description');
+        $this->db->from('customer_information s');
+        $this->db->join('invoice p','s.customer_id=p.customer_id','left');
+        $this->db->join('payment py','p.payment_id=py.payment_id','left');
+        $this->db->where('s.create_by',$adminId);
+        /*if($supplier){
+            $this->db->where('s.customer_id', $supplier_id);
+        } */ 
+        if(trim($paydate)!="") {
+            $split=explode(' to ',$paydate);
+            $start =  $split[0];
+            $end = $split[1];
+            $this->db->where('py.payment_date >=',$start);
+            $this->db->where('py.payment_date <=',$end);
+        }
+       
+        if($searchValue != ''){
+            $this->db->where($searchQuery);
+        }
+        $this->db->order_by($orderField, $orderDirection);
+        $this->db->limit($limit, $start);
+        $records = $this->db->get()->result_array();
+        return $records;
+
+
+    }
+    public function suppliers_list($date=null) {
+        if($date) {
+$split = array_map(
+ function($value) {
+     return implode(' ', $value);
+ },
+ array_chunk(explode('-', $date), 3)
+);
+     $start = str_replace(' ', '-', $split[0]);
+     $end = str_replace(' ', '-', $split[1]);
+     $start = rtrim($start, "-");
+     $end= preg_replace('/' . '-' . '/', '', $end, 1);
+}
+$query = '';
+     $data = array();
+     $records_per_page = 10;
+     $start_from = 0;
+     $current_page_number = 0;
+     if(isset($_POST["rowCount"]))
+     {
+      $records_per_page = $_POST["rowCount"];
+     }
+     else
+     {
+      $records_per_page = 10;
+     }
+     if(isset($_POST["current"]))
+     {
+      $current_page_number = $_POST["current"];
+     }
+     else
+     {
+      $current_page_number = 1;
+     }
+     $start_from = ($current_page_number - 1) * $records_per_page;
+     $usertype = $this->session->userdata('user_type');
+    //   $this->db->select("a.*,b.HeadCode,((select ifnull(sum(Debit),0) from acc_transaction where COAID= `b`.`HeadCode` AND IsAppove = 1)-(select ifnull(sum(Credit),0) from acc_transaction where COAID= `b`.`HeadCode` AND IsAppove = 1)) as balance");
+    //   $this->db->select("(select (sum(due_amount_usd)) from product_purchase where supplier_id= `b`.`supplier_id`) as due_amount_usd,(select (sum(balance)) from product_purchase where supplier_id= `b`.`supplier_id`) as inv_due_amount_usd, a.*,b.HeadCode,((select ifnull(sum(Debit),0) from acc_transaction where COAID= `b`.`HeadCode` AND IsAppove = 1)-(select ifnull(sum(Credit),0) from acc_transaction where COAID= `b`.`HeadCode` AND IsAppove = 1)) as balance");
+         $this->db->select("(select (sum(due_amount_usd)) from product_purchase where supplier_id= `b`.`supplier_id`) as due_amount_usd,(select (sum(balance)) from product_purchase where supplier_id= `b`.`supplier_id`) as inv_due_amount_usd,(select (sum(balances)) from service where service_provider_name= `a`.`supplier_name`) as service_balance, a.*,b.HeadCode,((select ifnull(sum(Debit),0) from acc_transaction where COAID= `b`.`HeadCode` AND IsAppove = 1)-(select ifnull(sum(Credit),0) from acc_transaction where COAID= `b`.`HeadCode` AND IsAppove = 1)) as balance");
+         $this->db->from('supplier_information a');
+         $this->db->join('acc_coa b','a.supplier_id = b.supplier_id','left');
+         $this->db->group_by('a.supplier_id');
+         $this->db->where('a.created_by',$this->session->userdata('user_id'));
+     if($date) {
+      if(!empty($start) && !empty($end)){
+         $this->db->where('a.date >=',$start);
+     $this->db->where('a.date <=',$end);
+      }
+     }
+     if(!empty($_POST["searchPhrase"]))
+     {
+      $query .= 'WHERE (a.supplier_name LIKE "%'.$_POST["searchPhrase"].'%" ';
+      $query .= 'OR a.address LIKE "%'.$_POST["searchPhrase"].'%" ';
+      $query .= 'OR a.mobile LIKE "%'.$_POST["searchPhrase"].'%" ';
+      $query .= 'OR a.businessphone LIKE "%'.$_POST["searchPhrase"].'%" ) ';
+      $query .= 'OR a.primaryemail LIKE "%'.$_POST["searchPhrase"].'%" ) ';
+      $query .= 'OR a.city LIKE "%'.$_POST["searchPhrase"].'%" ) ';
+      $query .= 'OR a.country LIKE "%'.$_POST["searchPhrase"].'%" ) ';
+     }
+     $order_by = '';
+     if(isset($_POST["sort"]) && is_array($_POST["sort"]))
+     {
+      foreach($_POST["sort"] as $key => $value)
+      {
+       $order_by .= " $key $value, ";
+      }
+     }
+     else
+     {
+     $query .= 'ORDER BY a.id DESC ';
+     }
+    // if($order_by != '')
+   //  {
+   //   $query .= ' ORDER BY ' . substr($order_by, 0, -2);
+  //   }
+     if($records_per_page != -1)
+     {
+      $query .= " LIMIT " . $start_from . ", " . $records_per_page;
+     }
+        $query = $this->db->get();
+      // echo $this->db->last_query();
+    // $result = $this->db->query($query);
+    $result = $query->result_array();
+    foreach($result as $row)
+ {
+     $data[] = $row;
+ }
+    $this->db->select("a.*,b.HeadCode,((select ifnull(sum(Debit),0) from acc_transaction where COAID= `b`.`HeadCode` AND IsAppove = 1)-(select ifnull(sum(Credit),0) from acc_transaction where COAID= `b`.`HeadCode` AND IsAppove = 1)) as balance");
+         $this->db->from('supplier_information a');
+         $this->db->join('acc_coa b','a.supplier_id = b.supplier_id','left');
+         $this->db->group_by('a.supplier_id');
+         $this->db->where('a.created_by',$this->session->userdata('user_id'));
+     $this->db->get();
+     $result1 = $query->result_array();
+     $total_records = $query->num_rows();
+        $output = array(
+      'rows'   => $data
+     );
+   return $output;
+//  echo json_encode($output);
+ }
 }

@@ -130,9 +130,10 @@ class Sales_model extends CI_Model {
                 a.amt_paid LIKE '%" . $searchValue . "%' OR
                 a.balance LIKE '%" . $searchValue . "%'
             )";         }
-            $this->db->select('a.*, b.customer_name');
+            $this->db->select('a.*, b.customer_name,c.supplier_name');
             $this->db->from('sale_trucking a');
             $this->db->join('customer_information b', 'b.customer_id = a.bill_to', 'left');
+            $this->db->join('supplier_information c', 'c.supplier_id = a.shipment_company', 'left');
             $this->db->where('a.create_by',$decodedId);
             $this->db->where('a.is_deleted',0);
   

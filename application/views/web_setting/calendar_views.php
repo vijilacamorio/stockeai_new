@@ -13,9 +13,8 @@
          <h1><?php echo 'Calendar View' ?></h1>
          <small></small>
          <ol class="breadcrumb">
-            <li><a href="<?php echo base_url('/') ?>"><i class="pe-7s-home"></i> <?php echo 'Home' ?></a></li>
+            <li><a href="javascript:void(0);"><i class="pe-7s-home"></i> <?php echo 'Home' ?></a></li>
             <li class="active" style="color: orange;"><?php echo 'Calendar' ?></li>
-            <!-- <li class="active" style="color:orange"><?php echo display('Manage Language') ?></li> -->
          </ol>
       </div>
    </section>
@@ -82,10 +81,10 @@
                      <tbody>
                      <?php 
                      $status1 = 'Scheduled';
-                     if(!empty($allData)){ $s=1; foreach ($allData as $key => $value) { ?>
+                     if(!empty($allData)){ $s=1; foreach ($allData as $value) { ?>
                         <tr>
                            <td><?php echo $s; ?></td>
-                           <td><b><?php echo $value->name_id; ?></b></td>
+                           <td><b><?php echo $value->invoice_id; ?></b></td>
                            <td><?php echo $value->title; ?></td>
                            <td><?php echo date('Y-m-d H:i:A',strtotime($value->start)); ?></td>
                            <td>
@@ -114,36 +113,41 @@
             <a href="#" class="close" data-dismiss="modal">&times;</a>
             <h4 class="modal-title"><?php echo 'Add Reminder' ?></h4>
          </div>
-         <?php echo form_open_multipart('Cweb_setting/add_reminder')?>
          <div class="modal-body">
-            <div class="panel-body">
-              <div class="row">
-                 <div class="col-md-12">
-                   <label>Title</label>
-                   <input type="text" name="title" class="form-control" placeholder="Enter your Title" required>
-                   <br>
-                 </div>
-                 <div class="col-md-12">
-                   <label>Description</label>
-                   <input type="text" name="description" class="form-control" placeholder="Enter your Description" required>
-                   <br>
-                 </div>
-                 <div class="col-md-12">
-                   <label>Schedule From</label>
-                   <input type="datetime-local" name="start" class="form-control" required>
-                   <br>
-                 </div>
-                 <div class="col-md-12">
-                   <label>Schedule To</label>
-                   <input type="datetime-local" name="end" class="form-control" required>
-                   <br>
-                 </div>
-                 <div class="col-md-12">
-                   <button class="btn btn-primary btn-md">Save</button>
-                 </div>
-              </div>
-         </div>
-         <?php echo form_close()?>
+            <form id="addreminder" class="addreminder" method="post">
+               <div class="panel-body">
+                  <div id="errormessage"></div>
+                    <div class="row">
+                       <div class="col-md-12">
+                         <label>Title <span class="text-danger">*</span></label>
+                         <input type="text" name="title" id="title" class="form-control" placeholder="Enter your Title">
+                         <div id="error_title" class="text-danger"></div>
+                         <input type="hidden" id="admin_company_id" name="admin_company_id" value="<?php echo $_GET['id']; ?>">
+                         <br>
+                       </div>
+                       <div class="col-md-12">
+                         <label>Description</label>
+                         <input type="text" name="description" id="description" class="form-control" placeholder="Enter your Description">
+                         <br>
+                       </div>
+                       <div class="col-md-12">
+                         <label>Schedule From <span class="text-danger">*</span></label>
+                         <input type="datetime-local" name="start" id="start" class="form-control">
+                         <div id="error_start" class="text-danger"></div>
+                         <br>
+                       </div>
+                       <div class="col-md-12">
+                         <label>Schedule To <span class="text-danger">*</span></label>
+                         <input type="datetime-local" name="end" id="end" class="form-control">
+                         <div id="error_end" class="text-danger"></div>
+                         <br>
+                       </div>
+                       <div class="col-md-12">
+                         <button type="submit" id="insertreminder" class="btn btn-primary btn-md">Save</button>
+                       </div>
+                    </div>
+               </div>
+            </form>
       </div>
    </div>
 </div>
@@ -169,72 +173,94 @@
 
 <script type="text/javascript">
   $(document).ready(function() {
-      var insertdata = '<?php echo $insertdata; ?>';
-      var eventData = JSON.parse(insertdata);  
-      console.log(eventData);
-      var currentDate = new Date();
+    var insertdata = '<?php echo $insertdata; ?>';
+    var eventData = JSON.parse(insertdata);
+    var currentDate = new Date();
       $('#calendar').fullCalendar({
-         header: {
+        header: {
             left: 'prev,next today',
             center: 'title',
             right: 'month,agendaWeek,agendaDay',
-         },
-         defaultDate: currentDate,
-         editable: true,
-         eventLimit: true, 
-         events: eventData
+        },
+        defaultDate: currentDate,
+        editable: true,
+        eventLimit: true,
+        events: eventData, 
+        eventRender: function(event, element) {
+            element.find('.fc-title').append("<br/>Start: " + event.start.format('YYYY-MM-DD HH:mm') + "<br/>End: " + event.end.format('YYYY-MM-DD HH:mm'));
+        }
       });
 
-      $('#calendar').on('click', '.fc-prev-button', function() {
-         $('#calendar').fullCalendar( 'removeEvents' );
-         $('#calendar').fullCalendar( 'addEventSource', eventData);
+      $('#calendar').on('click', '.fc-prev-button, .fc-next-button', function() {
+        $('#calendar').fullCalendar('removeEvents');
+        $('#calendar').fullCalendar('addEventSource', eventData);
       });
-  });
+});
 
 
-    //  $(document).ready(function() {
-    //     var insertdata = '<?php echo $insertdata; ?>';
-    //     var eventData = JSON.parse(insertdata);
-    
-    //     var eventDataFromLocalStorage = localStorage.getItem('eventData');
-        
-    //     if (eventDataFromLocalStorage) {
-    //         eventData = JSON.parse(eventDataFromLocalStorage);
-    //     }
-    
-    //     var currentDate = new Date();
-    //     var calendar = $('#calendar');
-    
-    //     calendar.fullCalendar({
-    //         header: {
-    //             left: 'prev,next today',
-    //             center: 'title',
-    //             right: 'month,agendaWeek,agendaDay',
-    //         },
-    //         defaultDate: currentDate,
-    //         editable: true,
-    //         eventLimit: true,
-    //         events: eventData,
-    //         eventDrop: function(event, delta, revertFunc) {
-    //             var updatedEvent = findEventById(event.id);
-    //             if (updatedEvent) {
-    //                 updatedEvent.start = event.start.format();
-    //                 saveEventInLocalStorage(eventData);
-    //             } else {
-    //                 console.error('Event with ID ' + event.id + ' not found.');
-    //                 revertFunc();
-    //             }
-    //         },
-    //     });
-    
-    //     function findEventById(eventId) {
-    //         return eventData.find(function(event) {
-    //             return event.id === eventId;
-    //         });
-    //     }
-    //     function saveEventInLocalStorage(eventData) {
-    //         localStorage.setItem('eventData', JSON.stringify(eventData));
-    //     }
-    // });
+
+// Validation in Add Reminder
+$(document).ready(function(){
+    var csrfName = '<?php echo $this->security->get_csrf_token_name();?>';
+    var csrfHash = '<?php echo $this->security->get_csrf_hash();?>';
+    var succalert = '<div class="alert alert-success alert-dismissible text-left" role="alert">';
+    var failalert = '<div class="alert alert-danger alert-dismissible text-left" role="alert">';
+
+    $('#insertreminder').on('click', function(event) {
+       event.preventDefault(); 
+       
+       var title = $('#title').val().trim();
+       var start = $('#start').val().trim();
+       var end = $('#end').val().trim();
+       var adminid = $('#admin_company_id').val();
+       
+       $('#error_title').text('');
+       $('#error_start').text('');
+       $('#error_end').text('');
+
+       var isValid = true;
+
+       if (title === '') {
+           $('#error_title').text('Title is required.');
+           isValid = false;
+       }
+
+       if (start === '') {
+           $('#error_start').text('Start date is required.');
+           isValid = false;
+       }
+
+       if (end === '') {
+           $('#error_end').text('End date is required.');
+           isValid = false;
+       } else if (start !== '' && new Date(start) > new Date(end)) {
+           $('#error_end').text('End date must be after start date.');
+           isValid = false;
+       }
+       if (isValid) {
+         $.ajax({
+              type:"POST",
+              dataType:"json",
+              url:"<?php echo base_url(); ?>Cweb_setting/add_reminder",
+              data:{<?php echo $this->security->get_csrf_token_name();?>: csrfHash, title: title, start: start, end: end, adminid: adminid},
+              success:function (response) {
+                  console.log(response);
+                  if(response.status =='success'){
+                     $('#errormessage').html('<div class="alert alert-success alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>' + response.msg + '</div>');
+                  
+                     window.setTimeout(function(){
+                        $('#reminderModal').modal('hide');
+                        $('.addreminder')[0].reset();
+                        location.reload();
+                     },2000);
+                  }else{
+                     $('#errormessage').html('<div class="alert alert-danger alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>' + response.msg + '</div>');
+                  }
+              }
+          });
+      }
+   });
+
+});
 </script>
 

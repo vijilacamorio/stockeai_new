@@ -332,39 +332,45 @@ public function insertPayment()
         'status'        => 'Paid',
         'create_by'     => $admin_comp_id,
     );
-    $paymentid = $this->Customers->payments_entry($data);
-    if ($paymentid) {
+   
         $upload_success = true;
+        $paymentid      = '';
         if (!empty($_FILES['payment_attachement']['name'])) {
             $upload_data = file_upload('payment_attachement', 'payment', PAYMENT_IMG_PATH);
             if (isset($upload_data['upload_data']['file_name'])) {
-                $update_data = array('attachement' => $upload_data['upload_data']['file_name']);
-                $this->Customers->update_payments($update_data, $paymentid);
+                //$update_data = array('attachement' => $upload_data['upload_data']['file_name']);
+                $data['attachement'] = $upload_data['upload_data']['file_name'];
+                //$this->Customers->update_payments($update_data, $paymentid);
+                
             } else {
                 $upload_success = false;
                 $upload_error = $upload_data['error'];
             }
         }
-        $paymentData = $this->Customers->fetchpaymentdata($paymentid, $admin_comp_id);
-        if ($upload_success) {
-            $response = array(
-                'status' => 'success',
-                'msg' => 'Payment has been added successfully.',
-                'paymentData' => $paymentData
-            );
+        if($upload_success ==true){
+            $paymentid = $this->Customers->payments_entry($data);
+        }
+        if ($paymentid!="") {
+            $paymentData = $this->Customers->fetchpaymentdata($paymentid, $admin_comp_id);
+            if ($upload_success) {
+                $response = array(
+                    'status' => 'success',
+                    'msg' => 'Payment has been added successfully.',
+                    'paymentData' => $paymentData
+                );
+            } else {
+                $response = array(
+                    'status' => 'partial_success',
+                    'msg' => 'File upload failed: ' . $upload_error,
+                    'paymentData' => $paymentData
+                );
+            }
         } else {
             $response = array(
-                'status' => 'partial_success',
-                'msg' => 'Payment added, but file upload failed: ' . $upload_error,
-                'paymentData' => $paymentData
+                'status' => 'error',
+                'msg' => 'Failed to add payment. Please try again.'
             );
         }
-    } else {
-        $response = array(
-            'status' => 'error',
-            'msg' => 'Failed to add payment. Please try again.'
-        );
-    }
     echo json_encode($response);
 }
     
@@ -2451,19 +2457,57 @@ $this->db->update('bootgrid_data');
     echo json_encode($response);
     }
 
-        public function add_state_tax_id(){
-        $this->load->model('Invoices');
-        $postData = $this->input->post('new_state_tax_id');
-        $data = $this->Invoices->add_state_tax_id($postData);
-        echo json_encode($data);
+
+  // manager company changed by ajith on 28/08/2024
+    public function add_state_tax_id() {
+        $this->form_validation->set_rules('new_state_tax_id', 'New State Tax ID', 'required');
+        $response = array();
+        if ($this->form_validation->run() == FALSE) {
+            $response['status'] = 'failure';
+            $response['msg']    = validation_errors();
+        } else {
+            $postData  = $this->input->post('new_state_tax_id');
+            $decodedId = $this->input->post('decodedId');
+            $data      = $this->Invoices->add_state_tax_id($postData, $decodedId);
+            if ($data) {
+                $response['status']          = 'success';
+                $response['msg']             = 'New State Tax ID has been added successfully';
+                $response['get_statetaxid'] = $data;
+            } else {
+                $response['status'] = 'failure';
+                $response['msg']    = 'Failed to add New State Tax ID. Please try again.';
+            }
+        }
+        echo json_encode($response);
     }
-     // manage my company--->add local tax number
-     public function add_local_tax_id(){
-        $this->load->model('Invoices');
-        $postData = $this->input->post('new_local_tax_id');
-        $data = $this->Invoices->add_local_tax_id($postData);
-        echo json_encode($data);
+   // manager company changed by ajith on 28/08/2024
+    public function add_local_tax_id() {
+        $this->form_validation->set_rules('new_local_tax_id', 'New Local Tax ID', 'required');
+        $response = array();
+        if ($this->form_validation->run() == FALSE) {
+            $response['status'] = 'failure';
+            $response['msg']    = validation_errors();
+        } else {
+            $postData  = $this->input->post('new_local_tax_id');
+            $decodedId = $this->input->post('decodedId');
+            $data      = $this->Invoices->add_local_tax_id($postData, $decodedId);
+            if ($data) {
+                $response['status']          = 'success';
+                $response['msg']             = 'New Local Tax ID has been added successfully';
+                $response['get_localtaxid'] = $data;
+            } else {
+                $response['status'] = 'failure';
+                $response['msg']    = 'Failed to add New Local Tax ID. Please try again.';
+            }
+        }
+        echo json_encode($response);
     }
+ 
+
+
+
+    
+
       public function add_city_tax(){
         $this->load->model('Invoices');
         $postData = $this->input->post('new_city_tax');
@@ -3773,21 +3817,5 @@ public function downloadQuotation()
     $dompdf->render();
     $dompdf->stream('proforma_invoice_' . $quotationId . '.pdf', array('Attachment' => 1));
 }
-public function customer_info_report(){
 
-    $CI = & get_instance();
-    $this->load->model('Invoices');
-    $this->load->model('Customers');
-    $CI->load->model('Web_settings');
-
-    $data['setting_detail'] = $CI->Web_settings->retrieve_setting_editdata($this->admin_id);
-    $data['customer_name'] = $this->Customers->all_customer($this->admin_id);
-    echo '<pre>';
-    echo $this->db->last_query(); 
-    print_r($data['customer_name']); exit;
-    $data['get_all_invoice_sale']= $this->Invoices->get_all_invoice_sale($this->admin_id);
-
-    $content = $CI->parser->parse('report/customer_info_report', $data, true);
-    $this->template->full_admin_html_view($content);
-}
 }

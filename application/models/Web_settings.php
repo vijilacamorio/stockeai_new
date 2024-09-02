@@ -25,8 +25,6 @@ class Web_settings extends CI_Model
     {
         $this->db->where('id', $notification_id);
         $this->db->update('schedule_list', array('bell_notification' => 0));
-        echo $this->db->last_query();
-        die();
         return $this->db->affected_rows() > 0;
     }
     public function schedule_alert($data)
@@ -166,14 +164,29 @@ class Web_settings extends CI_Model
         }
         return false;
     }
-    public function insertDateforScheduleStatus()
+    // insertDateforScheduleStatus - Madhu
+    public function insertDateforScheduleStatus($admin_comp_id)
     {
         $this->db->select('*');
         $this->db->from('schedule_list');
         $this->db->where('schedule_status', 1);
         $this->db->where('source', 'CALENDER');
-        $this->db->where('created_by', $this->session->userdata('user_id'));
+        $this->db->where('created_by', $admin_comp_id);
         $query = $this->db->get();
+        if ($query->num_rows() > 0) {
+            return $query->result();
+        }
+        return false;
+    }
+    // insertDateforSchedule - Madhu
+    public function insertDateforSchedule($admin_comp_id)
+    {
+        $this->db->select('id, title, description, start, end');
+        $this->db->from('schedule_list');
+        $this->db->where('source', 'CALENDER');
+        $this->db->where('created_by', $admin_comp_id);
+        $query = $this->db->get();
+        // echo $this->db->last_query(); die();
         if ($query->num_rows() > 0) {
             return $query->result();
         }
@@ -232,19 +245,7 @@ class Web_settings extends CI_Model
         }
         return false;
     }
-    public function insertDateforSchedule()
-    {
-        $this->db->select('id, title, description, start, end');
-        $this->db->from('schedule_list');
-        $this->db->where('source', 'CALENDER');
-        $this->db->where('created_by', $this->session->userdata('user_id'));
-        $query = $this->db->get();
-        // echo $this->db->last_query(); die();
-        if ($query->num_rows() > 0) {
-            return $query->result();
-        }
-        return false;
-    }
+
     public function get_email_scheduled()
     {
         $todayDate = date('Y-m-d');
@@ -552,7 +553,6 @@ class Web_settings extends CI_Model
         }
         return true;
     }
- 
     public function update_invoice_set($decodedId)
     {
         $purchase_id = date('YmdHis');
@@ -613,15 +613,6 @@ class Web_settings extends CI_Model
         }
         return true;
     }
-
-
-
-
-
-
-
-
-
     public function update_invoice_setting($data)
     {
         $this->db->insert('invoice_settings', $data);

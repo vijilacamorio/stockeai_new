@@ -112,5 +112,7 @@ define('TRUCK_IMG_PATH','./uploads/road_truck/');
 define('SALESPARTNER_IMG_PATH','./uploads/salespartner/');
 
 
+define('InvoiceDesign_IMG_PATH','./ my-assets/image/logo/');
+
 define('BOOTSTRAP_MODELS',array('payment_type'=>'payment_type','vendor'=>'vendor','customer'=>'customer','payment_terms'=>'payment_terms','payment_model'=>'payment_model','tax_info'=>'tax_info', 'bank_info' => 'bank_info', 'sendemailmodal' => 'sendemailmodal'));
 define('IMAGE_ALLOWED_TYPES','gif|jpg|png|pdf|docx|doc|jpeg');

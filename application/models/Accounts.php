@@ -1,5 +1,5 @@
 <?php
-
+// error_reporting(1);
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 
@@ -40,26 +40,6 @@ class Accounts extends CI_Model {
         $this->db->where('status', $status);
         $query = $this->db->get();
         return $query->result_array();
-    }
-
-    //tax entry
-    public function tax_entry($data) {
-
-        $this->db->select("*");
-        $this->db->from('tax_information');
-        $this->db->where('created_by',$this->session->userdata('user_id'));
-        $this->db->where('tax', $data['tax']);
-        $query = $this->db->get()->num_rows();
-
-
-    //    echo $this->db->last_query();
-
-        if ($query > 0) {
-            return FALSE;
-        } else {
-            $this->db->insert('tax_information', $data);
-            return true;
-        }
     }
     
     
@@ -711,5 +691,103 @@ $this->db->insert('payroll_tax_setup',$data);
         return $query->result_array();
 
     }
+
+    // For Taxes Datatable - Madhu
+    public function getPaginatedTaxes($limit, $offset, $orderField, $orderDirection, $search, $Id, $date="") 
+    {
+        $this->db->select("id,tax_id,created_by,tax,status,description,state,tax_agency,account,show_taxonreturn,status_type,created_date");
+        $this->db->from("tax_information");
+        if (!empty($search)) {
+            $this->db->group_start();
+            $this->db->like("tax_id", $search);
+            $this->db->or_like("tax", $search);
+            $this->db->or_like("tax_agency", $search);
+            $this->db->or_like("account", $search);
+            $this->db->or_like("show_taxonreturn", $search);
+            $this->db->or_like("status_type", $search);
+            $this->db->or_like("created_date", $search);
+            $this->db->group_end();
+        }
+        if (!empty($date)) {
+            $dates = explode(' - ', $date);
+            if (count($dates) == 2) {
+                $start_date = date('Y-m-d', strtotime($dates[0]));
+                $end_date = date('Y-m-d', strtotime($dates[1]));
+                if ($start_date && $end_date) {
+                    $this->db->where("DATE(created_date) >=", $start_date);
+                    $this->db->where("DATE(created_date) <=", $end_date);
+                }
+            }
+        }
+        $this->db->where("is_deleted", 0);
+        $this->db->where("created_by", $Id);
+        $this->db->limit($limit);
+        $this->db->order_by($orderField, $orderDirection);
+        $query = $this->db->get();
+        if ($query === false) {
+            return false;
+        }
+        return $query->result_array();
+    }
+
+    // For Taxes Datatable - Madhu
+    public function getTotalTaxes($search, $Id, $date="")
+    {
+        $this->db->select("id,tax_id,tax,created_by,status,description,state,tax_agency,account,show_taxonreturn,status_type,created_date");
+        $this->db->from("tax_information");
+        if ($search != "") {
+            $this->db->group_start();
+            $this->db->like("tax_id", $search);
+            $this->db->or_like("tax", $search);
+            $this->db->or_like("tax_agency", $search);
+            $this->db->or_like("account", $search);
+            $this->db->or_like("show_taxonreturn", $search);
+            $this->db->or_like("status_type", $search);
+            $this->db->or_like("created_date", $search);
+            $this->db->group_end();
+        }
+        if (!empty($date)) {
+            $dates = explode(' - ', $date);
+            if (count($dates) == 2) {
+                $start_date = date('Y-m-d', strtotime($dates[0]));
+                $end_date = date('Y-m-d', strtotime($dates[1]));
+                if ($start_date && $end_date) {
+                    $this->db->where("DATE(created_date) >=", $start_date);
+                    $this->db->where("DATE(created_date) <=", $end_date);
+                }
+            }
+        }
+        $this->db->where("is_deleted", 0);
+        $this->db->where("created_by", $Id);
+        $query = $this->db->get();
+        return $query->num_rows();
+    }
+
+    //tax entry - Madhu
+    public function tax_entry($table_name, $data) 
+    {
+        return $this->db->insert($table_name, $data);
+    }
+
+    // Get Tax single data - Madhu
+    public function getTaxsingledata($admin_id, $tax_id = null)
+    {
+        $this->db->select('*');
+        $this->db->from('tax_information');
+        $this->db->where('created_by', $admin_id);
+        $this->db->where('id', $tax_id);
+        $query = $this->db->get();
+        if ($query->num_rows() > 0) {
+            return $query->result_array();
+        }
+    }
+
+    // Update Tax Data - Madhu
+    public function updatetaxdata($galleryId, $data, $table_name) 
+    {
+        $this->db->where('id', $galleryId);
+        return $this->db->update($table_name, $data);
+    }
+
 
 }
