@@ -1653,16 +1653,18 @@ public function overall_admins() {
         $searchQuery = "";
         if($searchValue != ''){
             $searchQuery = "(
-                a.supplier_name LIKE '%" . $searchValue . "%' OR
-                a.address LIKE '%" . $searchValue . "%' OR
-                a.mobile LIKE '%" . $searchValue . "%' OR
-                a.businessphone LIKE '%" . $searchValue . "%' OR
-                a.primaryemail LIKE '%" . $searchValue . "%' OR
-                a.city LIKE '%" . $searchValue . "%' OR
-                a.country LIKE '%" . $searchValue . "%'
-            )";         
+                s.supplier_id LIKE '%" . $searchValue . "%' OR
+                p.chalan_no LIKE '%" . $searchValue . "%' OR
+                p.purchase_date LIKE '%" . $searchValue . "%' OR
+                p.grand_total_amount LIKE '%" . $searchValue . "%' OR
+                p.payment_due_date LIKE '%" . $searchValue . "%' OR
+                p.balance LIKE '%" . $searchValue . "%' OR
+                p.due_amount_usd LIKE '%" . $searchValue . "%' OR
+                p.payment_terms LIKE '%" . $searchValue . "%' OR
+                p.paid_amount LIKE '%" . $searchValue . "%'
+            )";              
         }
-        $this->db->select('s.id');
+        $this->db->select('s.supplier_id');
         $this->db->from('supplier_information s');
         $this->db->join('product_purchase p','s.supplier_id=p.supplier_id');
         if($supplier_id){
@@ -1672,6 +1674,7 @@ public function overall_admins() {
         if($searchValue != ''){
             $this->db->where($searchQuery);
         }
+        //echo $this->db->get_compiled_select(); exit;
         $query = $this->db->get();
         return $query->num_rows();
     }
@@ -1681,21 +1684,20 @@ public function overall_admins() {
         $searchQuery = "";
         if($searchValue != ''){
             $searchQuery = "(
-                a.customer_name LIKE '%" . $searchValue . "%' OR
-                a.id LIKE '%" . $searchValue . "%' OR
-                a.chalan_no LIKE '%" . $searchValue . "%' OR
-                a.purchase_date LIKE '%" . $searchValue . "%' OR
-                a.grand_total_amount LIKE '%" . $searchValue . "%' OR
-                a.payment_due_date LIKE '%" . $searchValue . "%' OR
-                a.balance LIKE '%" . $searchValue . "%' OR
-                a.due_amount LIKE '%" . $searchValue . "%' OR
-                a.payment_terms LIKE '%" . $searchValue . "%' OR
-                a.paid_amount LIKE '%" . $searchValue . "%'
+                s.supplier_id LIKE '%" . $searchValue . "%' OR
+                p.chalan_no LIKE '%" . $searchValue . "%' OR
+                p.purchase_date LIKE '%" . $searchValue . "%' OR
+                p.grand_total_amount LIKE '%" . $searchValue . "%' OR
+                p.payment_due_date LIKE '%" . $searchValue . "%' OR
+                p.balance LIKE '%" . $searchValue . "%' OR
+                p.due_amount_usd LIKE '%" . $searchValue . "%' OR
+                p.payment_terms LIKE '%" . $searchValue . "%' OR
+                p.paid_amount LIKE '%" . $searchValue . "%'
             )";         
         }
         
     
-        $this->db->select('s.*,p.*');
+        $this->db->select('s.supplier_name,s.supplier_id,p.chalan_no,p.purchase_date, p.grand_total_amount,p.payment_due_date,p.balance,p.due_amount_usd,p.payment_terms,p.paid_amount');
         $this->db->from('supplier_information s');
         $this->db->join('product_purchase p','s.supplier_id=p.supplier_id');
         if($supplier_id){
