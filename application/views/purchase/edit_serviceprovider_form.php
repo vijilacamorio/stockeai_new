@@ -21,7 +21,15 @@
          <div class="bar"></div>
       </div>
     </div>
-        
+           <style>
+           #bulk_payment_form input[type="text"]  { border: none; 
+    background: inherit;
+    padding: 0; 
+    margin: 0; 
+    box-shadow: none; 
+    outline: none; 
+}
+            </style>
         
          </ol>
       </div>
@@ -32,7 +40,7 @@
    
    
    
-   
+         <?php  $payment_id_new=rand(); ?>
    
    <section class="content">
       <?php  $d= $tax_detail; 
@@ -409,7 +417,7 @@ foreach ($expensetax as $tx) {?>
             <h4 class="modal-title"><?php echo display('PAYMENT HISTORY') ?></h4>
          </div>
          <div class="modal-body1">
-            <form method='post' id='bulk_payment_form'>
+            <form id='bulk_payment_form' action="<?php echo base_url(); ?>Cpurchase/bulk_payment_ser_pro" method="post">
                <input type="hidden" name="<?php echo $this->security->get_csrf_token_name();?>" value="<?php echo $this->security->get_csrf_hash();?>">
                <div id="salle_list"></div>
             </form>
@@ -635,7 +643,7 @@ foreach ($expensetax as $tx) {?>
       $.ajax({
           type:"POST",
           dataType:"json",
-          url:"<?php echo base_url(); ?>Cinvoice/payment_history",
+          url:"<?php echo base_url(); ?>Cpurchase/payment_history_purchase_serv_provider",
           data:$("#histroy").serialize(),
    
           success:function (data) {
@@ -676,437 +684,331 @@ foreach ($expensetax as $tx) {?>
    
    }
    
-   
-   
-   
-   
-   
-   
-   
-      var csrfName = '<?php echo $this->security->get_csrf_token_name();?>';
-                     var csrfHash = '<?php echo $this->security->get_csrf_hash();?>';
-   $(document).on('click', '#pay_now', function (event) {
-       event.preventDefault();
-    var dataString = {
-                             dataString : $('#bulk_payment_form').serialize()
-                        };
-                        dataString[csrfName] = csrfHash;
-       $.ajax({
-           type: 'POST',
-           data: $('#bulk_payment_form').serialize(),
-           dataType: 'json',
-            url: '<?php echo base_url();?>Cpurchase/bulk_payment_ser_pro',
-           success: function (result) {
-    $('#payment_history_modal').modal('hide');
-                 $("#bodyModal1").html("Payment Completed Successfully");
-      $('#myModal1').modal('show');
-      window.setTimeout(function(){
-          $('.modal').modal('hide');
-         
-   $('.modal-backdrop').remove();
-   },2000);
-           },
-           error: function (xhr, status, error) {
-            $('#payment_history_modal').modal('hide');
-                 $("#bodyModal1").html("Payment Completed Successfully");
-      $('#myModal1').modal('show');
-      window.setTimeout(function(){
-          $('.modal').modal('hide');
-         
-   $('.modal-backdrop').remove();
-   },2000);
-           }
-       });
-   });
-
-
-
-
-
-
-
+   $(document).ready(function() {
+    $(document).on('click', '#pay_now', function(event) {
+        event.preventDefault(); 
+        var formData = $('#bulk_payment_form').serialize();
+        formData += '&' + csrfName + '=' + csrfHash; 
+        $.ajax({
+            type: 'POST',
+            data: formData, 
+            dataType: 'text',
+            url: $('#bulk_payment_form').attr('action'), 
+            success: function(result) {
+                
+                  $('#payment_error').html('<div class="alert alert-success alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>' + "Payment Completed Successfully" + '</div>');
+                window.setTimeout(function() {
+                  $('#payment_history_modal').modal('hide');
+                    location.reload(); 
+                }, 2000);
+      
+             }
+        });
+    });
+});
    $(document).on('click', '#edit_payment', function (event) {
    var csrf_token = {
-       <?php echo $this->security->get_csrf_token_name(); ?>: '<?php echo $this->security->get_csrf_hash(); ?>'
+    <?php echo $this->security->get_csrf_token_name(); ?>: '<?php echo $this->security->get_csrf_hash(); ?>'
    };
-       var tableData = [];
-       $('#toggle_table tbody tr').each(function () {
-           var rowData = {
-            
-               date: $(this).find('td:eq(0)').text(),
-               referenceNo: $(this).find('td:eq(1)').text(),
-               bankName: $(this).find('td:eq(2)').text(),
-               amountPaid: $(this).find('td:eq(3)').text(),
-                balanceamount: $(this).find('td:eq(4)').text(),
-                 detail: $(this).find('td:eq(5)').text(),
-                payment : $('#payment_id').val(),
-                gtotal : $('#vendor_gtotals').val(),
-               t_amt_paid : $('#tl_amt_pd').val(),
-               t_bal_amt : $('#my_bal_1').val(),
-               bill_bo : $('#bill_number').val()
-           };
-           tableData.push(rowData);
-       });
-   
-       var postData = {
-                             tableData: tableData
-                        };
-                        postData[csrfName] = csrfHash;
-    
-   
-       // Perform an AJAX request to send the data to the controller
-       $.ajax({
-           type: "POST",
-           dataType: "json",
-           url: "<?php echo base_url(); ?>Cinvoice/payment_edit_serv_pro",
-           data: postData,
-           success: function (response) {
-                $('#payment_history_modal').modal('hide');
-                 $("#bodyModal1").html("Updated Successfully");
-      $('#myModal1').modal('show');
-      window.setTimeout(function(){
-          $('.modal').modal('hide');
-         
-   $('.modal-backdrop').remove();
-   },2000);
-           },
-           error: function (error) {
-             $('#payment_history_modal').modal('hide');
-               $("#bodyModal1").html("Updated Successfully");
-      $('#myModal1').modal('show');
-      window.setTimeout(function(){
-          $('.modal').modal('hide');
-         
-   $('.modal-backdrop').remove();
-   },2000);
-           }
-       });
-   
-       // Prevent the default form submission
-       event.preventDefault();
+    var tableData = [];
+    $('#toggle_table tbody tr').each(function () {
+        var rowData = {
+            date: $(this).find('td:eq(0)').text(),
+            referenceNo: $(this).find('td:eq(1)').text(),
+            bankName: $(this).find('td:eq(2)').text(),
+            amountPaid: $(this).find('td:eq(3)').text(),
+             balanceamount: $(this).find('td:eq(4)').text(),
+              detail: $(this).find('td:eq(5)').text(),
+             payment : $('#payment_id_this_invoice').val(),
+             gtotal : $('#customer_gtotal_provider').val(),
+              t_amt_paid : $('#tl_amt_pd').val(),
+            t_bal_amt : $('#my_bal_1').val(),
+             inv_no :$('#unq_inv').val()
+        };
+        tableData.push(rowData);
+    });
+    var postData = {
+                          tableData: tableData
+                     };
+                     postData[csrfName] = csrfHash;
+  
+    $.ajax({
+        type: "POST",
+        dataType: "json",
+        url: "<?php echo base_url(); ?>Cinvoice/payment_edit_serv_pro",
+        data: postData,
+        success: function (response) {
+        payment_update();
+         $('#payment_error').html('<div class="alert alert-success alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>' + 'Updated Successfully' + '</div>');
+        },
+        error: function (error) {
+           $('#payment_error').html('<div class="alert alert-danger alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>' + 'Failed to Updated Successfully' + '</div>');
+        }
+    });
+  
+    event.preventDefault();
    });
-      $('#payment_history').click(function (event) {
-           $('#current_in_id').val($('#bill_number').val());
-       var dataString = {
-           dataString: $("#histroy").serialize()
-       };
-       dataString[csrfName] = csrfHash;
-   
-       $.ajax({
-           type: "POST",
-           dataType: "json",
-         url:"<?php echo base_url(); ?>Cpurchase/payment_history_purchase_serv_provider",
-           data: $("#histroy").serialize(),
-   
-           success: function (data) { 
-   debugger;
+   $('#payment_history').click(function (event) {
+        $('#current_in_id').val($('#bill_number').val());
+    var dataString = {
+        dataString: $("#histroy").serialize()
+    };
+    dataString[csrfName] = csrfHash;
+    $.ajax({
+        type: "POST",
+        dataType: "json",
+       url:"<?php echo base_url(); ?>Cpurchase/payment_history_purchase_serv_provider",
+        data: $("#histroy").serialize(),
+        success: function (data) { 
    var basedOnCustomer = data.based_on_customer;
    var overallGTotal = parseFloat(data.overall[0].overall_gtotal);
    var overall_due = parseFloat(data.overall[0].overall_due);
    var overall_paid = parseFloat(data.overall[0].overall_paid);
-    console.log("OVER : "+overallGTotal);
-    var gt = $('#gtotal_provider').val();
-               var amtpd = data.amt_paid;
-   
-               var bal = gt - data.amt_paid;
-                var total = "<table id='table2' class='newtable table table-striped table-bordered'><tbody><tr><td rowspan='2' style='vertical-align: middle;text-align-last: center;'><b>Grand Total :  <?php  echo $currency;  ?>"+gt+"<b></td><td class='td' style='text-align:end;border-right: hidden;'><b>Total Amount Paid :<b></td><td style='text-align:start;'><?php  echo $currency;  ?><span class='amt_paid_update'><input type='text' id='tl_amt_pd' value='"+data.amt_paid+"' name='tl_amt_pd'/></span></td><td><input type='hidden' value='"+$('#customer_gtotal_provider').val()+"' name='t_unique'/><span style='font-weight:bold;'>INVOICE NO</span> :<input type='hidden' value='"+$('#bill_number').val()+"' id='unq_inv' name='unq_inv'/>"+$('#bill_number').val()+"</td>                  <td rowspan='2' style='vertical-align: middle;text-align-last: center;'><b>Advance :   <input type='text' name='advanceamount' id='advanceamount' readonly ></td>                                                       </tr><tr><td class='td' style='text-align:end;' ><b>Balance :<input type='text' id='my_bal_1' value='"+bal+"' name='my_bal_1'/><b></td><td class='due_pay' style='display:none;' id='balance-cell' data-currency='<?php  echo $currency;  ?>'>"+bal +"</td><td  data-currency='<?php echo $currency; ?>'><span style='font-weight:bold;'>Amount to Pay : </span><input type='text' id='amount_pay_unique' class='amount_pay' style='text-align:center;' name='amount_pay_1'/></td><td style='display:none'><input type='text'  value='<?php if($payment_id_service){ echo $payment_id_service; }?>' name='payment_id_this_invoice' class='payment_id_val' id='payment_id'/></td><td style='display:none' class='' data-currency='<?php echo $currency; ?>'><input type='text' name='updated_bal_uniq' class='balance-col'/></td><td> <input type='text' id='total-amount' placeholder='Enter Amount To Distribute'></td></tr></tbody></table>"
-              
-                var table_header1 = "<div> </div>  <thead><tr><td ><input type='hidden'  value='<?php  echo $s_id;  ?>' name='supplier_id' /></tr></thead><tbody>";
-
-                var table_header = "<div class='toggle-button' onclick='toggleTable()'>Payment History &#9660;</div><table id='toggle_table' class='table table-striped table-bordered'><thead style='FONT-WEIGHT:BOLD;'><tr><td style='display:none;'><input type='text'  value='<?php if($info_service[0]['payment_id']){ echo $info_service[0]['payment_id']; } ?>' name='payment_id_this_invoice' class='payment_id_val' id='payment_id'/></td><td>Payment Date</td><td>Reference.NO</td><td>Bank Name</td><td>Amount Paid</td><td>Balance</td><td>Details</td><td>Delete</td></tr></thead><tbody>";
-             
-              var table_footer = "</tbody><tfoot><tr><td style='text-align: center;vertical-align: middle;' colspan='7' ><input type='button' class='btnclr btn' style='text-align:center;color:white;font-weight:bold';  value='Update' id='edit_payment'/></td></tr></tfoot></table>";
-               var html = "";
-               var count = 1;
-   
-               data.payment_get.forEach(function (element) {
-                   html += "<tr><td contenteditable='true'>" + element.payment_date + "</td><td contenteditable='true'>" + element.reference_no + "</td><td contenteditable='true'>" + element.bank_name + "</td><td  class='editable-amount-paid' contenteditable='true' data-currency='<?php echo $currency; ?>'>" + element.amt_paid + "<input type='hidden' class='editable-input-4' name='editable-input-4' /></td><td class='balance-cell' contenteditable='false'>" + element.balance + "<input type='text' class='edit_balance' name='edit_balance' /></td><td contenteditable='true'>" + element.details + "</td><td style='display:none;'><input type='hidden'  class='payment_id_val' id='payment_id'/></td><td><a class=' btnclr btn del_pay'> Delete</a>    </td></tr>";
-                   count++;
-               });
-   
-               var all = total +table_header1 + table_header + html + table_footer;
-   
-                var total1 = "<input type='hidden' name='<?php echo $this->security->get_csrf_token_name();?>' value='<?php echo $this->security->get_csrf_hash();?>'><table id='table1'  class='table table-striped table-bordered'><tr><td colspan='3' style='border-top: hidden!important;background-color: white;text-align:center;font-weight:bold;font-size:18px;'>LIST OF DUE INVOICES</td></tr><tr><td rowspan='2' style='vertical-align: middle;text-align-last: center;'><b>Grand Total :  <?php  echo $currency;  ?>"+overallGTotal.toFixed(2)+"<b></td><td class='td' style='text-align:center;border-right: hidden;'><b>Total Amount Paid :<b></td><td style='text-align:start;'><?php  echo $currency;  ?>"+overall_paid.toFixed(2)+"</td></tr></tr><td class='td' style='border-right: hidden;'><b>Balance :<b></td><td  style='text-align:start;'  class='bcm' id='balance-cell' data-currency='<?php  echo $currency;  ?>'>"+parseFloat(overall_due.toFixed(2)) +"</td></tr></table>"
-           var table_header1='';
-            var table_footer1='';
-               if (basedOnCustomer && basedOnCustomer.length > 0) {
-       table_header1 = "<table class='newtable-second table table-striped table-bordered'><thead style='FONT-WEIGHT:BOLD;'><tr><td><div id='distribute-container'> </div></td><td style='width:60px;'>Invoice No</td><td style='width:100px;'>Total Amount</td><td style='width:200px;'>Amount Paid</td><td style='width:200px;'>Balance</td><td style='width:200px;'>Amount to Pay</td><td class='balance-column' style='width:200px;'>Updated Balance</td></tr></thead><tbody>";
-      
-      
-      
-      
-       table_footer1 = "</tbody><tfoot><tr><td colspan='5'></td><td class='t_amt_pay'></td><td  style='display:none;' class='balance-col t_bal_pay'></td></tr></tfoot></table>";
+   console.log("OVER : "+overallGTotal);
+   var gt = $('#customer_gtotal_provider').val();
+                    var amtpd = data.amt_paid;
+            var bal = $('#customer_gtotal_provider').val() - data.amt_paid;
+            var total = "<table id='table2' class='newtable table table-striped table-bordered'><tbody><tr><td rowspan='2' style='vertical-align: middle;text-align-last: center;'><b>Grand Total :  <?php  echo $currency;  ?>"+$('#customer_gtotal_provider').val()+"<b></td>                       <td class='td' style='text-align:end;border-right: hidden;'><b>Total Amount Paid :<b></td>       <td style='text-align:start;'><?php  echo $currency;  ?><span class='amt_paid_update'><input type='text' id='tl_amt_pd' value='"+data.amt_paid+"' name='tl_amt_pd'/></span></td>            <td><input type='hidden' value='"+$('#customer_gtotal_provider').val()+"' name='t_unique'/><span style='font-weight:bold;'>INVOICE NO</span> :<input type='hidden' id='unq_inv' value='"+$('#bill_number').val()+"' name='unq_inv'/>"+$('#bill_number').val()+"</td>     <td rowspan='2' style='vertical-align: middle;text-align-last: center;'><b>Advance :   <input type='text' name='advanceamount' id='advanceamount' readonly ></td>                                         </tr><tr><td class='td' style='text-align:end;'><b>Balance :<input type='text' id='my_bal_1' value='"+bal+"' name='my_bal_1'/><b></td><td class='due_pay' style='display:none;' id='balance-cell' data-currency='<?php  echo $currency;  ?>'>"+bal +"</td><td  data-currency='<?php echo $currency; ?>'><span style='font-weight:bold;'>Amount to Pay : </span><input type='text' id='amount_pay_unique' class='amount_pay' style='text-align:center;' readonly  name='amount_pay_1'/></td><td style='display:none'><input type='text'  value='<?php if($info_service[0]['payment_id']){ echo $info_service[0]['payment_id']; }else{ echo $payment_id_new;}?>' name='payment_id' class='payment_id_val' id='payment_id'/></td><td style='display:none' class='' data-currency='<?php echo $currency; ?>'><input type='text' name='updated_bal_uniq' class='balance-col'/></td><td> <input type='text' id='total-amount' placeholder='Enter Amount To Distribute' ></td> </tr></tbody></table>"
+               var table_header1 = "<div></div>  <thead><tr><td ><input type='hidden'  value='<?php echo $info_service[0]['customer_id'];  ?>' name='customer_id' /></tr></thead><tbody>";
+             var table_header = "<div class='toggle-button' onclick='toggleTable()'>Payment History &#9660;</div><table id='toggle_table' class='table table-striped table-bordered'><thead style='FONT-WEIGHT:BOLD;'><tr><td style='display:none;'><input type='text'  value='<?php if($info_service[0]['payment_id']){ echo $info_service[0]['payment_id']; }else{ echo $payment_id_new;}?>' name='payment_id_this_invoice' class='payment_id_val' id='payment_id_this_invoice'/></td><td>Payment Date</td><td>Reference.NO</td><td>Bank Name</td><td>Amount Paid</td><td>Balance</td><td>Details</td> </tr></thead><tbody>";
+           var table_footer = "</tbody><tfoot><tr><td style='text-align: center;vertical-align: middle;' colspan='7' ><input type='button' class='btn' style='text-align:center;color:white;background-color:#38469f;font-weight:bold';  value='Update' id='edit_payment'/></td></tr></tfoot></table>";
+             var html = "";
+             var count = 1;
+            data.payment_get.forEach(function (element) {
+                html += "<tr>" +
+    "<td contenteditable='true'>" + element.payment_date + "</td>" +
+    "<td contenteditable='true'>" + element.reference_no + "</td>" +
+    "<td contenteditable='true'>" + element.bank_name + "</td>" +
+    "<td class='editable-amount-paid' contenteditable='true' data-currency='<?php echo $currency; ?>'>" +  "<span class='palist'>" + element.amt_paid + "</span>" +
+    "<input type='hidden' class='editable-input-4' name='editable-input-4' /></td>" +
+    "<td class='balance-cell' contenteditable='false'>" + "<span class='balist'>" +  element.balance +"</span>" +
+    "<input type='text' class='edit_balance' name='edit_balance' /></td>" +
+    "<td contenteditable='true'>" + element.details + "</td>" +
+    "<td style='display:none;'>" +
+    "<input type='hidden' value='<?php if($info_service[0]['payment_id']){ echo $info_service[0]['payment_id']; }else{ echo $payment_id_new;}?>' name='payment_id' class='pay_id' id='payment_id'/></td>" +
+    +  "</tr>";
+                  count++;
+            });
+                var all = total + table_header + html + table_footer +table_header1;
+             var total1 = "<input type='hidden' name='<?php echo $this->security->get_csrf_token_name();?>' value='<?php echo $this->security->get_csrf_hash();?>'><table id='table1'  class='table table-striped table-bordered'><tr><td colspan='3' style='border-top: hidden!important;background-color: white;text-align:center;font-weight:bold;font-size:18px;'>LIST OF DUE INVOICES</td></tr><tr><td rowspan='2' style='vertical-align: middle;text-align-last: center;'><b>Grand Total :  <?php  echo $currency;  ?>"+overallGTotal.toFixed(2)+"<b></td><td class='td' style='text-align:center;border-right: hidden;'><b>Total Amount Paid :<b></td><td><?php  echo $currency;  ?>"+overall_paid.toFixed(2)+"</td></tr></tr><td class='td' style='border-right: hidden;'><b>Balance :<b></td><td style='text-align:start;' id='balance-cell'  class='bcm'   data-currency='<?php  echo $currency;  ?>'>"+parseFloat(overall_due.toFixed(2)) +"</td></tr></table>"
+               var table_header1='';
+         var table_footer1='';
+            if (basedOnCustomer && basedOnCustomer.length > 0) {
+    table_header1 = "<table class='newtable-second table table-striped table-bordered'><thead style='FONT-WEIGHT:BOLD;'><tr><td><div id='distribute-container'> </div></td><td style='width:60px;'>Invoice No</td><td style='width:100px;'>Total Amount</td><td style='width:200px;'>Amount Paid</td><td style='width:200px;'>Balance</td><td style='width:200px;'>Amount to Pay</td><td class='balance-column' style='width:200px;'>Updated Balance</td></tr></thead><tbody>";
+    table_footer1 = "</tbody><tfoot><tr><td colspan='5'></td><td class='t_amt_pay'></td><td  style='display:none;' class='balance-col t_bal_pay'></td></tr></tfoot></table>";
    } else {
-       // Center-align the "No Due Invoices" text using CSS
-       table_header1 = "<div style='font-size:larger;text-align:center;'><b>No Dues</b>  &#x1F60A;</div>";
+   
+    table_header1 = "<div style='font-size:larger;text-align:center;'><b>No Dues</b>  &#x1F60A;</div>";
    }
-               var html1 = "";
-               var count1 = 1;
-   
-   
-               for (var invoiceId in basedOnCustomer) {
-       if (basedOnCustomer.hasOwnProperty(invoiceId)) {
-     
-           var element = basedOnCustomer[invoiceId];
-                var pay_id=element.payment_id;
-          console.log("PAY :"+pay_id);
-         var random10DigitNumber='';
-         if(pay_id=='' || pay_id =='0'){
-     random10DigitNumber = generateRandom10DigitNumber();
-         }else{
-            random10DigitNumber=pay_id;
-         }
-               html1 += "<tr><td style='display:none;'><input type='hidden' value='"+random10DigitNumber+"' name='payment_id[]'/></td><td> <input type='checkbox' id='<?php echo $count1; ?>' class='checkbox-distribute'></td><td><input type='text' readonly style='text-align:center;'  value='" + element.bill_number + "' name='invoice_no[]'/></td><td><input type='text' readonly  class='g_pament' value='" + element.gtotals + "' name='total_amt[]' style='text-align:center;'/></td><td>" + element.amount_paids + "</td><td class='due_pay' data-currency='<?php echo $currency; ?>'>" + element.balances + "</td><td  data-currency='<?php echo $currency; ?>'><input type='text' id='amount_pay' class='amount_pay' style='text-align:center;' name='amount_pay[]'/></td><td    class='balance-column' data-currency='<?php echo $currency; ?>'><input type='text' name='updated_bal[]' readonly class='balance-col'/></td></tr>";
-                   count1++;
-       }
+             var html1 = "";
+            var count1 = 1;
+            for (var invoiceId in basedOnCustomer) {
+    if (basedOnCustomer.hasOwnProperty(invoiceId)) {
+        var element = basedOnCustomer[invoiceId];
+             var pay_id=element.payment_id;
+       console.log("PAY :"+pay_id);
+      var random10DigitNumber='';
+      if(pay_id=='' || pay_id =='0'){
+   random10DigitNumber = generateRandom10DigitNumber();
+      }else{
+         random10DigitNumber=pay_id;
+      }
+            html1 += "<tr><td style='display:none;'><input type='hidden' value='"+random10DigitNumber+"' name='payment_id[]'/></td><td> <input type='checkbox' id='<?php echo $count1; ?>' class='checkbox-distribute'></td><td><input type='text' readonly style='text-align:center;'  value='" + element.bill_number + "' name='invoice_no[]'/></td><td><input type='text' readonly  class='g_pament' value='" + element.gtotals + "' name='total_amt[]' style='text-align:center;'/></td><td>" + element.amount_paids + "</td><td class='due_pay' data-currency='<?php echo $currency; ?>'>" + element.balances + "</td><td  data-currency='<?php echo $currency; ?>'><input type='text' id='amount_pay' class='amount_pay' style='text-align:center;' name='amount_pay[]'/></td><td    class='balance-column' data-currency='<?php echo $currency; ?>'><input type='text' name='updated_bal[]' readonly class='balance-col'/></td></tr>";
+            count1++;
+    }
    }
-     all +=  total1 + table_header1 + html1 + table_footer1;
-    var total2 = ""
-               var table_header2 = "<div id='pay_now_table'><table class='table table-striped table-bordered'><tr><th>Date</th><th>Bank</th><th>Reference No</th><th>Payment Amount</th><th>Action</th></tr><tr><td><input type='date' name='bulk_payment_date' value='<?php echo html_escape($date); ?>'/></td><td><select name='bulk_bank' id='bank'  class='form-control bankpayment' > <option value='JPMorgan Chase'>JPMorgan Chase</option> <option value='New York City'>New York City</option> <option value='Bank of America'>Bank of America</option> <option value='Citigroup'>Citigroup</option> <option value='Wells Fargo'>Wells Fargo</option> <option value='Goldman Sachs'>Goldman Sachs</option> <option value='Morgan Stanley'>Morgan Stanley</option> <option value='U.S. Bancorp'>U.S. Bancorp</option> <option value='PNC Financial Services'>PNC Financial Services</option> <option value='Truist Financial'>Truist Financial</option> <option value='Charles Schwab Corporation'>Charles Schwab Corporation</option> <option value='TD Bank, N.A.'>TD Bank, N.A.</option> <option value='Capital One'>Capital One</option> <option value='The Bank of New York Mellon'>The Bank of New York Mellon</option> <option value='State Street Corporation'>State Street Corporation</option> <option value='American Express'>American Express</option> <option value='Citizens Financial Group'>Citizens Financial Group</option> <option value='HSBC Bank USA'>HSBC Bank USA</option> <option value='SVB Financial Group'>SVB Financial Group</option> <option value='First Republic Bank '>First Republic Bank </option> <option value='Fifth Third Bank'>Fifth Third Bank</option> <option value='BMO USA'>BMO USA</option> <option value='USAA'>USAA</option> <option value='UBS'>UBS</option> <option value='M&T Bank'>M&T Bank</option> <option value='Ally Financial'>Ally Financial</option> <option value='KeyCorp'>KeyCorp</option> <option value='Huntington Bancshares'>Huntington Bancshares</option> <option value='Barclays'>Barclays</option> <option value='Santander Bank'>Santander Bank</option> <option value='RBC Bank'>RBC Bank</option> <option value='Ameriprise'>Ameriprise</option> <option value='Regions Financial Corporation'>Regions Financial Corporation</option> <option value='Northern Trust'>Northern Trust</option> <option value='BNP Paribas'>BNP Paribas</option> <option value='Discover Financial'>Discover Financial</option> <option value='First Citizens BancShares'>First Citizens BancShares</option> <option value='Synchrony Financial'>Synchrony Financial</option> <option value='Deutsche Bank'>Deutsche Bank</option> <option value='New York Community Bank'>New York Community Bank</option> <option value='Comerica'>Comerica</option> <option value='First Horizon National Corporation'>First Horizon National Corporation</option> <option value='Raymond James Financial'>Raymond James Financial</option> <option value='Webster Bank'>Webster Bank</option> <option value='Western Alliance Bank'>Western Alliance Bank</option> <option value='Popular, Inc.'>Popular, Inc.</option> <option value='CIBC Bank USA'>CIBC Bank USA</option> <option value='East West Bank'>East West Bank</option> <option value='Synovus'>Synovus</option> <option value='Valley National Bank'>Valley National Bank</option> <option value='Credit Suisse '>Credit Suisse </option> <option value='Mizuho Financial Group'>Mizuho Financial Group</option> <option value='Wintrust Financial'>Wintrust Financial</option> <option value='Cullen/Frost Bankers, Inc.'>Cullen/Frost Bankers, Inc.</option> <option value='John Deere Capital Corporation'>John Deere Capital Corporation</option> <option value='MUFG Union Bank'>MUFG Union Bank</option> <option value='BOK Financial Corporation'>BOK Financial Corporation</option> <option value='Old National Bank'>Old National Bank</option> <option value='South State Bank'>South State Bank</option> <option value='FNB Corporation'>FNB Corporation</option> <option value='Pinnacle Financial Partners'>Pinnacle Financial Partners</option> <option value='PacWest Bancorp'>PacWest Bancorp</option> <option value='TIAA'>TIAA</option> <option value='Associated Banc-Corp'>Associated Banc-Corp</option> <option value='UMB Financial Corporation'>UMB Financial Corporation</option> <option value='Prosperity Bancshares'>Prosperity Bancshares</option> <option value='Stifel'>Stifel</option> <option value='BankUnited'>BankUnited</option> <option value='Hancock Whitney'>Hancock Whitney</option> <option value='MidFirst Bank'>MidFirst Bank</option> <option value='Sumitomo Mitsui Banking Corporation'>Sumitomo Mitsui Banking Corporation</option> <option value='Beal Bank'>Beal Bank</option> <option value='First Interstate BancSystem'>First Interstate BancSystem</option> <option value='Commerce Bancshares'>Commerce Bancshares</option> <option value='Umpqua Holdings Corporation'>Umpqua Holdings Corporation</option> <option value='United Bank (West Virginia)'>United Bank (West Virginia)</option> <option value='Texas Capital Bank'>Texas Capital Bank</option> <option value='First National of Nebraska'>First National of Nebraska</option> <option value='FirstBank Holding Co'>FirstBank Holding Co</option> <option value='Simmons Bank'>Simmons Bank</option> <option value='Fulton Financial Corporation'>Fulton Financial Corporation</option> <option value='Glacier Bancorp'>Glacier Bancorp</option> <option value='Arvest Bank'>Arvest Bank</option> <option value='BCI Financial Group'>BCI Financial Group</option> <option value='Ameris Bancorp'>Ameris Bancorp</option> <option value='First Hawaiian Bank'>First Hawaiian Bank</option> <option value='United Community Bank'>United Community Bank</option> <option value='Bank of Hawaii'>Bank of Hawaii</option> <option value='Home BancShares'>Home BancShares</option> <option value='Eastern Bank'>Eastern Bank</option> <option value='Cathay Bank'>Cathay Bank</option> <option value='Pacific Premier Bancorp'>Pacific Premier Bancorp</option> <option value='Washington Federal'>Washington Federal</option> <option value='Customers Bancorp'>Customers Bancorp</option> <option value='Atlantic Union Bank'>Atlantic Union Bank</option> <option value='Columbia Bank'>Columbia Bank</option> <option value='Heartland Financial USA'>Heartland Financial USA</option> <option value='WSFS Bank'>WSFS Bank</option> <option value='Central Bancompany'>Central Bancompany</option> <option value='Independent Bank'>Independent Bank</option> <option value='Hope Bancorp'>Hope Bancorp</option> <option value='SoFi'>SoFi</option> <?php foreach($bank_list as $b){ ?> <option value='<?=$b['bank_name']; ?>'><?=$b['bank_name']; ?></option> <?php } ?> </select></td><td><input type='text' required  name='bulk_pay_ref' placeholder='Ref No'/></td><td class='t_amt_pay'></td>";
-               var table_footer2 = "<td><input type='submit' style='color:white;background-color: #38469f;padding:2px;font-weight:bold;' id='pay_now' value='PAY NOW'/></td></tr></tbody></table></div>";
-               var html2 = "";
-               var count2 = 1;
-     all +=  total2 + table_header2 + html2 + table_footer2;
-   
-               $('#salle_list').html(all);
-               $('#payment_history_modal').modal('show');
-                 $('#pay_now_table').hide();
-                 $('.balance-column').hide();
-     var amountPaidCells = document.querySelectorAll('#salle_list tbody tr td:nth-child(5)'); // Assuming "Amount Paid" is the 5th column
-               amountPaidCells.forEach(function (cell) {
-                   cell.addEventListener('input', function () {
-                       updateBalances();
-                    
-                   });
-               });
-           }
-       });
-   
-       event.preventDefault();
+   all +=  total1 + table_header1 + html1 + table_footer1;
+   var total2 = ""
+            var table_header2 = "<div id='pay_now_table'><table class='table table-striped table-bordered'><tr><th>Date</th><th>Bank</th><th>Reference No</th><th>Payment Amount</th><th>Action</th></tr><tr><td><input type='date' name='bulk_payment_date' value='<?php echo html_escape($date); ?>'/></td><td><select name='bulk_bank' id='bank'  class='form-control bankpayment' > <option value='JPMorgan Chase'>JPMorgan Chase</option> <option value='New York City'>New York City</option> <option value='Bank of America'>Bank of America</option> <option value='Citigroup'>Citigroup</option> <option value='Wells Fargo'>Wells Fargo</option> <option value='Goldman Sachs'>Goldman Sachs</option> <option value='Morgan Stanley'>Morgan Stanley</option> <option value='U.S. Bancorp'>U.S. Bancorp</option> <option value='PNC Financial Services'>PNC Financial Services</option> <option value='Truist Financial'>Truist Financial</option> <option value='Charles Schwab Corporation'>Charles Schwab Corporation</option> <option value='TD Bank, N.A.'>TD Bank, N.A.</option> <option value='Capital One'>Capital One</option> <option value='The Bank of New York Mellon'>The Bank of New York Mellon</option> <option value='State Street Corporation'>State Street Corporation</option> <option value='American Express'>American Express</option> <option value='Citizens Financial Group'>Citizens Financial Group</option> <option value='HSBC Bank USA'>HSBC Bank USA</option> <option value='SVB Financial Group'>SVB Financial Group</option> <option value='First Republic Bank '>First Republic Bank </option> <option value='Fifth Third Bank'>Fifth Third Bank</option> <option value='BMO USA'>BMO USA</option> <option value='USAA'>USAA</option> <option value='UBS'>UBS</option> <option value='M&T Bank'>M&T Bank</option> <option value='Ally Financial'>Ally Financial</option> <option value='KeyCorp'>KeyCorp</option> <option value='Huntington Bancshares'>Huntington Bancshares</option> <option value='Barclays'>Barclays</option> <option value='Santander Bank'>Santander Bank</option> <option value='RBC Bank'>RBC Bank</option> <option value='Ameriprise'>Ameriprise</option> <option value='Regions Financial Corporation'>Regions Financial Corporation</option> <option value='Northern Trust'>Northern Trust</option> <option value='BNP Paribas'>BNP Paribas</option> <option value='Discover Financial'>Discover Financial</option> <option value='First Citizens BancShares'>First Citizens BancShares</option> <option value='Synchrony Financial'>Synchrony Financial</option> <option value='Deutsche Bank'>Deutsche Bank</option> <option value='New York Community Bank'>New York Community Bank</option> <option value='Comerica'>Comerica</option> <option value='First Horizon National Corporation'>First Horizon National Corporation</option> <option value='Raymond James Financial'>Raymond James Financial</option> <option value='Webster Bank'>Webster Bank</option> <option value='Western Alliance Bank'>Western Alliance Bank</option> <option value='Popular, Inc.'>Popular, Inc.</option> <option value='CIBC Bank USA'>CIBC Bank USA</option> <option value='East West Bank'>East West Bank</option> <option value='Synovus'>Synovus</option> <option value='Valley National Bank'>Valley National Bank</option> <option value='Credit Suisse '>Credit Suisse </option> <option value='Mizuho Financial Group'>Mizuho Financial Group</option> <option value='Wintrust Financial'>Wintrust Financial</option> <option value='Cullen/Frost Bankers, Inc.'>Cullen/Frost Bankers, Inc.</option> <option value='John Deere Capital Corporation'>John Deere Capital Corporation</option> <option value='MUFG Union Bank'>MUFG Union Bank</option> <option value='BOK Financial Corporation'>BOK Financial Corporation</option> <option value='Old National Bank'>Old National Bank</option> <option value='South State Bank'>South State Bank</option> <option value='FNB Corporation'>FNB Corporation</option> <option value='Pinnacle Financial Partners'>Pinnacle Financial Partners</option> <option value='PacWest Bancorp'>PacWest Bancorp</option> <option value='TIAA'>TIAA</option> <option value='Associated Banc-Corp'>Associated Banc-Corp</option> <option value='UMB Financial Corporation'>UMB Financial Corporation</option> <option value='Prosperity Bancshares'>Prosperity Bancshares</option> <option value='Stifel'>Stifel</option> <option value='BankUnited'>BankUnited</option> <option value='Hancock Whitney'>Hancock Whitney</option> <option value='MidFirst Bank'>MidFirst Bank</option> <option value='Sumitomo Mitsui Banking Corporation'>Sumitomo Mitsui Banking Corporation</option> <option value='Beal Bank'>Beal Bank</option> <option value='First Interstate BancSystem'>First Interstate BancSystem</option> <option value='Commerce Bancshares'>Commerce Bancshares</option> <option value='Umpqua Holdings Corporation'>Umpqua Holdings Corporation</option> <option value='United Bank (West Virginia)'>United Bank (West Virginia)</option> <option value='Texas Capital Bank'>Texas Capital Bank</option> <option value='First National of Nebraska'>First National of Nebraska</option> <option value='FirstBank Holding Co'>FirstBank Holding Co</option> <option value='Simmons Bank'>Simmons Bank</option> <option value='Fulton Financial Corporation'>Fulton Financial Corporation</option> <option value='Glacier Bancorp'>Glacier Bancorp</option> <option value='Arvest Bank'>Arvest Bank</option> <option value='BCI Financial Group'>BCI Financial Group</option> <option value='Ameris Bancorp'>Ameris Bancorp</option> <option value='First Hawaiian Bank'>First Hawaiian Bank</option> <option value='United Community Bank'>United Community Bank</option> <option value='Bank of Hawaii'>Bank of Hawaii</option> <option value='Home BancShares'>Home BancShares</option> <option value='Eastern Bank'>Eastern Bank</option> <option value='Cathay Bank'>Cathay Bank</option> <option value='Pacific Premier Bancorp'>Pacific Premier Bancorp</option> <option value='Washington Federal'>Washington Federal</option> <option value='Customers Bancorp'>Customers Bancorp</option> <option value='Atlantic Union Bank'>Atlantic Union Bank</option> <option value='Columbia Bank'>Columbia Bank</option> <option value='Heartland Financial USA'>Heartland Financial USA</option> <option value='WSFS Bank'>WSFS Bank</option> <option value='Central Bancompany'>Central Bancompany</option> <option value='Independent Bank'>Independent Bank</option> <option value='Hope Bancorp'>Hope Bancorp</option> <option value='SoFi'>SoFi</option> <?php foreach($bank_list as $b){ ?> <option value='<?=$b['bank_name']; ?>'><?=$b['bank_name']; ?></option> <?php } ?> </select></td><td><input type='text' name='bulk_pay_ref' placeholder='Ref No'/></td><td class='t_amt_pay'></td>";
+            var table_footer2 = "<td><input type='submit' style='color:white;background-color: #38469f;padding:2px;font-weight:bold;' id='pay_now' value='PAY NOW'/></td></tr></tbody></table></div>";
+            var html2 = "";
+            var count2 = 1;
+   all +=  total2 + table_header2 + html2 + table_footer2;
+    all = all.replace(/NaN/g, '');
+            $('#salle_list').html(all);
+            $('#payment_history_modal').modal('show');
+              $('#pay_now_table').hide();
+              $('.balance-column').hide();
+   var amountPaidCells = document.querySelectorAll('#salle_list tbody tr td:nth-child(5)'); // Assuming "Amount Paid" is the 5th column
+            amountPaidCells.forEach(function (cell) {
+                cell.addEventListener('input', function () {
+                    updateBalances();
+                });
+            });
+        }
+    });
+    event.preventDefault();
    });
    var amountPaidCells = document.querySelectorAll('#salle_list tbody td.editable-amount-paid');
    amountPaidCells.forEach(function (cell) {
-       cell.addEventListener('input', function () {
-           updateBalance(cell);
-       });
+    cell.addEventListener('input', function () {
+        updateBalance(cell);
+    });
    });
+     function generateRandom10DigitNumber() {
    
+    const min = Math.pow(10, 9); 
+    const max = Math.pow(10, 10) - 1; 
+    const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
+    return randomNumber;
+}
    function toggleTable() {
-     const toggleTable = document.getElementById('toggle_table');
-     const toggleButton = document.querySelector('.toggle-button');
-   
-     if (toggleTable.style.display === 'none' || toggleTable.style.display === '') {
-       toggleTable.style.display = 'table'; // Show the table
-       toggleButton.textContent = 'Hide Table \u25B2'; // Change text to "Hide Table" with up arrow
-     } else {
-       toggleTable.style.display = 'none'; // Hide the table
-       toggleButton.textContent = 'Payment History \u25BC'; // Change text to "Payment History" with down arrow
-     }
+   const toggleTable = document.getElementById('toggle_table');
+   const toggleButton = document.querySelector('.toggle-button');
+   if (toggleTable.style.display === 'none' || toggleTable.style.display === '') {
+    toggleTable.style.display = 'table'; 
+    toggleButton.textContent = 'Hide Table \u25B2'; 
+   } else {
+    toggleTable.style.display = 'none'; 
+    toggleButton.textContent = 'Payment History \u25BC'; 
    }
-   
-   
-   
-   
-   
-   
-   
-      
-   
-   
-   
-    // Function to show the tooltip
-   
-   
-       // Event handler for when the total amount input changes
-   $(document).ready(function () {
-       $(document).on('keyup', '#total-amount', function () {
-   
-           var totalAmount = parseFloat($(this).val().trim());
-   
-           if (isNaN(totalAmount)) {
-               totalAmount = 0;
-           }
-   
-           var t_amont = 0;
-           var rows = $('.newtable tbody tr');
-           var secondTableRows = $('.newtable-second tbody tr');
-           var remainingAmount = totalAmount;
-   
-           // Fill the first table
-           rows.each(function () {
-               var amountPayInput = $(this).find('.amount_pay');
-               var balanceCell = $(this).find('.td input');
-            
-               var balance = parseFloat(balanceCell.val());
-     balance = isNaN(balance) ? 0 : balance;
+   }
   
-               if (balance > 0 && remainingAmount > 0) {
-                   var amountToPay = Math.min(balance, remainingAmount);
-                   amountPayInput.val(amountToPay.toFixed(2));
-                   remainingAmount -= amountToPay;
-                   t_amont += amountToPay;
-   
-                   if (amountToPay > 0) {
-                       $(this).find('.checkbox-distribute').prop('checked', true);
-                   }
-               } else if (balance <= 0 && remainingAmount > 0) {
-           // Share the remainingAmount with the secondTableRows
-           var amountToPay = Math.min(Math.abs(balance), remainingAmount);
-        
-           t_amont += amountToPay;
-   
-           if (amountToPay > 0) {
-               $(this).find('.checkbox-distribute').prop('checked', true);
-           }
-   
+   $(document).ready(function () {
+    $(document).on('keyup', '#total-amount', function () {
+        var totalAmount = parseFloat($(this).val().trim());
+        if (isNaN(totalAmount)) {
+            totalAmount = 0;
+        }
+        var t_amont = 0;
+        var rows = $('.newtable tbody tr');
+        var secondTableRows = $('.newtable-second tbody tr');
+        var remainingAmount = totalAmount;
        
-       } else {
-           amountPayInput.val('0.00');
-       }
-           });
-
-           // Distribute any remaining amount to the second table
-           secondTableRows.each(function () {
-               var checkbox = $(this).find('.checkbox-distribute');
-               var amountPayInput = $(this).find('.amount_pay');
-               var balanceCell = $(this).find('.due_pay');
-               var balance = parseFloat(balanceCell.text());
-           //  var b=  parseFloat(balanceCell.text())-parseFloat(amountPayInput.text());
-               //console.log('swd'+b);
-              
-               var balance = parseFloat(balanceCell.text());
-   
-   var amountPaid = parseFloat(amountPayInput.val());
-    var amountToPay1 = Math.min(balance, remainingAmount);
-                   var b = balance - amountToPay1.toFixed(2);
-   console.log('swd' +balance+'-'+ amountPaid+'='+b);
-     $(this).closest('tr').find('.balance-col').val(b.toFixed(2));
-               if (balance > 0 && remainingAmount > 0) {
-                   var amountToPay = Math.min(balance, remainingAmount);
-   //                 var b = balance - amountToPay.toFixed(2);
-   // console.log('swd' +balance+'-'+ amountPaid+'='+b);
-   //   $(this).closest('tr').find('.balance-col').val(b);
-                   amountPayInput.val(amountToPay.toFixed(2));
-                   remainingAmount -= amountToPay;
-   
-                   if (amountToPay > 0) {
-                       checkbox.prop('checked', true);
-                   }
-               } else {
-                   amountPayInput.val('0.00');
-               }
-           });
-   
+        rows.each(function () {
+            var amountPayInput = $(this).find('.amount_pay');
+            var balanceCell = $(this).find('.td input');
         
-   
-           var amttopay = isNaN(t_amont) ? 0 : t_amont;
-           if (amttopay == '' || amttopay == '0.00') {
-               $('#pay_now_table').hide();
-               $('.checkbox-distribute').prop('checked', false);
-               $('.amount_pay').val('0.00');
-           }
-           $('.t_amt_pay').text(amttopay.toFixed(2));
-              oninputamount_pay();
-
-       });
+            var balance = parseFloat(balanceCell.val());
+   balance = isNaN(balance) ? 0 : balance;
+    if (balance > 0 && remainingAmount > 0) {
+                var amountToPay = Math.min(balance, remainingAmount);
+                amountPayInput.val(amountToPay.toFixed(2));
+                remainingAmount -= amountToPay;
+                t_amont += amountToPay;
+                if (amountToPay > 0) {
+                    $(this).find('.checkbox-distribute').prop('checked', true);
+                }
+            } else if (balance <= 0 && remainingAmount > 0) {
+     
+        var amountToPay = Math.min(Math.abs(balance), remainingAmount);
+     
+        t_amont += amountToPay;
+        if (amountToPay > 0) {
+            $(this).find('.checkbox-distribute').prop('checked', true);
+        }
+    } else {
+        amountPayInput.val('0.00');
+    }
+        });
+   $(document).on('change', '.checkbox-distribute', function () {
+        if (!$(this).prop('checked')) {
+            $(this).closest('tr').find('.amount_pay').val('');
+            var due_pay= $(this).closest('tr').find('.due_pay').val();
+             $(this).closest('tr').find('.balance-column input').val('');
+        }
+        updateTotalAmountToPay();
+    });
+      
+        secondTableRows.each(function () {
+            var checkbox = $(this).find('.checkbox-distribute');
+            var amountPayInput = $(this).find('.amount_pay');
+            var balanceCell = $(this).find('.due_pay');
+            var balance = parseFloat(balanceCell.text());
+      
+            var balance = parseFloat(balanceCell.text());
+   var amountPaid = parseFloat(amountPayInput.val());
+   var amountToPay1 = Math.min(balance, remainingAmount);
+                var b = balance - amountToPay1.toFixed(2);
+   console.log('swd' +balance+'-'+ amountPaid+'='+b);
+   $(this).closest('tr').find('.balance-col').val(b.toFixed(2));
+            if (balance > 0 && remainingAmount > 0) {
+                var amountToPay = Math.min(balance, remainingAmount);
+ 
+                amountPayInput.val(amountToPay.toFixed(2));
+                remainingAmount -= amountToPay;
+                if (amountToPay > 0) {
+                    checkbox.prop('checked', true);
+                }
+            } else {
+                amountPayInput.val('0.00');
+            }
+        });
+        oninputamount_pay();
+        var amttopay = isNaN(t_amont) ? 0 : t_amont;
+        if (amttopay == '' || amttopay == '0.00') {
+            $('#pay_now_table').hide();
+            $('.checkbox-distribute').prop('checked', false);
+            $('.amount_pay').val('0.00');
+        }
+        $('.t_amt_pay').text(amttopay.toFixed(2));
+    });
    });
-       $(document).on('change', '.checkbox-distribute', function () {
-           if (!$(this).prop('checked')) {
-               $(this).closest('tr').find('.amount_pay').val('');
-               var due_pay= $(this).closest('tr').find('.due_pay').val();
-                $(this).closest('tr').find('.balance-column input').val('');
-           }
-           updateTotalAmountToPay();
-       });
    // Function to update the balance based on the edited "Amount Paid"
    function updateBalance(editedCell) {
-       var row = editedCell.parentElement;
-       var totalAmountCell = row.querySelector('td[data-currency]');
-       var balanceCell = row.querySelector('td.balance-cell');
+    var row = editedCell.parentElement;
+    var totalAmountCell = row.querySelector('td[data-currency]');
+    var balanceCell = row.querySelector('td.balance-cell');
+    var totalAmount = parseFloat(totalAmountCell.textContent);
+    var editedAmountPaid = parseFloat(editedCell.textContent);
+    var newBalance = totalAmount - editedAmountPaid;
    
-       var totalAmount = parseFloat(totalAmountCell.textContent);
-       var editedAmountPaid = parseFloat(editedCell.textContent);
-       var newBalance = totalAmount - editedAmountPaid;
-   
-       // Update the balance cell with the new balance
-       balanceCell.textContent = newBalance.toFixed(2);
+    balanceCell.textContent = newBalance.toFixed(2);
    }
    function updateBalances() {
-      
+    var grandTotal = $('#grand-total').val();
     
-       var grandTotal = $('#grand-total').val();
-         // var grandTotal = 3500;
-           var totalPaid = 0;
-   
-           // Loop through each row
-           $('#toggle_table tr').each(function () {
-               var $row = $(this);
-               var $amountPaid = $row.find('.editable-amount-paid');
-               var $balanceCell = $row.find('.balance_cell');
-   
-               // Get the amount paid from the input field
-               var amountPaid = parseFloat($amountPaid.text());
-   
-               // Update the balance cell
-               var balance = grandTotal - totalPaid - amountPaid;
-               $balanceCell.text(balance);
-   
-               // Update the total paid
-               totalPaid += amountPaid;
-           });
-      
+        var totalPaid = 0;
+    
+        $('#toggle_table tr').each(function () {
+            var $row = $(this);
+            var $amountPaid = $row.find('.editable-amount-paid');
+            var $balanceCell = $row.find('.balance_cell');
+          
+            var amountPaid = parseFloat($amountPaid.text());
+           
+            var balance = grandTotal - totalPaid - amountPaid;
+            $balanceCell.text(balance);
+           
+            totalPaid += amountPaid;
+        });
    }
-   
-   
    function updateTotalAmountToPay() {
-     var totalAmountToPay = 0;
-     
-     // Iterate through each "Amount to Pay" input field and sum their values
-     $('.amount_pay').each(function () {
-       var amount = parseFloat($(this).val()) || 0; // Convert input value to a number, default to 0 if not a valid number
-     if($(this).val() =='' || $(this).val() =='0.00'){
-      $(this).closest('tr').find('.checkbox-distribute').prop('checked', false);
-   
-     }
-       totalAmountToPay += amount;
-     });
-      var amttopay = isNaN(totalAmountToPay) ? 0 : totalAmountToPay;
-      if(amttopay =='' || amttopay=='0.00'){
-         $('#pay_now_table').hide();
-      }
-     // Display the sum in the .t_amt_pay element
-     $('.t_amt_pay').text(amttopay.toFixed(2));
-     
+   var totalAmountToPay = 0;
+   // Iterate through each "Amount to Pay" input field and sum their values
+   $('.amount_pay').each(function () {
+    var amount = parseFloat($(this).val()) || 0; 
+   if($(this).val() =='' || $(this).val() =='0.00'){
+   $(this).closest('tr').find('.checkbox-distribute').prop('checked', false);
    }
-   
+    totalAmountToPay += amount;
+   });
+   var amttopay = isNaN(totalAmountToPay) ? 0 : totalAmountToPay;
+   if(amttopay =='' || amttopay=='0.00'){
+      $('#pay_now_table').hide();
+   }
+
+   $('.t_amt_pay').text(amttopay.toFixed(2));
+   }
    function updateTotalbalanceToPay() {
-     
-     var totalbalanceToPay = 0;
-     
-     // Iterate through each "Amount to Pay" input field and sum their values
-     $('.updated_bal').each(function () {
-       var amount1 = parseFloat($(this).val()) || 0; // Convert input value to a number, default to 0 if not a valid number
-       totalbalanceToPay += amount1;
-     });
-     
-     // Display the sum in the .t_amt_pay element
-     $('.t_bal_pay').text(totalbalanceToPay.toFixed(2));
+   var totalbalanceToPay = 0;
+ 
+   $('.updated_bal').each(function () {
+    var amount1 = parseFloat($(this).val()) || 0; 
+    totalbalanceToPay += amount1;
+   });
+   
+   $('.t_bal_pay').text(totalbalanceToPay.toFixed(2));
    }
-   
-   
-     var totalbalancetopay = 0;
-   // Add an event listener to all "Amount to Pay" input fields for keyup event
+   var totalbalancetopay = 0;
+  
    $(document).on('keyup change input', '.amount_pay,#total-amount', function () {
    oninputamount_pay();
    });
-      $(document).on('keyup change input', '.amount_pay', function () {
-
-   debugger;
+         $(document).on('keyup change input', '.amount_pay', function () {
     var total_balance_amount = parseFloat($('.t_amt_pay').html());
  var amount_to_distribute = parseFloat($('#total-amount').val());
-
  var final=parseFloat(amount_to_distribute)-parseFloat(total_balance_amount);
- 
  if (final > 0) {
      $('#advanceamount').val(final);
  }else{
@@ -1114,273 +1016,221 @@ foreach ($expensetax as $tx) {?>
  }
    });
    $(document).on('keyup change input', '.amount_pay,#total-amount', function () {
-   
-     updateTotalAmountToPay();
-   
+   updateTotalAmountToPay();
    var anyAmountPaid = false;
-               $('.amount_pay').each(function () {
-                   if ($(this).val() !== '') {
-                       anyAmountPaid = true;
-                       return false; // Exit the loop early
-                   }
-               });
-               if (anyAmountPaid) {
-                   $('#pay_now_table').show();
-                    $('.balance-column').show();
-               } else {
-                   $('#pay_now_table').hide();
-                    $('.balance-column').hide();
-               } 
-    var amountPaidCell = $(this).val(); // "Amount Paid" cell
-       var balanceCell = $(this).closest('tr').find('.due_pay').text(); // "Balance" cell
-     var amountPaid = parseFloat(amountPaidCell) || 0; // Get the current "Amount Paid"
-       var amountToPay = parseFloat(balanceCell) || 0; // Get the entered "Amount to Pay"
-       var updatedBalance = amountToPay-amountPaid; // Calculate the updated balance
-    //$(this).closest('tr').find('.updated_bal').val();
-     
-    
-    
-    $(this).closest('tr').find('.balance-column').html("<input type='text' id='updated_bal' readonly class='updated_bal' name='updated_bal[]' value="+updatedBalance.toFixed(2)+" />");
+            $('.amount_pay').each(function () {
+                if ($(this).val() !== '') {
+                    anyAmountPaid = true;
+                    return false;
+                }
+            });
+            if (anyAmountPaid) {
+                $('#pay_now_table').show();
+                 $('.balance-column').show();
+            } else {
+                $('#pay_now_table').hide();
+                 $('.balance-column').hide();
+            } 
+   var amountPaidCell = $(this).val(); 
+    var balanceCell = $(this).closest('tr').find('.due_pay').text(); 
+   var amountPaid = parseFloat(amountPaidCell) || 0; 
+    var amountToPay = parseFloat(balanceCell) || 0;
+    var updatedBalance = amountToPay-amountPaid; 
+  
+   $(this).closest('tr').find('.balance-column').html("<input type='text' id='updated_bal' readonly class='updated_bal' name='updated_bal[]' value="+updatedBalance.toFixed(2)+" />");
    updateTotalbalanceToPay();
    });
    function oninputamount_pay() {
-    
-     updateTotalAmountToPay();
-   
+   updateTotalAmountToPay();
    var anyAmountPaid = false;
-   
-               $('.amount_pay').each(function () {
-                   if ($(this).val() !== '') {
-                      
-                       anyAmountPaid = true;
-                       return false; // Exit the loop early
-                   }else{
-                      $(this).closest('tr').find('td.updated_bal').val('');
-                   }
-               });
-               if (anyAmountPaid) {
-                   $('#pay_now_table').show();
-                    $('.balance-column').show();
-               } else {
-                
-                   $('#pay_now_table').hide();
-                    $('.balance-column').hide();
-               }
-    var amountPaidCell =$(this).closest('tr').find('amount_pay').val(); // "Amount Paid" cell
-       var balanceCell = $(this).closest('tr').find('.due_pay').text(); // "Balance" cell
-     var amountPaid = parseFloat(amountPaidCell) || 0; // Get the current "Amount Paid"
-       var amountToPay = parseFloat(balanceCell) || 0; // Get the entered "Amount to Pay"
-       //  var updatedBalance='';
-     //  if(amountPaid){
-    updatedBalance  = amountToPay-amountPaid;
-    console.log('up_bal :'+updatedBalance);
-     $(this).closest('tr').find('.balance-col').val(updatedBalance.toFixed(2));
-    updateTotalbalanceToPay();
-    
+            $('.amount_pay').each(function () {
+                if ($(this).val() !== '') {
+                    anyAmountPaid = true;
+                    return false; 
+                }else{
+                   $(this).closest('tr').find('td.updated_bal').val('');
+                }
+            });
+            if (anyAmountPaid) {
+                $('#pay_now_table').show();
+                 $('.balance-column').show();
+            } else {
+                $('#pay_now_table').hide();
+                 $('.balance-column').hide();
+            }
+   var amountPaidCell =$(this).closest('tr').find('amount_pay').val(); 
+    var balanceCell = $(this).closest('tr').find('.due_pay').text(); 
+   var amountPaid = parseFloat(amountPaidCell) || 0; 
+    var amountToPay = parseFloat(balanceCell) || 0; 
+     updatedBalance  = amountToPay-amountPaid;
+   console.log('up_bal :'+updatedBalance);
+   $(this).closest('tr').find('.balance-col').val(updatedBalance.toFixed(2));
+   updateTotalbalanceToPay();
    }
-   
-
- 
-
-
    $(document).on('input','#total-amount', function () {
- 
  var total_balance_amount = parseFloat($('.bcm').html());
  var amount_to_distribute = parseFloat($('#total-amount').val());
-
+  console.log('total_balance_amount: ' + total_balance_amount);
+  console.log('amount_to_distribute: ' + amount_to_distribute);
  final=parseFloat(amount_to_distribute)-parseFloat(total_balance_amount);
- 
  if (final > 0) {
      $('#advanceamount').val(final);
  }else{
    $('#advanceamount').val('0.00');
  }
 });
-
-
-
-
-
-
-   // Initial calculation and display of the total amount
+  
    updateTotalAmountToPay();
    updateTotalbalanceToPay();
-   
-   
-   
    function editRow(button) {
-     var row = button.parentNode.parentNode;
-     var cells = row.getElementsByTagName("td");
+   var row = button.parentNode.parentNode;
+   var cells = row.getElementsByTagName("td");
+   for (var i = 0; i < cells.length - 1; i++) { 
+    var cell = cells[i];
    
-     for (var i = 0; i < cells.length - 1; i++) { // Exclude the last cell with the button
-       var cell = cells[i];
-       
-       // Check if the current cell should be excluded from editing based on header content
-       var headerCell = row.parentNode.parentNode.querySelector("thead tr td:nth-child(" + (i + 1) + ")");
-       if (headerCell.textContent.trim() !== "Balance" && headerCell.textContent.trim() !== "S.NO") {
-         var currentValue = cell.innerHTML;
-         var input = document.createElement("input");
-         input.type = "text";
-         input.value = currentValue;
-          var uniqueClassName = "editable-input-" + i; // You can customize the class name generation logic
-         input.className = uniqueClassName;
-           input.name = "inputField" + i;
-         cell.innerHTML = "";
-         cell.appendChild(input);
-       }
-     }
-   
-     var saveButton = document.createElement("button");
-     saveButton.className = "save-button";
-    
-     saveButton.style.backgroundColor = '#38469f';
-       saveButton.style.color  = 'white';
-       saveButton.style.fontWeight = 'bold';
-     saveButton.innerHTML = "Update";
-     row.setAttribute("data-row-id", "unique_row_id_" + Date.now());
-     saveButton.onclick = function () {
-       if (saveButton.innerHTML === "Update") {
-       // If it's "Save", change it to "Edit"
-       saveButton.innerHTML = "Edit";
-         saveButton.style.backgroundColor = '#38469f';
-       saveButton.style.color  = 'white';
-       saveButton.style.fontWeight = 'bold';
-       for (var i = 0; i < cells.length - 1; i++) {
-       var cell = cells[i];
-       var input = cell.querySelector("input");
-       var newValue = input.value;
-       cell.innerHTML = newValue;
-   
-       // Check if the button text is "Edit"
-    
-         // If it's "Edit," make the input fields uneditable
-         input.setAttribute("readonly", "true");
-       
-     }
-   
-   
-         saveButton.onclick = function () {
-           editRow(saveButton);
-         };
-     } else {
-       // If it's "Edit", change it back to "Save"
-       saveButton.innerHTML = "Update";
-         saveButton.style.backgroundColor = '#38469f';
-       saveButton.style.color  = 'white';
-       saveButton.style.fontWeight = 'bold';
-         saveButton.onclick = function () {
-           saveRow(saveButton);
-         };
-     }
-       saveRow(row);
-     };
-   
-     var actionCell = row.getElementsByTagName("td")[cells.length - 1];
-     actionCell.innerHTML = "";
-     actionCell.appendChild(saveButton);
+    var headerCell = row.parentNode.parentNode.querySelector("thead tr td:nth-child(" + (i + 1) + ")");
+    if (headerCell.textContent.trim() !== "Balance" && headerCell.textContent.trim() !== "S.NO") {
+      var currentValue = cell.innerHTML;
+      var input = document.createElement("input");
+      input.type = "text";
+      input.value = currentValue;
+       var uniqueClassName = "editable-input-" + i; 
+      input.className = uniqueClassName;
+        input.name = "inputField" + i;
+      cell.innerHTML = "";
+      cell.appendChild(input);
+    }
    }
+   var saveButton = document.createElement("button");
+   saveButton.className = "save-button";
+   saveButton.style.backgroundColor = '#38469f';
+    saveButton.style.color  = 'white';
+    saveButton.style.fontWeight = 'bold';
+   saveButton.innerHTML = "Update";
+   row.setAttribute("data-row-id", "unique_row_id_" + Date.now());
+   saveButton.onclick = function () {
+    if (saveButton.innerHTML === "Update") {
    
+    saveButton.innerHTML = "Edit";
+      saveButton.style.backgroundColor = '#38469f';
+    saveButton.style.color  = 'white';
+    saveButton.style.fontWeight = 'bold';
+    for (var i = 0; i < cells.length - 1; i++) {
+    var cell = cells[i];
+    var input = cell.querySelector("input");
+    var newValue = input.value;
+    cell.innerHTML = newValue;
+   
+      input.setAttribute("readonly", "true");
+   }
+      saveButton.onclick = function () {
+        editRow(saveButton);
+      };
+   } else {
+   
+    saveButton.innerHTML = "Update";
+      saveButton.style.backgroundColor = '#38469f';
+    saveButton.style.color  = 'white';
+    saveButton.style.fontWeight = 'bold';
+      saveButton.onclick = function () {
+        saveRow(saveButton);
+      };
+   }
+    saveRow(row);
+   };
+   var actionCell = row.getElementsByTagName("td")[cells.length - 1];
+   actionCell.innerHTML = "";
+   actionCell.appendChild(saveButton);
+   }
    $(document).on('keyup', '.editable-amount-paid', function () {
-     
-      var gtotal=$('#vendor_gtotals').val();
-       const grandTotal = parseFloat(gtotal) || 0;
-       console.log("grandTotal :"+grandTotal);
-       let cumulativePayment = 0;
+   var gtotal=$('#customer_gtotal_provider').val();
+    const grandTotal = parseFloat(gtotal) || 0;
+    console.log("grandTotal :"+grandTotal);
+    let cumulativePayment = 0;
    let balance_payment = 0;
-       $('#toggle_table tbody tr').each(function () {
-           const inputField = $(this).find('.editable-amount-paid');
-           
-           const balanceCell = $(this).find('.balance-cell');
-    
-           const paymentAmount = parseFloat(inputField.text()) || 0;
-            console.log("inputField :"+paymentAmount);
-           cumulativePayment += paymentAmount;
+    $('#toggle_table tbody tr').each(function () {
+        const inputField = $(this).find('.editable-amount-paid');
+        const balanceCell = $(this).find('.balance-cell');
+        const paymentAmount = parseFloat(inputField.text()) || 0;
+         console.log("inputField :"+paymentAmount);
+        cumulativePayment += paymentAmount;
    $(this).find('.editable-amount-paid input').val(paymentAmount);
-           const balance = grandTotal - cumulativePayment;
-           balance_payment +=balance;
-              console.log("balance :"+grandTotal+"-"+cumulativePayment+"="+balance);
-          
-              
-           balanceCell.text('$' + balance.toFixed(2));
-             $(this).find('.edit_balance').val(balance.toFixed(2));
-       });
-        document.getElementById('tl_amt_pd').value = cumulativePayment.toFixed(2);
-        var b=gtotal-cumulativePayment;
-         document.getElementById('my_bal_1').value = b.toFixed(2);
+        const balance = grandTotal - cumulativePayment;
+        balance_payment +=balance;
+           console.log("balance :"+grandTotal+"-"+cumulativePayment+"="+balance);
+        balanceCell.text('$' + balance.toFixed(2));
+          $(this).find('.edit_balance').val(balance.toFixed(2));
+    });
+     document.getElementById('tl_amt_pd').value = cumulativePayment.toFixed(2);
+     var b=gtotal-cumulativePayment;
+      document.getElementById('my_bal_1').value = b.toFixed(2);
    });
-     $(document).on('click','.save-button',function (event) {
-     var row1 = $(this).closest('tr');
-         var row = $(this).closest('table').find('tr'); // Get the closest table row
-         var name =  $(this).closest('table').find('tr').find('td:eq(0)').text(); // Extract data from the first column
-         var payment_date =  $(this).closest('table').find('tr').find('.editable-input-1').val(); // Extract data from the second column
-    var ref =  $(this).closest('table').find('tr').find('.editable-input-2').val();
-     var b_name =  $(this).closest('table').find('tr').find('.editable-input-3').val();
-      var amt_paid =  $(this).closest('table').find('tr').find('.editable-input-4').val();
-        var bal =  row1.find('td.balance-cell').text();
-          var detail =  $(this).closest('table').find('tr').find('.editable-input-6').val();
-           var payment_id = "<?php if($payment_id_service){ echo $payment_id_service; }else{ echo $payment_id_new;}?>";
-         // Create a data object to send to the server
-         var data = {
-           name: name,
-           payment_date: payment_date,
-           ref: ref,
-           b_name: b_name,
-           amt_paid: amt_paid,
-           bal: bal,
-           detail:detail,
-           payment_id:payment_id
+   $(document).on('click','.save-button',function (event) {
+   var row1 = $(this).closest('tr');
+      var row = $(this).closest('table').find('tr'); 
+      var name =  $(this).closest('table').find('tr').find('td:eq(0)').text(); 
+      var payment_date =  $(this).closest('table').find('tr').find('.editable-input-1').val(); 
+   var ref =  $(this).closest('table').find('tr').find('.editable-input-2').val();
+   var b_name =  $(this).closest('table').find('tr').find('.editable-input-3').val();
+   var amt_paid =  $(this).closest('table').find('tr').find('.editable-input-4').val();
+     var bal =  row1.find('td.balance-cell').text();
+       var detail =  $(this).closest('table').find('tr').find('.editable-input-6').val();
+        var payment_id = "<?php if($info_service[0]['payment_id']){ echo $info_service[0]['payment_id']; }else{ echo $payment_id_new;}?>";
+    
+      var data = {
+        name: name,
+        payment_date: payment_date,
+        ref: ref,
+        b_name: b_name,
+        amt_paid: amt_paid,
+        bal: bal,
+        detail:detail,
+        payment_id:payment_id
+      };
+     data[csrfName] = csrfHash;
      
-         };
-        data[csrfName] = csrfHash;
-         // Send an AJAX request to the server-side controller
-         $.ajax({
-           type: 'POST',
-          url:"<?php echo base_url(); ?>Cinvoice/update_payment_data",
-           data: data,
-           success: function (response) {
-             // Handle the response from the server
-             console.log(response);
-           },
-           error: function (error) {
-             // Handle any errors
-             console.error(error);
-           },
-         });
-            event.preventDefault();
-       });
-       function saveRow(row) {
-         
-         var cells = row.getElementsByTagName("td");
-     var editButton = row.querySelector("button");
-   
-     for (var i = 0; i < cells.length - 1; i++) {
-       var cell = cells[i];
-       var input = cell.querySelector("input");
-       var newValue = input.value;
-       cell.innerHTML = newValue;
-   
-       // Check if the button text is "Edit"
-       if (editButton.innerHTML === "Edit") {
-         // If it's "Edit," make the input fields uneditable
-         input.setAttribute("readonly", "true");
-       }
-     }
-   
-     var actionCell = row.getElementsByTagName("td")[cells.length - 1];
-   
-     // Update the button text to "Edit"
-     editButton.innerHTML = "Edit";
-       
-         editButton.onclick = function () {
-           editRow(editButton);
-         };
-   
-         actionCell.innerHTML = "";
-         actionCell.appendChild(editButton);
+      $.ajax({
+        type: 'POST',
+       url:"<?php echo base_url(); ?>Cinvoice/update_payment_data",
+        data: data,
+        success: function (response) {
+        
+          console.log(response);
+        },
+        error: function (error) {
+        
+          console.error(error);
+        },
+      });
+         event.preventDefault();
+    });
+    function saveRow(row) {
+      var cells = row.getElementsByTagName("td");
+   var editButton = row.querySelector("button");
+   for (var i = 0; i < cells.length - 1; i++) {
+    var cell = cells[i];
+    var input = cell.querySelector("input");
+    var newValue = input.value;
+    cell.innerHTML = newValue;
+  
+    if (editButton.innerHTML === "Edit") {
+    
+      input.setAttribute("readonly", "true");
+    }
+   }
+   var actionCell = row.getElementsByTagName("td")[cells.length - 1];
+ 
+   editButton.innerHTML = "Edit";
+      editButton.onclick = function () {
+        editRow(editButton);
+      };
+      actionCell.innerHTML = "";
+      actionCell.appendChild(editButton);
+    }
    
    
-       }
-      
+   
+
    
 </script>
 
@@ -1527,39 +1377,12 @@ foreach ($expensetax as $tx) {?>
    ddl.options.add(opt);
    }
 
-          $(document).on('click','.del_pay',function (event) {
-        event.preventDefault();
-       var payment_id = $('input[name="payment_id_this_invoice"]').val();
-       var paid_amt = $(this).closest('tr').find('td.editable-amount-paid').text();
-       var bal = $(this).closest('tr').find('td.balance-cell').text();
-      
-           var unq_inv=$('#unq_inv').val();
-           var dataString = {
-           bal : bal,
-           payment_id : payment_id,
-           paid_amt :paid_amt,
-         
-           unq_inv:unq_inv
-      };
-      dataString[csrfName] = csrfHash;
-       $.ajax({
-           type:"POST",
-           dataType:"json",
-           url:"<?php echo base_url(); ?>Cpurchase/delete_the_payment",
-           data:dataString,
-           success:function (data1) {
-           console.log(data1);
-           $('#payment_history_modal').modal('hide');
 
-         $("#bodyModal1").html("Payment Delete Successfully");
-         $('#myModal1').modal('show');
-         window.setTimeout(function(){
-            $('.modal-backdrop').remove();
-          $('#myModal1').modal('hide');
-          location.reload();
-       }, 2000);
-   }
-   });
-   });
-
+   function generateRandom10DigitNumber() {
+    // Generate a random 10-digit number
+    const min = Math.pow(10, 9); // 10^9
+    const max = Math.pow(10, 10) - 1; // 10^10 - 1
+    const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
+    return randomNumber;
+}
 </script>
