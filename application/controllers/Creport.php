@@ -658,10 +658,10 @@ class Creport extends CI_Controller {
                 $status='';
                 if($arr['grand_total_amount']==$arr['paid_amount'] && ($arr['balance']=='0' || $arr['balance']=='0.00')){
                     $status='Paid';
+                }else if($arr['grand_total_amount'] != $arr['paid_amount'] && ($arr['paid_amount'] =='0.00' || $arr['paid_amount']=='')){
+                    $status='Not Paid';
                 }else if($arr['grand_total_amount'] != $arr['paid_amount'] && $arr['paid_amount'] !=='0.00'  && $arr['paid_amount'] !=='0' && substr($arr['due_amount'], 0, 1) !== '-'){
                     $status='Partially Paid';
-                }else if($arr['grand_total_amount'] != $arr['paid_amount'] && $arr['paid_amount'] =='0.00'){
-                    $status='Not Paid';
                 }else if( substr($arr['balance'], 0, 1) == '-'){
                     $status='Paid';
                 }
@@ -690,16 +690,16 @@ class Creport extends CI_Controller {
                 }
              
                 $row = [
-                    "id"            => $i,
+                    "supplier_id"            => $i,
                     "chalan_no"             => $arr['chalan_no'],
-                    "purchase_date"         =>  $arr['purchase_date'],
+                    "purchase_date"         =>  date('m-d-Y',strtotime($arr['purchase_date'])),
                     "grand_total_amount"    => $currency. $arr['grand_total_amount'],
-                    "customer_name"         => $arr['customer_name'],
-                    "payment_due_date"      => $arr['payment_due_date'],
+                    "supplier_name"         => $arr['supplier_name'],
+                    "payment_due_date"      => date('m-d-Y',strtotime($arr['payment_due_date'])),
                     "no_of_days"            => $numberOfDaysc,
-                    "paid_amount"           => $currency. $arr['paid_amount'],
-                    "balance"               => $currency. $arr['balance'],
-                    "due_amount"            => $currency.$statusdisp
+                    "paid_amount"           => $currency. ($arr['paid_amount'] =='' ? '0' : $arr['paid_amount']),
+                    "balance"               => $currency. ($arr['balance'] =='' ? 0 : $arr['balance']),
+                    "due_amount"            => $statusdisp
                 ];
                 $data[] = $row;
                 $i++;
@@ -715,7 +715,19 @@ class Creport extends CI_Controller {
         echo json_encode($response);
     }
 
+    public function supplierTransactionList(){
+        $CI = & get_instance();
+        $CI->load->model('Suppliers');
+        $CI->load->model('Web_settings');
 
+        $data['setting_detail'] = $CI->Web_settings->retrieve_setting_editdata($this->admin_id);
+
+        
+        $content = $CI->parser->parse('report/transaction_list_vendor', $data, true);
+        $this->template->full_admin_html_view($content);
+
+
+    }
 
 
 

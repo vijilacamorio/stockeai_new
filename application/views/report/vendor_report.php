@@ -148,9 +148,9 @@
                               <th width="11%"> <?php echo display('Invoice No')?></th>
                               <th width="11%"><?php echo display('Sales Invoice date')?></th>
                               <th width="11%"><?php echo display('Grand Total')?></th>
-                              <th width="11%"><?php echo 'Customer Name ';?></th>
+                              <th width="11%"><?php echo 'Supplier Name ';?></th>
                               <th width="11%"><?php echo 'Payment Due Date';?></th>
-                              <th width="10%"><?php echo 'Past Due';?> </th>
+                              <th width="10%"><?php echo 'No of Due Days';?> </th>
                               <th width="10%"><?php echo display('Amount Paid')?></th>
                               <th width="10%"> <?php echo display('Balance Amount')?> </th>
                               <th width="10%"><?php echo 'Status';?></th>
@@ -207,7 +207,7 @@
                         }
                     },
                     "columns": [{
-                            "data": "id"
+                            "data": "supplier_id"
                         },
                         {
                             "data": "chalan_no"
@@ -219,7 +219,7 @@
                             "data": "grand_total_amount"
                         },
                         {
-                            "data": "customer_name"
+                            "data": "supplier_name"
                         },
                         {
                             "data": "payment_due_date"
