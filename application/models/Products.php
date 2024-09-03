@@ -39,6 +39,7 @@ class Products extends CI_Model
             return $query->result_array();
         }
     }
+    //For Listing Products in 
     public function get_all_products_with_supplier()
     {
         $this->db->select("*");
@@ -141,11 +142,12 @@ class Products extends CI_Model
             return $query->result_array();
         }
     }
-    public function get_all_products()
+    //For Listing the Products in Expense Create/Edit 
+    public function get_all_products($company_id)
     {
         $this->db->select("*");
         $this->db->from("product_information");
-        $this->db->where("created_by", $this->session->userdata("user_id"));
+        $this->db->where("created_by", $company_id);
         $query = $this->db->get();
         if ($query->num_rows() > 0) {
             return $query->result_array();
