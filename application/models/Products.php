@@ -9,13 +9,13 @@ class Products extends CI_Model
     {
         parent::__construct();
     }
-    public function product_info_report()
+    public function product_info_report($admin_id)
     {
         $this->db->select("a.*, b.*, COUNT(c.product_id) AS product_quantity");
         $this->db->from("product_information a");
         $this->db->join(
             "supplier_information b",
-            "b.supplier_id = a.supplier_name",
+            "b.supplier_id = a.supplier_id",
             "left"
         );
         $this->db->join(
@@ -23,8 +23,8 @@ class Products extends CI_Model
             "c.product_id = a.product_id",
             "left"
         );
-        $this->db->where("a.created_by", $this->session->userdata("user_id"));
-        $this->db->group_by("a.product_id, a.product_name");
+        $this->db->where("a.created_by", $admin_id);
+        $this->db->group_by("a.product_id, a.supplier_id");
         $query = $this->db->get();
         if ($query->num_rows() > 0) {
             return $query->result_array();
@@ -118,12 +118,12 @@ class Products extends CI_Model
         return $query->num_rows();
     }
     //Count Product
-    public function count_product()
+    public function count_product($admin_id)
     {
         $query = $this->db
             ->select("*")
             ->from("product_information")
-            ->where("created_by", $Id)
+            ->where("created_by", $admin_id)
             ->where("is_deleted", 0)
             ->get();
         return $query->num_rows();
@@ -169,13 +169,14 @@ class Products extends CI_Model
         }
     }
     // To calculate the Product Availablity for Product Index Page
-    public function expense_product_all()
+    public function expense_product_all($admin_id)
     {
         $this->db->select(
             "a.product_id,a.product_name,COUNT(*) as available,b.p_quantity"
         );
         $this->db->from("product_purchase_details a");
         $this->db->join("product_information b", "b.product_id = a.product_id");
+        $this->db->where("a.create_by", $admin_id);
         $this->db->group_by("a.product_id");
         $query = $this->db->get();
         if ($query->num_rows() > 0) {
@@ -183,7 +184,7 @@ class Products extends CI_Model
         }
     }
     // To calculate the Product Availablity for Product Index Page
-    public function sales_product_all()
+    public function sales_product_all($admin_id)
     {
         $this->db->select(
             "a.product_id,a.product_name,COUNT(*) as available ,b.p_quantity"
@@ -191,7 +192,7 @@ class Products extends CI_Model
         $this->db->from("invoice_details a");
         $this->db->join("product_information b", "b.product_id = a.product_id");
         $this->db->group_by("a.product_id");
-        $this->db->where("a.created_by", $this->session->userdata("user_id"));
+        $this->db->where("a.created_by", $admin_id);
         $query = $this->db->get();
         if ($query->num_rows() > 0) {
             return $query->result_array();
@@ -366,7 +367,7 @@ class Products extends CI_Model
     }
     //For Product Edit Data
     public function retrieve_product_editdata($product_id)
-    {
+    { 
         $this->db->select(
             "product_information.*,supplier_information.supplier_name"
         );

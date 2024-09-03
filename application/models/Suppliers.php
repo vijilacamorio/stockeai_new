@@ -35,10 +35,10 @@ class Suppliers extends CI_Model {
         $query = $this->db->get();
         return $query->row_array(); 
     }
-    public function get_all_supplier() {
+    public function get_all_supplier($admin_id) {
         $this->db->select('*');
         $this->db->from('supplier_information');
-        $this->db->where('created_by' ,$this->session->userdata('user_id'));
+        $this->db->where('created_by' ,$admin_id);
         $query = $this->db->get();  
             return $query->result_array();
     }

@@ -1821,4 +1821,67 @@ public function overall_admins() {
         $records = $this->db->get()->result_array();
         return $records;
     }
+
+    public function getProductReportCount($searchValue,$adminId,$msearch){
+        $searchQuery = "";
+        if($searchValue != ''){
+            $searchQuery = "(
+                a.product_id LIKE '%" . $searchValue . "%' OR
+                a.product_name LIKE '%" . $searchValue . "%' OR
+                a.product_model LIKE '%" . $searchValue . "%' OR
+                b.supplier_name LIKE '%" . $searchValue . "%' OR
+                a.supplier_id LIKE '%" . $searchValue . "%' OR
+                a.unit LIKE '%" . $searchValue . "%' OR
+                a.category_name LIKE '%" . $searchValue . "%'
+            )";               
+        }
+        $this->db->select("a.id");
+        $this->db->from("product_information a");
+        $this->db->join("supplier_information b","b.supplier_id = a.supplier_id","left");
+        $this->db->where("a.created_by", $adminId);
+        if($searchValue != ''){
+            $this->db->where($searchQuery);
+        }
+        if($msearch['supplier_id'] !=""){
+            $this->db->where('b.supplier_id', $msearch['supplier_id']);
+
+        }   
+        $this->db->group_by("a.product_id, a.supplier_id");
+        
+        $query = $this->db->get();
+       // echo $this->db->last_query();
+        return $query->num_rows();
+    }
+
+
+    public function getProductReportData($limit, $start, $orderField, $orderDirection, $searchValue, $adminId,$msearch){
+        $searchQuery = "";
+        if($searchValue != ''){
+            $searchQuery = "(
+                a.product_id LIKE '%" . $searchValue . "%' OR
+                a.product_name LIKE '%" . $searchValue . "%' OR
+                a.product_model LIKE '%" . $searchValue . "%' OR
+                b.supplier_name LIKE '%" . $searchValue . "%' OR
+                a.supplier_id LIKE '%" . $searchValue . "%' OR
+                a.unit LIKE '%" . $searchValue . "%' OR
+                a.category_name LIKE '%" . $searchValue . "%'
+            )";           
+        }
+        $this->db->select("a.product_id,a.product_name,a.product_model,b.supplier_name,b.supplier_id,a.unit,a.category_name");
+        $this->db->from("product_information a");
+        $this->db->join("supplier_information b","b.supplier_id = a.supplier_id","left");
+        $this->db->where("a.created_by", $adminId);
+        if($msearch['supplier_id'] !=""){
+            $this->db->where('b.supplier_id', $msearch['supplier_id']);
+
+        }   
+        if($searchValue != ''){
+            $this->db->where($searchQuery);
+        }
+        $this->db->group_by("a.product_id, a.supplier_id");
+        $this->db->order_by($orderField, $orderDirection);
+        $this->db->limit($limit,$start);
+        $records = $this->db->get()->result_array();
+        return $records;
+    }
 }
