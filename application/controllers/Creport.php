@@ -785,4 +785,58 @@ class Creport extends CI_Controller {
         ];
         echo json_encode($response);
     }
+    public function productReport() {
+        $this->load->model("Products");
+        $data["setting_detail"] = $this->Web_settings->retrieve_setting_editdata($this->admin_id);
+        $data["products"]      = $this->Products->product_info_report($this->admin_id);
+        $data["getsupplier"]   = $this->Suppliers->get_all_supplier($this->admin_id);
+        $content               = $this->parser->parse("report/product_report", $data, true);
+        $this->template->full_admin_html_view($content);
+    }
+    public function productReportData() {
+
+        $this->load->model("Products");
+        $this->load->library("lproduct");
+        $this->load->model('Reports');
+        $data["setting_detail"] = $this->Web_settings->retrieve_setting_editdata($this->admin_id);
+        $currency       = $setting_detail[0]['currency'];
+        $limit          = $this->input->post('length');
+        $start          = $this->input->post('start');
+        $search         = $this->input->post('search')['value'];
+        $supplierId     = $this->input->post('supplier_id');
+        $msearch['supplier_id'] = $supplierId;
+        $orderField     = $this->input->post('columns')[$this->input->post('order')[0]['column']]['data'];
+        $orderDirection = $this->input->post('order')[0]['dir'];
+        $totalItems     = $this->Reports->getProductReportCount($search, $this->admin_id,$msearch);
+        $items          = $this->Reports->getProductReportData($limit, $start, $orderField, $orderDirection, $search, $this->admin_id,$msearch);
+        $data           = [];
+        $i              = $start + 1;
+       
+        if (!empty($items)) {
+            $previousSupplierName = null;
+            $previousInvoiceNumber = null;
+            $previousPaymentID = null;
+            foreach ($items as $product) {
+                $row = [
+                    "supplier_id"         => $i,
+                    "product_id"          => $product['product_id'],
+                    "product_name"        => '<a href="'.base_url(). 'Cproduct/product_view/'.$product['product_id'].'">'.$product['product_name'].'</a>',
+                    "product_model"       => $product['product_model'],
+                    "category_name"         => $product['category_name'],
+                    "supplier_name"       => $product['supplier_name'],
+                    "unit"                => $product['unit']
+                ];
+                $data[] = $row;
+                $i++;
+            }
+        }
+       
+        $response = [
+            "draw"            => $this->input->post('draw'),
+            "recordsTotal"    => $totalItems,
+            "recordsFiltered" => $totalItems,
+            "data"            => $data,
+        ];
+        echo json_encode($response);
+    }
 }

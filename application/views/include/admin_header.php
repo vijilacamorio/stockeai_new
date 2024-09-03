@@ -732,13 +732,13 @@ $(document).ready(function() {
 									</li>
 								</ul>
 							</li>
-							<li class="treeview">
+							<li class="treeview  <?php echo ($this->uri->segment(2) == 'productReport') ? 'active' : ''; ?>">
 								<a href="fa fa-asl-interpreting">
 									<i class="ti-user"></i><span><?php echo "Product" ?></span>
 								</a>
 								<ul class="treeview-menu">
-									<li class="treeview">
-										<a href="<?php echo base_url('Cproduct/product_info') ?>"><?php echo 'Product Information'; ?>
+									<li class="treeview <?php echo ($this->uri->segment(2) == 'productReport') ? 'active' : ''; ?>">
+										<a href="<?php echo base_url('Creport/productReport?id='.$encode_com_id) ?>"><?php echo 'Product Information'; ?>
 										</a>
 									</li>
 									<li class="treeview">

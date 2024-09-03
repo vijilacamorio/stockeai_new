@@ -124,8 +124,8 @@
          
          <small><?php //echo "Vocher Report"; ?></small>
          <ol class="breadcrumb" style="border: 3px solid #d7d4d6;" >
-            <li><a href="#"><i class="pe-7s-home"></i> <?php echo display('home') ?></a></li>
-            <li><a href="#"><?php echo "Accounts"; ?></a></li>
+            <li><a href="<?php echo base_url(); ?>"><i class="pe-7s-home"></i> <?php echo display('home') ?></a></li>
+            <li><a href="#"><?php echo "Reports"; ?></a></li>
             <li class="active" style="color:orange;"><?php echo "Transaction By Customer"; ?></li>
         
            <div class="load-wrapp">
