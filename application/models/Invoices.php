@@ -165,6 +165,11 @@ public function tax_inf() {
         }
         return false;
     }
+
+
+
+
+    
     public function open_invoices_exp(){
           $this->db->select('i.*,cs.*');
     $this->db->from('product_purchase i');
