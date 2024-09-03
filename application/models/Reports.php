@@ -1714,4 +1714,111 @@ public function overall_admins() {
         return $records;
     }
 
+    public function getSupplierTransactCount($searchValue,$adminId,$msearch){
+        $searchQuery = "";
+        if($searchValue != ''){
+            $searchQuery = "(
+                p.total_amt LIKE '%" . $searchValue . "%' OR
+                s.amt_paid LIKE '%" . $searchValue . "%' OR
+                p.balance LIKE '%" . $searchValue . "%' OR
+                s.supplier_name LIKE '%" . $searchValue . "%' OR
+                p.chalan_no LIKE '%" . $searchValue . "%' OR
+                py.payment_id LIKE '%" . $searchValue . "%' OR
+                py.payment_date LIKE '%" . $searchValue . "%' OR
+                p.balance LIKE '%" . $searchValue . "%' OR
+                s.details LIKE '%" . $searchValue . "%'
+            )";             
+        }
+        $this->db->select('s.supplier_id');
+        $this->db->from('supplier_information s');
+        $this->db->join('product_purchase p','s.supplier_id=p.supplier_id');
+        if($msearch['supplier_id'] !=""){
+            $this->db->where('s.supplier_id', $msearch['supplier_id']);
+
+        }   
+        if(trim($msearch['paydate'])!="") {
+            $split=explode(' to ',$msearch['paydate']);
+            $start_date  =  $split[0];
+            $end_date    = $split[1];
+
+            $dateObject = DateTime::createFromFormat('m-d-Y', $start_date);
+
+            if ($dateObject !== false) {
+                $formattedDate = $dateObject->format('Y-m-d');
+                $start_date =  $formattedDate; 
+            }
+
+            $dateObject = DateTime::createFromFormat('m-d-Y', $end_date);
+
+            if ($dateObject !== false) {
+                $formattedDate = $dateObject->format('Y-m-d');
+                $end_date =  $formattedDate; 
+            }
+            $this->db->where("py.payment_date >='$start_date'");
+            $this->db->where("py.payment_date <='$end_date'");
+        }
+        $this->db->join('payment py','p.payment_id=py.payment_id');
+        $this->db->where('s.created_by',$adminId);
+        if($searchValue != ''){
+            $this->db->where($searchQuery);
+        }
+        //echo $this->db->get_compiled_select(); exit;
+        $query = $this->db->get();
+        return $query->num_rows();
+    }
+
+
+    public function getSupplierTransactData($limit, $start, $orderField, $orderDirection, $searchValue, $adminId,$msearch){
+        $searchQuery = "";
+        if($searchValue != ''){
+            $searchQuery = "(
+                p.total_amt LIKE '%" . $searchValue . "%' OR
+                py.amt_paid LIKE '%" . $searchValue . "%' OR
+                p.balance LIKE '%" . $searchValue . "%' OR
+                s.supplier_name LIKE '%" . $searchValue . "%' OR
+                p.chalan_no LIKE '%" . $searchValue . "%' OR
+                py.payment_id LIKE '%" . $searchValue . "%' OR
+                py.payment_date LIKE '%" . $searchValue . "%' OR
+                p.balance LIKE '%" . $searchValue . "%' OR
+                s.details LIKE '%" . $searchValue . "%'
+            )";         
+        }
+        
+    
+        $this->db->select('p.total_amt,py.amt_paid,p.balance as due_amount, s.supplier_name, s.supplier_id,p.chalan_no,py.payment_id,py.payment_date,p.balance,s.details');
+        $this->db->from('supplier_information s');
+        $this->db->join('product_purchase p','s.supplier_id=p.supplier_id');
+        if($msearch['supplier_id'] !=""){
+            $this->db->where('s.supplier_id', $msearch['supplier_id']);
+
+        }   
+        if(trim($msearch['paydate'])!="") {
+            $split=explode(' to ',$msearch['paydate']);
+            $start_date  =  $split[0];
+            $end_date    = $split[1];
+
+            $dateObject = DateTime::createFromFormat('m-d-Y', $start_date);
+
+            if ($dateObject !== false) {
+                $formattedDate = $dateObject->format('Y-m-d');
+                $start_date =  $formattedDate; 
+            }
+
+            $dateObject = DateTime::createFromFormat('m-d-Y', $end_date);
+
+            if ($dateObject !== false) {
+                $formattedDate = $dateObject->format('Y-m-d');
+                $end_date =  $formattedDate; 
+            }
+            $this->db->where("py.payment_date >='$start_date'");
+            $this->db->where("py.payment_date <='$end_date'");
+        }
+      
+        $this->db->join('payment py','p.payment_id=py.payment_id');
+        $this->db->where('s.created_by',$adminId);
+        $this->db->order_by($orderField, $orderDirection);
+        $this->db->limit($limit,$start);
+        $records = $this->db->get()->result_array();
+        return $records;
+    }
 }
