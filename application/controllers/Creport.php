@@ -10,6 +10,10 @@ class Creport extends CI_Controller {
         $this->db->query('SET SESSION sql_mode = ""');
         $CI = & get_instance();
         $CI->load->model('Web_settings');
+
+        $this->load->model('Invoices');
+        $this->load->model('Suppliers');
+
         $this->auth->check_admin_auth();
         $encodedId = $_GET['id'];
         $this->admin_id   = decodeBase64UrlParameter($encodedId);
@@ -435,7 +439,7 @@ class Creport extends CI_Controller {
             $date_now = date("Y-m-d");
             if($item['payment_due_date'] !=='' && ($item['payment_due_date'] < $date_now)){
                 
-                $dateStr1=$arr['payment_due_date'];
+                $dateStr1=$item['payment_due_date'];
                 $dateStr2=date('Y-m-d');
                 $date1 = new DateTime($dateStr1);
                 $date2 = new DateTime($dateStr2);
@@ -525,7 +529,7 @@ class Creport extends CI_Controller {
                     "customer_name"     => $arr['customer_name'],
                     "commercial_invoice_number"   => $arr['commercial_invoice_number'],
                     "payment_id"                  => $arr['payment_id'],
-                    "payment_date"                => $arr['payment_date'],
+                    "payment_date"                => $arr['payment_date'] !="" ? date('m-d-Y',strtotime($arr['payment_date'])) : '',
                     "total_amt"                   => $currency.($arr['total_amt'] =='' ? '0.00' : $arr['total_amt']),
                     "amt_paid"                    => $currency.($arr['amt_paid'] =='' ? '0.00' : $arr['amt_paid']),
                     "balance"                     => $currency.($arr['balance'] =='' ? '0.00' : $arr['balance']),
@@ -547,52 +551,177 @@ class Creport extends CI_Controller {
     }
     public function vendorList() {
         $this->load->model('Web_settings');
-        $this->load->model('Reports');
-        $this->load->model('Suppliers');
-        $vendor = $this->Reports->suppliers_list();
-        $setting_detail = $this->Web_settings->retrieve_setting_editdata();
-
-        $currency_details = $this->Web_settings->retrieve_setting_editdata();
-        $data['currency']          = $currency_details[0]['currency'];
-        $data['total_supplier']    = $this->Suppliers->count_supplier();
-
        
-        $data['vendor_data']=$vendor;
-                $data['setting_detail']=$setting_detail;
-
-        $data['company_info']      = $this->Suppliers->retrieve_company();
-
-
-        $data['getsupplier']      = $this->Suppliers->get_all_supplier();
-
-
-              $content = $this->parser->parse('report/vendor_info_report', $data, true);
+        $data['setting_detail'] = $this->Web_settings->retrieve_setting_editdata($this->admin_id);
+        $content = $this->parser->parse('report/vendor_info_report', $data, true);
         $this->template->full_admin_html_view($content);
 
     }
+
+
+
+
     public function vendorListData() {
-        $this->load->model('Suppliers');
-
         $this->load->model('Web_settings');
-        $vendor = $this->Suppliers->suppliers_list();
-        $setting_detail = $this->Web_settings->retrieve_setting_editdata();
-
-        $currency_details = $this->Web_settings->retrieve_setting_editdata();
-        $data['currency']          = $currency_details[0]['currency'];
-        $data['total_supplier']    = $this->Suppliers->count_supplier();
-
+        $this->load->model('Reports');
+        $setting_detail = $this->Web_settings->retrieve_setting_editdata($this->admin_id);
+        $currency       = $setting_detail[0]['currency'];
+        $limit          = $this->input->post('length');
+        $start          = $this->input->post('start');
+        $search         = $this->input->post('search')['value'];
+        $orderField     = $this->input->post('columns')[$this->input->post('order')[0]['column']]['data'];
+        $orderDirection = $this->input->post('order')[0]['dir'];
+        $totalItems     = $this->Reports->getAllSupplier($search, $this->admin_id);
+        $items          = $this->Reports->getAllSupplierData($limit, $start, $orderField, $orderDirection, $search, $this->admin_id);
+       // print_r($items); exit;
+        $data           = [];
+        $i              = $start + 1;
        
-        $data['vendor_data']=$vendor;
-                $data['setting_detail']=$setting_detail;
-
-        $data['company_info']      = $this->Suppliers->retrieve_company();
-
-
-        $data['getsupplier']      = $this->Suppliers->get_all_supplier();
-
-
-              $content = $this->parser->parse('report/vendor_info_report', $data, true);
-        $this->template->full_admin_html_view($content);
-
+        if (!empty($items)) {
+            $previousSupplierName = null;
+            $previousInvoiceNumber = null;
+            $previousPaymentID = null;
+        
+            foreach ($items as $arr) {
+                $supplier_name = $arr['vendor_type']=='Product Supplier' ? '<a href="'.base_url().'/Csupplier/supplier_ledger_report/'.$arr['vendor_type'].'/'.$arr['supplier_id'].'">'.$arr['supplier_name'] : '<a href="'.base_url().'/Csupplier/supplier_ledger_report/'.$arr['vendor_type'].'/'.$arr['supplier_id'].' class="ads">'.$arr['supplier_name'].'</a>';
+                if($arr['vendor_type'] == 'Product Supplier' ){
+         
+                    if(!empty($arr['inv_due_amount_usd'])) { $inv_due_amt = $currency." ".$arr['inv_due_amount_usd'];} 
+                    elseif (!empty($arr['due_amount_usd']) ) { $inv_due_amt = $currency." ".$arr['due_amount_usd'];}
+                    else{ $inv_due_amt= $currency." 0.00";}     
+                    
+                }
+                else{
+                  if(!empty($arr['service_balance'])){
+                    $inv_due_amt = $currency." ".$arr['service_balance']; }
+                  else{ $inv_due_amt = $currency." 0.00"; }     
+                
+                }
+                $row = [
+                    "created_by"     => $i,
+                    "supplier_id"     => $arr['supplier_id'],
+                    "supplier_name"   => $supplier_name,
+                    "address"         => $arr['address'],
+                    "mobile"          => $arr['mobile'],
+                    "businessphone"   => $arr['businessphone'],
+                    "primaryemail"    => $arr['primaryemail'],
+                    "city"            => $arr['city'],
+                    "country"         => $arr['country'],
+                    "credit_limit"    => $arr['credit_limit'] =="" ? $currency.'0.00' : $arr['credit_limit'],
+                    "inv_due_amount_usd"    => $inv_due_amt,
+                    "vendor_type"    => $arr['vendor_type'],
+                    "state"          => $arr['state'],
+                    "zip"               => $arr['zip'],
+                    "details"       => $arr['details'],
+                ];
+                $data[] = $row;
+                $i++;
+            }
+        }
+       
+        $response = [
+            "draw"            => $this->input->post('draw'),
+            "recordsTotal"    => $totalItems,
+            "recordsFiltered" => $totalItems,
+            "data"            => $data,
+        ];
+        echo json_encode($response);
     }
+
+    public function purchaseByvendorList() {
+        $this->load->model('Web_settings');
+       
+        $data['setting_detail'] = $this->Web_settings->retrieve_setting_editdata($this->admin_id);
+        $content = $this->parser->parse('report/vendor_report', $data, true);
+        $this->template->full_admin_html_view($content);
+    }
+
+    public function purchaseByvendorListgetData() {
+        $this->load->model('Web_settings');
+        $this->load->model('Reports');
+        $setting_detail = $this->Web_settings->retrieve_setting_editdata($this->admin_id);
+        $currency       = $setting_detail[0]['currency'];
+        $limit          = $this->input->post('length');
+        $start          = $this->input->post('start');
+        $search         = $this->input->post('search')['value'];
+        $paydate        = $this->input->post('payment_date_search');
+        $orderField     = $this->input->post('columns')[$this->input->post('order')[0]['column']]['data'];
+        $orderDirection = $this->input->post('order')[0]['dir'];
+        $totalItems     = $this->Reports->getAllpurchasebyVendor($search, $this->admin_id);
+        $items          = $this->Reports->getAllpurchasebyVendorData($limit, $start, $orderField, $orderDirection, $search, $this->admin_id);
+        $data           = [];
+        $i              = $start + 1;
+       
+        if (!empty($items)) {
+            foreach ($items as $arr) {
+               
+                $status='';
+                if($arr['grand_total_amount']==$arr['paid_amount'] && ($arr['balance']=='0' || $arr['balance']=='0.00')){
+                    $status='Paid';
+                }else if($arr['grand_total_amount'] != $arr['paid_amount'] && $arr['paid_amount'] !=='0.00'  && $arr['paid_amount'] !=='0' && substr($arr['due_amount'], 0, 1) !== '-'){
+                    $status='Partially Paid';
+                }else if($arr['grand_total_amount'] != $arr['paid_amount'] && $arr['paid_amount'] =='0.00'){
+                    $status='Not Paid';
+                }else if( substr($arr['balance'], 0, 1) == '-'){
+                    $status='Paid';
+                }
+                    
+                $numberOfDays='';
+                $date_now = date("Y-m-d");
+                if($arr['payment_due_date'] !=='' && $invdatcus['payment_due_date'] < $date_now){
+                    $dateStr1=$arr['payment_due_date'];
+                    $dateStr2=date('Y-m-d');
+                    $date1 = new DateTime($dateStr1);
+                    $date2 = new DateTime($dateStr2);
+                    $interval = $date1->diff($date2);
+                    $numberOfDays = $interval->days;
+                }
+                if ($status != 'Paid') {
+                    $numberOfDaysc = $numberOfDays;
+                }else{
+                    $numberOfDaysc = 0;
+                }
+                if ($status == 'Paid') {
+                    $statusdisp = '<span style="color: green; font-weight: bold;">' . $status . '</span>';
+                } else if ($status == 'Partially Paid') {
+                    $statusdisp = '<span style="color: #4E11A8; font-weight: bold;">' . $status . '</span>';
+                } else if ($status == 'Not Paid') {
+                    $statusdisp = '<span style="color: red; font-weight: bold;">' . $status . '</span>';
+                }
+             
+                $row = [
+                    "id"            => $i,
+                    "chalan_no"             => $arr['chalan_no'],
+                    "purchase_date"         =>  $arr['purchase_date'],
+                    "grand_total_amount"    => $currency. $arr['grand_total_amount'],
+                    "customer_name"         => $arr['customer_name'],
+                    "payment_due_date"      => $arr['payment_due_date'],
+                    "no_of_days"            => $numberOfDaysc,
+                    "paid_amount"           => $currency. $arr['paid_amount'],
+                    "balance"               => $currency. $arr['balance'],
+                    "due_amount"            => $currency.$statusdisp
+                ];
+                $data[] = $row;
+                $i++;
+            }
+        }
+       
+        $response = [
+            "draw"            => $this->input->post('draw'),
+            "recordsTotal"    => $totalItems,
+            "recordsFiltered" => $totalItems,
+            "data"            => $data,
+        ];
+        echo json_encode($response);
+    }
+
+
+
+
+
+
+
+
+     
+
 }
