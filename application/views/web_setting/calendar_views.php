@@ -186,9 +186,20 @@
         editable: true,
         eventLimit: true,
         events: eventData, 
-        eventRender: function(event, element) {
-            element.find('.fc-title').append("<br/>Start: " + event.start.format('YYYY-MM-DD HH:mm') + "<br/>End: " + event.end.format('YYYY-MM-DD HH:mm'));
-        }
+         eventRender: function(event, element) {
+             var start = moment(event.start);
+             var end = moment(event.end);
+
+             if (start.isValid() && end.isValid()) {
+                 element.find('.fc-title').append(
+                     "<br/>Start: " + start.format('YYYY-MM-DD HH:mm') + 
+                     "<br/>End: " + end.format('YYYY-MM-DD HH:mm')
+                 );
+             } else {
+                 console.warn('Invalid start or end date', event);
+             }
+         }
+
       });
 
       $('#calendar').on('click', '.fc-prev-button, .fc-next-button', function() {
