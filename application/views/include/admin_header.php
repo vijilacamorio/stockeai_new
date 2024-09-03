@@ -724,8 +724,8 @@ $(document).ready(function() {
 										<a href="<?php echo base_url('Creport/vendorList?id='.$encode_com_id) ?>"><?php echo 'Vendor Information'; ?>
 										</a>
 									</li>
-									<li class="treeview">
-										<a href="<?php echo base_url('Cinvoice/vendor_report_data') ?>"><?php echo 'Purchase By Vendor'; ?></a>
+									<li class="treeview <?php echo ($this->uri->segment(2) == 'vendorList') ? 'active' : ''; ?>">							
+						          	  <a href="<?php echo base_url('Creport/purchaseByvendorList?id='.$encode_com_id) ?>"><?php echo 'Purchase By Vendor'; ?></a> 
 									</li>
 									<li class="treeview">
 										<a href="<?php echo base_url('Csupplier/transaction_list') ?>"><?php echo 'Transaction to Vendor'; ?></a>
