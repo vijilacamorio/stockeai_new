@@ -611,26 +611,29 @@ $overall_payment = $this->Purchases->get_cust_payment_overall_info($customer_id)
 echo json_encode($data);//die();
 
 }
+ public function bulk_payment(){
+ $payment_id=$this->input->post('pay_id');
+ $payment = $this->Purchases->bulk_payment();
+$payment = $this->Purchases->bulk_payment_unique($payment_unique);
+ echo json_encode($payment);
+}
+
 
 //To Make the Payment for Service Provider - Surya
       public function bulk_payment_ser_pro(){
-        
-        $payment_id=$this->input->post('payment_id');
+     $payment_id=$this->input->post('payment_id');
  $payment = $this->Purchases->bulk_payment_ser_provider_unique($payment_unique);
         $payment = $this->Purchases->bulk_payment_ser_provider();
-      
      echo json_encode($payment);
-
   }
+ 
  public function payment_history_purchase_serv_provider(){
-    
     $payment_id=$this->input->post('payment_id');
      $customer_id=$this->input->post('supplier_id_payment');
               $current_in_id=$this->input->post('current_in_id');
 $overall_payment = $this->Purchases->get_cust_payment_overall_info_ser_pro($customer_id);
   $get_cust_payment =$this->Purchases->get_cust_payment_info_ser_provider($customer_id,$current_in_id);
-
-    $payment_get = $this->Invoices->get_payment_info($payment_id);
+   $payment_get = $this->Invoices->get_payment_info($payment_id);
 
     $amt_paid = $this->db->select('sum(amt_paid) as amt_paid')->from('payment')->where('payment_id',$payment_id)->get()->row()->amt_paid;
 
@@ -665,16 +668,7 @@ echo json_encode($data);
 }
 
 
-public function bulk_payment(){
-    $CI = & get_instance();
-    $CI->auth->check_admin_auth();
-    $CI->load->model('Purchases');
-    $payment_id=$this->input->post('pay_id');
-//    print_r($this->input->post());die();
-    $payment = $CI->Purchases->bulk_payment();
-    $payment = $CI->Purchases->bulk_payment_unique($payment_unique);
- echo json_encode($payment);
-}
+
 
         public function add_csv_serviceprovider()
         {

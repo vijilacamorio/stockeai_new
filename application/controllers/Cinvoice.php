@@ -94,15 +94,17 @@ $tableData = $this->input->post('tableData');
             'create_by'  => $this->session->userdata('user_id')
            );
            $this->db->insert('payment', $data);
+    
 }
 $data1=array(
   'amount_paids'  => $tableData[0]['t_amt_paid'],  
-  'balances'  => $tableData[0]['t_bal_amt']    
+  'balances'  => $tableData[0]['t_bal_amt'] ,
+  'payment_id' =>$tableData[0]['payment']   
 );
-$this->db->where('payment_id',$tableData[0]['payment']);
+$this->db->where('bill_number',$tableData[0]['inv_no']);
 $this->db->where('create_by',$this->session->userdata('user_id'));
  $this->db->update('service', $data1);
- echo $this->db->last_query();
+
 }
     #==============sale delete==============#
     public function sale_invoice_delete($invoice_id)
