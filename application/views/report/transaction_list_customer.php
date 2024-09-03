@@ -153,7 +153,7 @@
                         </td>
                         <td class="search_dropdown" id="datepicker-container" style="width: 15%; color: black; padding: 5px;">
                            <div >
-                              <input type="text" class="form-control daterangepicker-field" id="daterangepicker-field" name="daterangepicker-field" style="width: 180px; margin-top:10px;border-radius: 8px; height: 35px;" autocomplete="off"/>
+                              <input type="text" class="form-control daterangepicker_field" id="daterangepicker-field" name="daterangepicker-field" style="width: 180px; margin-top:10px;border-radius: 8px; height: 35px;" autocomplete="off"/>
                            </div>
                         </td>
                         <td style="width: 20px; padding: 5px;">
