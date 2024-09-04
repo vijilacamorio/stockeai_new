@@ -144,21 +144,21 @@
                      </div>
                      <table class="table table-bordered" id="vendorInfoTbl" cellspacing="0" width="100%">
                         <thead class="sortableTable">
-                              <th width="5%">S.No</th>
-                              <th width="5%"><?php echo display('Company ID')?></th>
-                              <th width="7%"><?php echo display('Name')?></th>
-                              <th width="7%"><?php echo display('Address')?></th>
-                              <th width="7%"><?php echo display('Mobile')?></th>
-                              <th width="7%"><?php echo display('Business Phone')?></th>
-                              <th width="7%"><?php echo display('Primary Email')?> </th>
-                              <th width="7%"><?php echo display('City')?></th>
-                              <th width="7%"><?php echo display('Country')?></th>
-                              <th width="7%"><?php echo display('Credit limit')?></th>
-                              <th width="7%">Open Balance</th>
-                              <th width="7%"><?php echo display('Vendor Type')?></th>
-                              <th width="7%"><?php echo display('State')?></th>
-                              <th width="7%"><?php echo display('Zip code')?></th>
-                              <th width="7%"><?php echo display('Supplier Details')?></th>
+                              <th class="btnclr" width="5%">S.No</th>
+                              <th class="btnclr" width="5%"><?php echo display('Company ID')?></th>
+                              <th class="btnclr" width="7%"><?php echo display('Name')?></th>
+                              <th class="btnclr" width="7%"><?php echo display('Address')?></th>
+                              <th class="btnclr" width="7%"><?php echo display('Mobile')?></th>
+                              <th class="btnclr" width="7%"><?php echo display('Business Phone')?></th>
+                              <th class="btnclr" width="7%"><?php echo display('Primary Email')?> </th>
+                              <th class="btnclr" width="7%"><?php echo display('City')?></th>
+                              <th class="btnclr" width="7%"><?php echo display('Country')?></th>
+                              <th class="btnclr" width="7%"><?php echo display('Credit limit')?></th>
+                              <th class="btnclr" width="7%">Open Balance</th>
+                              <th class="btnclr" width="7%"><?php echo display('Vendor Type')?></th>
+                              <th class="btnclr" width="7%"><?php echo display('State')?></th>
+                              <th  class="btnclr" width="7%"><?php echo display('Zip code')?></th>
+                              <th class="btnclr" width="7%"><?php echo display('Supplier Details')?></th>
                         </thead>
          
                      </table>

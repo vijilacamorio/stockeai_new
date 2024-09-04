@@ -30,15 +30,15 @@ class Products extends CI_Model
             return $query->result_array();
         }
     }
-    public function get_products()
-    {
-        $sql =
-            "select a.*,b.category_name  from product_information a join product_category b on b.category_id=a.category_id limit 10";
-        $query = $this->db->query($sql);
-        if ($query->num_rows() > 0) {
-            return $query->result_array();
-        }
-    }
+    // public function get_products()
+    // {
+    //     $sql =
+    //         "select a.*,b.category_name  from product_information a join product_category b on b.category_id=a.category_id limit 10";
+    //     $query = $this->db->query($sql);
+    //     if ($query->num_rows() > 0) {
+    //         return $query->result_array();
+    //     }
+    // }
     //For Listing Products in 
     public function get_all_products_with_supplier()
     {
@@ -123,7 +123,10 @@ class Products extends CI_Model
         $query = $this->db
             ->select("*")
             ->from("product_information")
+
+          
             ->where("created_by", $admin_id)
+
             ->where("is_deleted", 0)
             ->get();
         return $query->num_rows();
@@ -179,10 +182,16 @@ class Products extends CI_Model
         $this->db->where("a.create_by", $admin_id);
         $this->db->group_by("a.product_id");
         $query = $this->db->get();
+
+        // echo $this->db->last_query(); die();
+
         if ($query->num_rows() > 0) {
             return $query->result_array();
         }
     }
+
+
+
     // To calculate the Product Availablity for Product Index Page
     public function sales_product_all($admin_id)
     {
@@ -193,11 +202,22 @@ class Products extends CI_Model
         $this->db->join("product_information b", "b.product_id = a.product_id");
         $this->db->group_by("a.product_id");
         $this->db->where("a.created_by", $admin_id);
-        $query = $this->db->get();
+        $query = $this->db->get(); 
+
+        // echo $this->db->last_query(); die();
+
         if ($query->num_rows() > 0) {
             return $query->result_array();
         }
     }
+
+
+
+
+
+
+
+
     public function uniqueProductname(
         $uniqueproduct_name,
         $uniqueproduct_model,$uniqueproduct_id,
@@ -567,4 +587,13 @@ class Products extends CI_Model
         }
         return false;
     }
+
+
+
+  
+
+
+
+
+
 }

@@ -144,16 +144,16 @@
                      </div>
                      <table class="table table-bordered" id="vendorRepTbl" cellspacing="0" width="100%">
                         <thead class="sortableTable">
-                              <th width="5%">S.No</th>
-                              <th width="11%"> <?php echo display('Invoice No')?></th>
-                              <th width="11%"><?php echo display('Sales Invoice date')?></th>
-                              <th width="11%"><?php echo display('Grand Total')?></th>
-                              <th width="11%"><?php echo 'Supplier Name ';?></th>
-                              <th width="11%"><?php echo 'Payment Due Date';?></th>
-                              <th width="10%"><?php echo 'No of Due Days';?> </th>
-                              <th width="10%"><?php echo display('Amount Paid')?></th>
-                              <th width="10%"> <?php echo display('Balance Amount')?> </th>
-                              <th width="10%"><?php echo 'Status';?></th>
+                              <th class="btnclr" width="5%">S.No</th>
+                              <th class="btnclr" width="11%"> <?php echo display('Invoice No')?></th>
+                              <th class="btnclr" width="11%"><?php echo display('Sales Invoice date')?></th>
+                              <th class="btnclr" width="11%"><?php echo display('Grand Total')?></th>
+                              <th class="btnclr" width="11%"><?php echo 'Supplier Name ';?></th>
+                              <th class="btnclr" width="11%"><?php echo 'Payment Due Date';?></th>
+                              <th class="btnclr" width="10%"><?php echo 'No of Due Days';?> </th>
+                              <th class="btnclr" width="10%"><?php echo display('Amount Paid')?></th>
+                              <th class="btnclr" width="10%"> <?php echo display('Balance Amount')?> </th>
+                              <th class="btnclr" width="10%"><?php echo 'Status';?></th>
                         </thead>
                      </table>
                   </div>
