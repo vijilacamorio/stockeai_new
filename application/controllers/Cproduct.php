@@ -27,6 +27,7 @@ class Cproduct extends CI_Controller {
         $CI->load->model("Web_settings");
        $encodedId     = isset($_GET["id"]) ? $_GET["id"] : null;
        $decodedId     = decodeBase64UrlParameter($encodedId);
+
         $currency_details = $CI->Web_settings->retrieve_setting_editdata($decodedId);
         $supplier = $CI->Suppliers->supplier_list($decodedId);
         $category_list = $CI->Categories->category_list_product($decodedId);
