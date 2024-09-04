@@ -165,6 +165,11 @@ public function tax_inf() {
         }
         return false;
     }
+
+
+
+
+    
     public function open_invoices_exp(){
           $this->db->select('i.*,cs.*');
     $this->db->from('product_purchase i');
@@ -2439,6 +2444,7 @@ if(!empty($this->input->post('paid_amount',TRUE))){
         $this->db->where('payment_id',$payment_id);
         $this->db->order_by('id', 'asc');
         $query = $this->db->get();
+        
         if ($query->num_rows() > 0) {
             return $query->result_array();
         }

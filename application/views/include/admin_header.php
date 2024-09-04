@@ -698,7 +698,7 @@ $(document).ready(function() {
 									</li>
 								</ul>
 							</li>
-							<li class="treeview <?php echo ($this->uri->segment(2) == 'customerReport' || $this->uri->segment(2) == 'customerSalesReport' || $this->uri->segment(2) == 'transaction_list') ? 'active' : ''; ?>">
+							<li class="treeview <?php echo ($this->uri->segment(2) == 'customerReport' || $this->uri->segment(2) == 'customerSalesReport' || $this->uri->segment(2) == 'customerTransaction') ? 'active' : ''; ?>">
 								<a href="fa fa-asl-interpreting">
 									<i class="ti-user"></i><span><?php echo "Customer" ?></span>
 								</a>
@@ -710,39 +710,39 @@ $(document).ready(function() {
 									<li class="treeview  <?php echo ($this->uri->segment(2) == 'customerSalesReport') ? 'active' : ''; ?>">
 										<a href="<?php echo base_url('Creport/customerSalesReport?id='.$encode_com_id) ?>"><?php echo 'Sales By Customer'; ?></a>
 									</li>
-									<li class="treeview  <?php echo ($this->uri->segment(2) == 'transaction_list') ? 'active' : ''; ?>">
-										<a href="<?php echo base_url('Creport/transaction_list?id='.$encode_com_id) ?>"><?php echo 'Transaction By Customer'; ?></a>
+									<li class="treeview  <?php echo ($this->uri->segment(2) == 'customerTransaction') ? 'active' : ''; ?>">
+										<a href="<?php echo base_url('Creport/customerTransaction?id='.$encode_com_id) ?>"><?php echo 'Transaction By Customer'; ?></a>
 									</li>
 								</ul>
 							</li>
-							<li class="treeview">
+							<li class="treeview <?php echo ($this->uri->segment(2) == 'vendorList' || $this->uri->segment(2) == 'purchaseByvendorList' || $this->uri->segment(2) == 'supplierTransactionList') ? 'active' : ''; ?>">
 								<a href="fa fa-asl-interpreting">
 									<i class="ti-user"></i><span><?php echo "Vendor" ?></span>
 								</a>
 								<ul class="treeview-menu">
-									<li class="treeview">
-										<a href="<?php echo base_url('Csupplier/supplier_list') ?>"><?php echo 'Vendor Information'; ?>
+									<li class="treeview <?php echo ($this->uri->segment(2) == 'vendorList') ? 'active' : ''; ?>">
+										<a href="<?php echo base_url('Creport/vendorList?id='.$encode_com_id) ?>"><?php echo 'Vendor Information'; ?>
 										</a>
 									</li>
-									<li class="treeview">
-										<a href="<?php echo base_url('Cinvoice/vendor_report_data') ?>"><?php echo 'Purchase By Vendor'; ?></a>
+									<li class="treeview <?php echo ($this->uri->segment(2) == 'purchaseByvendorList') ? 'active' : ''; ?>">							
+						          	  <a href="<?php echo base_url('Creport/purchaseByvendorList?id='.$encode_com_id) ?>"><?php echo 'Purchase By Vendor'; ?></a> 
 									</li>
-									<li class="treeview">
-										<a href="<?php echo base_url('Csupplier/transaction_list') ?>"><?php echo 'Transaction to Vendor'; ?></a>
+									<li class="treeview <?php echo ($this->uri->segment(2) == 'supplierTransactionList') ? 'active' : ''; ?>">
+										<a href="<?php echo base_url('Creport/supplierTransactionList?id='.$encode_com_id) ?>"><?php echo 'Transaction to Vendor'; ?></a>
 									</li>
 								</ul>
 							</li>
-							<li class="treeview">
+							<li class="treeview  <?php echo ($this->uri->segment(2) == 'productReport' || $this->uri->segment(2) == 'productReportStock') ? 'active' : ''; ?>">
 								<a href="fa fa-asl-interpreting">
 									<i class="ti-user"></i><span><?php echo "Product" ?></span>
 								</a>
 								<ul class="treeview-menu">
-									<li class="treeview">
-										<a href="<?php echo base_url('Cproduct/product_info') ?>"><?php echo 'Product Information'; ?>
+									<li class="treeview <?php echo ($this->uri->segment(2) == 'productReport') ? 'active' : ''; ?>">
+										<a href="<?php echo base_url('Creport/productReport?id='.$encode_com_id) ?>"><?php echo 'Product Information'; ?>
 										</a>
 									</li>
-									<li class="treeview">
-										<a href="<?php echo base_url('Cproduct/product_info_stock') ?>"><?php echo 'Product Stock'; ?></a>
+									<li class="treeview <?php echo ($this->uri->segment(2) == 'productReportStock') ? 'active' : ''; ?>">
+										<a href="<?php echo base_url('Creport/productReportStock?id='.$encode_com_id) ?>"><?php echo 'Product Stock'; ?></a>
 									</li>
 								</ul>
 							</li>
@@ -1052,7 +1052,7 @@ $(document).ready(function() {
 				   if (trim($split[0]) == 'setting') {
 				?>
 					<li class="treeview  <?php echo ($this->uri->segment(2) == 'calender_view') ? 'active' : ''; ?>">
-						<a href="<?php echo base_url(); ?>Cweb_setting/calender_view">
+						<a href="<?php echo base_url(); ?>Cweb_setting/calender_view?id=<?php echo $encode_com_id; ?>">
 							<i class="ti-calendar"></i><span><?php echo 'Calendar'; ?></span>
 						</a>
 					</li>

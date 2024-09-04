@@ -303,4 +303,5 @@ $this->db->update('customer_information');
         }
         return false;
     }
+    
 }

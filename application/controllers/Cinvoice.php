@@ -68,14 +68,17 @@ $tableData = $this->input->post('tableData');
             'create_by'  => $this->session->userdata('user_id')
            );
            $this->db->insert('payment', $data);
+           echo $this->db->last_query();
 }
 $data1=array(
   'paid_amount'  => $tableData[0]['t_amt_paid'],  
-  'balance'  => $tableData[0]['t_bal_amt']    
+  'balance'  => $tableData[0]['t_bal_amt']   ,
+    'payment_id' =>$tableData[0]['payment']   
 );
-$this->db->where('payment_id',$tableData[0]['payment']);
-$this->db->where('create_by',$this->session->userdata('user_id'));
+$this->db->where('chalan_no',$tableData[0]['bill_bo']);
+
  $this->db->update('product_purchase', $data1);
+   echo $this->db->last_query();
 }
 public function payment_edit_serv_pro(){
 $tableData = $this->input->post('tableData');
@@ -96,15 +99,16 @@ $tableData = $this->input->post('tableData');
             'create_by'  => $this->session->userdata('user_id')
            );
            $this->db->insert('payment', $data);
+    
 }
 $data1=array(
   'amount_paids'  => $tableData[0]['t_amt_paid'],  
-  'balances'  => $tableData[0]['t_bal_amt']    
+  'balances'  => $tableData[0]['t_bal_amt'] ,
+  'payment_id' =>$tableData[0]['payment']   
 );
-$this->db->where('payment_id',$tableData[0]['payment']);
-$this->db->where('create_by',$this->session->userdata('user_id'));
+$this->db->where('bill_number',$tableData[0]['inv_no']);
  $this->db->update('service', $data1);
- echo $this->db->last_query();
+
 }
     #==============sale delete==============#
     public function sale_invoice_delete($invoice_id)
@@ -542,7 +546,7 @@ echo json_encode($result, JSON_NUMERIC_CHECK);
         $curn_info_default = $this->db->select('*')->from('currency_tbl')->where('icon',$currency_details[0]['currency'])->get()->result_array();
       $get_agent_data = $this->Invoices->get_agent_data();
         $bank_list          = $this->Web_settings->bank_list();
-        $prodt = $this->Products->get_all_products();
+        $prodt = $this->Products->get_all_products($_GET['id']);
         $payment_terms_dropdown = $this->Suppliers->payment_terms_dropdown();
         $paytype=$this->Invoices->payment_type();
         $voucher_no = $this->Invoices->commercial_inv_number();
@@ -919,7 +923,7 @@ public function makepay()
     $all_supplier1 = $this->Purchases->select_all_supplier();
     $profarma_data = $this->Invoices->getAllProfarmadata();
     $country_code = $this->db->select('*')->from('country')->get()->result_array();
-    $prodt = $this->Products->get_all_products();
+    $prodt = $this->Products->get_all_products($_GET['id']);
     $cutomerData = $this->Invoices->pos_customer_setup($admin_comp_id);
     $data=array(
         'curn_info_default' =>$curn_info_default[0]['currency_name'],
@@ -1418,7 +1422,7 @@ public function deletesale(){
         $curn_info_default = $this->db->select('*')->from('currency_tbl')->where('icon',$currency_details[0]['currency'])->get()->result_array();
         $customer = $this->Invoices->pos_customer_setup($admin_comp_id);
         $taxfield1 = $this->db->select('tax_id,tax')->from('tax_information')->get()->result_array();
-        $prodt = $this->Products->get_all_products();
+        $prodt = $this->Products->get_all_products($_GET['id']);
         $bank_name = $this->db->select('bank_name')->from('bank_add')->get()->result_array();
         $data = array(
             'customer'  => $customer,
@@ -2137,7 +2141,7 @@ public function PaymentTerms() {
         $supplier_block_no = $this->Invoices->get_product_supplier_block();
         $paytype=$this->Invoices->payment_type();
         $curn_info_default = $this->db->select('*')->from('currency_tbl')->where('icon',$currency_details[0]['currency'])->get()->result_array();
-        $prodt = $this->Products->get_all_products();
+        $prodt = $this->Products->get_all_products($_GET['id']);
         $all_invoice = $this->Invoices->all_invoice($invoice_id);
         $servic_provider = $this->Invoices->servic_provider_list();
         $payment_terms_dropdown = $this->Suppliers->payment_terms_dropdown();
@@ -2900,14 +2904,14 @@ $this->db->update('bootgrid_data');
     $content = $this->load->view('invoice/packing_list_invoice_html', $data, true);
     $this->template->full_admin_html_view($content);
     }
- public function get_all_products() {
-      $CI = & get_instance();
- $prodt = $CI->db->select('product_name,product_model,p_quantity')
-        ->from('product_information')
-        ->get()
-        ->result_array();
-echo json_encode($prodt);
- }
+//  public function get_all_products() {
+//       $CI = & get_instance();
+//  $prodt = $CI->db->select('product_name,product_model,p_quantity')
+//         ->from('product_information')
+//         ->get()
+//         ->result_array();
+// echo json_encode($prodt);
+//  }
     public function pos_invoice_inserted_data_manual() {
         $CI = & get_instance();
         $CI->auth->check_admin_auth();

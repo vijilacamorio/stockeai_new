@@ -760,6 +760,7 @@ if(in_array(BOOTSTRAP_MODELS['payment_model'],$bootstrap_model)){ ?>
                         <input type="hidden" name="admin_company_id" id="admin_company_id" value="<?php echo $_GET['id']; ?>">
                      </div>
                   </div>
+                  <input type="hidden" id="custocurrencyrate"/>
                   <input type="hidden" id="cutomer_name" name="cutomer_name"/>
                   <?php //$payment_id = rand();  ?>
                   <input type="hidden" value="<?php echo isset($payment_id) ? $payment_id : rand(); ?>"  name="payment_id" id="payment_id"/>
@@ -856,7 +857,7 @@ function cal_balanceamt(){
    var pay = $('#amount_to_pay').val();
    var amount_received = $('#payment_from_modal').val();
    var bal = pay-amount_received;
-   $('#balance_modal').val(bal);
+   $('#balance_modal').val(bal.toFixed(2));
 }
 var csrfName = '<?php echo $this->security->get_csrf_token_name();?>';
 var csrfHash = '<?php echo $this->security->get_csrf_hash();?>';
@@ -898,7 +899,7 @@ $(document).ready(function(){
                     processData: false, 
                     success:function (response) {
                     	console.log(response, 'response');
-                    	//debugger;
+                    //	debugger;
                         if (response.status == 'success') {
                            var already_paid = parseFloat($('#amount_paid').val()) || 0;
                            var current_paid = parseFloat(response.paymentData[0]['amt_paid']) || 0;
@@ -907,9 +908,15 @@ $(document).ready(function(){
 				                $('.amt').css('display', 'table-cell');
 				                if (response.paymentData && response.paymentData.length > 0) {
 					                $('#makepaymentId').val(response.paymentData[0]['payment_id']);
+                                $('#makepaymentProvider').val(response.paymentData[0]['payment_id']);
 					                $('#amount_paid').val(total_paid);
+                               $('#amount_paid_provider').val(total_paid);
 					                $('#Balance').val(response.paymentData[0]['balance']);
 					                $('#balance').val(response.paymentData[0]['balance']);
+                               $('#balance_provider').val((response.paymentData[0]['balance']));
+                               var customer_currency = $('#custocurrencyrate').val();
+                               $('#balance_customer_currency').val((customer_currency*response.paymentData[0]['balance']).toFixed(2));
+                                $('#paid_customer_currency').val((customer_currency*total_paid).toFixed(2));
 					            }
 				                setTimeout(function() {
 				                    $('#payment_modal').modal('hide');

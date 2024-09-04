@@ -3,19 +3,24 @@ if (!defined("BASEPATH")) {
     exit("No direct script access allowed");
 }
 
-class Lproduct
+class Lproduct 
 {
-    public function product_list()
+  
+  
+    public function product_list($admin_id)
     {
         $CI = &get_instance();
         $CI->load->model("Products");
         $CI->load->model("Web_settings");
-        $setting_detail = $CI->Web_settings->retrieve_setting_editdata();
-        $data["sale_count"] = $CI->Products->sales_product_all();
-        $data["expense_count"] = $CI->Products->expense_product_all();
+        $setting_detail = $CI->Web_settings->retrieve_setting_editdata($admin_id);
+        $data["sale_count"] = $CI->Products->sales_product_all($admin_id);
+        $data["expense_count"] = $CI->Products->expense_product_all($admin_id);
         $productList = $CI->parser->parse("product/product", $data, true);
         return $productList;
     }
+
+
+
     public function product_view($id, $company_id)
     {
         $CI = &get_instance();
@@ -128,7 +133,7 @@ class Lproduct
             $product_details_pdv[0]["product_id"],
             $company_id
         );
-        $data["sale_count"] = $CI->Products->sales_product_all();
+        $data["sale_count"] = $CI->Products->sales_product_all($admin_id);
         $data["expense_count"] = $CI->Products->expense_product_all();
         $data[
             "setting_detail"
@@ -165,8 +170,8 @@ class Lproduct
         $product_detail = $CI->Products->retrieve_product_editdata($product_id);
         $country_list = $CI->Web_settings->getCountryDetails();
         $product_table = $CI->Products->product_table($product_id);
-        $currency_details = $CI->Web_settings->retrieve_setting_editdata();
-        $supplier_list = $CI->Suppliers->supplier_list();
+        $currency_details = $CI->Web_settings->retrieve_setting_editdata($created_by);
+        $supplier_list = $CI->Suppliers->supplier_list($created_by);
         $view_attachments = $CI->Invoices->editMultiplefiles(
             $product_id,
             "product",
@@ -174,7 +179,7 @@ class Lproduct
         );
         $category_list = $CI->Categories->category_list_product($created_by);
         $unit_list = $CI->Units->unit_list();
-        $setting_detail = $CI->Web_settings->retrieve_setting_editdata();
+        $setting_detail = $CI->Web_settings->retrieve_setting_editdata($created_by);
         $data["supplier_list"] = $supplier_list;
         $data["country_list"] = $country_list;
         $data["unit_list"] = $unit_list;
