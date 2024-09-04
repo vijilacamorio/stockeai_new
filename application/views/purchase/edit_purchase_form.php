@@ -527,7 +527,8 @@
                                  <input type="text" id="weight_<?php  echo $m.$n; ?>" name="weight[]"  value="<?php  echo $inv['weight'];  ?>" class="weight form-control" />
                               </td>
                               <td >
-                                                <select id="origin_1" name="origin[]" class="origin form-control">      
+                                                <select id="origin_<?php  echo $m.$n; ?>" name="origin[]" class="origin form-control">   
+                                                    <option value="<?php echo $inv['origin']; ?>"><?php echo $inv['origin']; ?></option>   
                                                 <?php foreach ($country_code as $key => $value) { ?>
                                                    <option value="<?php echo $value['iso']; ?>"><?php echo $value['iso']; ?></option>
                                                 <?php } ?> </select>
@@ -821,11 +822,27 @@ foreach ($tax_data as $tx) {?>
     var csrfHash = '<?php echo $this->security->get_csrf_hash();?>';
    $(document).ready(function(){
       $(".normalinvoice").each(function(i,v){
+          $(this).find('select').each(function() {
+    var $select = $(this);
+   if ($select.data('select2')) {
+        $select.select2('destroy');
+    }
+    $select.select2();
+});
        if($(this).find("tbody").html().trim().length === 0){
            $(this).hide()
        }
     })
+                              
+//  $('.normalinvoice tbody tr').find('select').each(function() {
+//     var $select = $(this);
+//    if ($select.data('select2')) {
+//         $select.select2('destroy');
+//     }
+//     $select.select2();
+// });
                         $('.normalinvoice tbody tr').each(function() {
+
         var tableId = $(this).closest('table').attr('id');
     updateTableTotals(tableId);
   updateOverallTotals(true);
@@ -1136,36 +1153,36 @@ function updateGrossCalculations() {
   updateOverallTotals(true);
 }
 
+// $(document).on('keyup', '.normalinvoice tbody tr:last', function (e) {
+// var tid = $(this).closest('table').attr('id');
+// const indexLast = tid.lastIndexOf('_');
+// var id = tid.slice(indexLast + 1);
+// var $lastRow = $('#addPurchaseItem_' + id + ' tr:last');
+
+
 $(document).on('keyup', '.normalinvoice tbody tr:last', function (e) {
 var tid = $(this).closest('table').attr('id');
 const indexLast = tid.lastIndexOf('_');
 var id = tid.slice(indexLast + 1);
 var $lastRow = $('#addPurchaseItem_' + id + ' tr:last');
 var num = id + ($lastRow.index() + 1);
-
-// Destroy existing Select2 instances on all select elements in the table
 $('#addPurchaseItem_' + id + ' select').each(function() {
     if ($(this).data('select2')) {
         $(this).select2('destroy');
     }
 });
-
-// Clone the last row including td elements
 var $newRow = $('<tr></tr>');
 $lastRow.find('td').each(function() {
     var $td = $(this);
-    var $clonedTd = $td.clone(); // Clone the td element
-    
+    var $clonedTd = $td.clone();    
     $clonedTd.find('select, input').each(function() {
-        var $element = $(this).clone(); // Clone the element
+        var $element = $(this).clone(); 
         var newId = $element.attr('id') ? $element.attr('id').replace(/\d+$/, num) : null;
         if (newId) {
-            $element.attr('id', newId); // Update ID
+            $element.attr('id', newId); 
         }
         $(this).replaceWith($element);
     });
-    
-    // Append the cloned td to the new row
     $newRow.append($clonedTd);
 });
 
@@ -1183,10 +1200,12 @@ $newRow.find('select').each(function() {
     $select.select2();
 });
 
-  $('#normalinvoice_' + dynamicId + ' tbody tr').each(function (index) {
-        $(this).find(".slab_no").val(index + 1);
-    });
-});
+
+   
+   });
+
+
+
 $(document).on('click', '.delete', function(){
    var $tableBody = $(this).closest('tbody');
     var rowCount = $tableBody.find('tr').length;
