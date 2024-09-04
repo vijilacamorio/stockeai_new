@@ -23,6 +23,12 @@ $this->load->view('include/bootstrap_model', $modaldata);
          $this->session->unset_userdata('error_message');
          }
          ?>
+         <style>
+            .slab_no{
+   border:none;
+   background-color:inherit;
+}
+            </style>
       <div class="row">
          <div class="col-sm-12">
             <div class="panel panel-bd lobidrag">
@@ -350,7 +356,7 @@ $this->load->view('include/bootstrap_model', $modaldata);
 
                                  <div class="form-group row">
     <label for="invoice_no" class="col-sm-4 col-form-label">
-        <?php echo display('ISF FIELD');?>
+        <?php echo display('ISF FIELD');?><i class="text-danger">*</i>
     </label>
     <div class="col-sm-8">
         <select name="isf_field" class="form-control" id="isf_dropdown" tabindex="3" required="" style="width:100%;border:2px solid #d7d4d6;">
@@ -413,7 +419,7 @@ $this->load->view('include/bootstrap_model', $modaldata);
                                        <tr>
                                           <td>
                                              <input type="hidden" class="table_id" name="tableid[]" id="tableid_1"/>
-                                             <input list="magicHouses" name="prodt[]" id="prodt_1" required=""  class="form-control product_name"  style="width:160px;" placeholder="Search Product" />
+                                             <input list="magicHouses" name="prodt[]" id="prodt_1"   class="form-control product_name"  style="width:160px;" placeholder="Search Product" />
                                              <datalist id="magicHouses">
                                                 <?php 
                                                    foreach($product_list as $tx){?>
@@ -423,37 +429,37 @@ $this->load->view('include/bootstrap_model', $modaldata);
                                              <input type='hidden' class='common_product autocomplete_hidden_value  product_id_1' name='product_id[]' id='product_id_1' />
                                           </td>
                                           <td>
-                                             <input type="text" id="bundle_no_1" name="bundle_no[]" required="" class="bundle_no form-control" />
+                                             <input type="text" id="bundle_no_1" name="bundle_no[]"  class="bundle_no form-control" />
                                           </td>
                                           <td>
                                              <input type="text" id="description_1" name="description[]" class="form-control productDescription" />
                                           </td>
                                           <td >
-                                             <input type="text" name="thickness[]" id="thickness_1" required="" class="form-control productThickness"/>
+                                             <input type="text" name="thickness[]" id="thickness_1" class="form-control productThickness"/>
                                           </td>
                                           <td>
-                                             <input type="text" id="supplier_b_no_1" name="supplier_block_no[]" required="" class="form-control" />
+                                             <input type="text" id="supplier_b_no_1" name="supplier_block_no[]"  class="form-control" />
                                           </td>
                                           <td >
-                                             <input type="text"  id="supplier_s_no_1" name="supplier_slab_no[]" required="" class="form-control"/>
+                                             <input type="text"  id="supplier_s_no_1" name="supplier_slab_no[]"  class="form-control"/>
                                           </td>
                                           <td>
-                                             <input type="text" id="gross_width_1" name="gross_width[]" required="" class="gross_width  form-control" />
+                                             <input type="text" id="gross_width_1" name="gross_width[]"  class="gross_width  form-control" />
                                           </td>
                                           <td>
-                                             <input type="text" id="gross_height_1" name="gross_height[]"  required="" class="gross_height form-control" />
+                                             <input type="text" id="gross_height_1" name="gross_height[]"   class="gross_height form-control" />
                                           </td>
                                           <td >
                                              <input type="text"   style="width:60px;" readonly id="gross_sq_ft_1" name="gross_sq_ft[]" class="gross_sq_ft form-control"/>
                                           </td>
                                           <td style="text-align:center;" >
-                                             <input type="text"   style="width:20px;" value="1" class="slab_no" id="slab_no_1" name="slab_no[]"  readonly  required=""/> 
+                                             <input type="text"   style="width:20px;" value="1" class="slab_no" id="slab_no_1" name="slab_no[]"  readonly  /> 
                                           </td>
                                           <td>
-                                             <input type="text" id="net_width_1" name="net_width[]"  required="" class="net_width form-control" />
+                                             <input type="text" id="net_width_1" name="net_width[]"  class="net_width form-control" />
                                           </td>
                                           <td>
-                                             <input type="text" id="net_height_1" name="net_height[]"   required="" class="net_height form-control" />
+                                             <input type="text" id="net_height_1" name="net_height[]"   class="net_height form-control" />
                                           </td>
                                           <td >
                                              <input type="text"   style="width:60px;" readonly id="net_sq_ft_1" name="net_sq_ft[]" class="net_sq_ft form-control"/>
@@ -1004,6 +1010,7 @@ foreach ($tax_data as $tx) {?>
 
 <script>
    $(document).ready(function(){
+         $(".isf_no1").hide();
     $('#main').hide();
     $('#expense_drop').hide();
    });
@@ -1448,4 +1455,17 @@ $('#amount_to_pay').val($('#balance_provider').val());
    }, 2500);
    
    });
+     $('#final_submit').on('click', function (e) {
+      $('#errormessage_expense').html('<div class="alert alert-success">' + "<?php echo  ('Invoice Number')." :";?>"+$('#Final_invoice_number').val()+"<?php echo  " ".display('has been saved Successfully');?>"+ '</div>');
+ window.setTimeout(function(){
+    window.location = "<?php  echo base_url(); ?>Cpurchase/manage_purchase?id=<?php echo $_GET['id']; ?>";
+   }, 2500);
+   
+   });
+      $('#isf_dropdown').on('change', function() {
+     if ( this.value == '2')
+        $(".isf_no1").show();
+     else
+       $(".isf_no1").hide();
+   }).trigger("change");
    </script>

@@ -607,13 +607,34 @@ $overall_payment = $this->Purchases->get_cust_payment_overall_info($customer_id)
 echo json_encode($data);//die();
 
 }
- public function bulk_payment(){
-    $payment_unique=$this->input->post('payment_id_this_invoice');
- //$payment_id=$this->input->post('payment_id');
- $payment = $this->Purchases->bulk_payment();
-$payment = $this->Purchases->bulk_payment_unique($payment_unique);
- echo json_encode($payment);
+public function bulk_payment() {
+    $response = ['status' => 'failure', 'msg' => 'An error occurred.'];
+
+    $payment_unique = $this->input->post('payment_id_this_invoice', TRUE);
+
+    try {
+        $bulkPaymentResult = $this->Purchases->bulk_payment();
+        if ($bulkPaymentResult === FALSE) {
+            throw new Exception('Bulk payment processing failed.');
+        }
+
+        $uniquePaymentResult = $this->Purchases->bulk_payment_unique($payment_unique);
+        if ($uniquePaymentResult === FALSE) {
+            throw new Exception('Unique payment processing failed.');
+        }
+
+        $response = [
+            'status' => 'success',
+            'msg' => 'Bulk payment processed successfully.'
+        ];
+    } catch (Exception $e) {
+        log_message('error', 'Bulk payment error: ' . $e->getMessage());
+        $response['msg'] = $e->getMessage();
+    }
+  echo json_encode($response);
+    exit;
 }
+
 
 
 //To Make the Payment for Service Provider - Surya
@@ -1810,6 +1831,7 @@ public function uploadCsv_Serviceprovider_second()
         $currency_details = $this->Web_settings->retrieve_setting_editdata();
         $curn_info_default = $this->db->select('*')->from('currency_tbl')->where('icon',$currency_details[0]['currency'])->get()->result_array();
         $sale_costpersqft_per = $this->Invoices->sales_cost_permission();
+         $country_code = $this->db->select('*')->from('country')->get()->result_array();
         $data = array(
             'tax_data'     =>  $tax,
             'attachments'   => $expense_attachment,
@@ -1818,6 +1840,7 @@ public function uploadCsv_Serviceprovider_second()
             'price'  =>$sale_costpersqft_per[1]['price'],
             'all_supplier'  => $supplier_list,
             'product_list'  => $all_product_list,
+              'country_code' => $country_code,
             'purchase_info' => $purchase_detail,
            'setting_detail' => $setting_detail
          );
