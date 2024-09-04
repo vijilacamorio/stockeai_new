@@ -2,8 +2,10 @@
 if (!defined('BASEPATH'))
 exit('No direct script access allowed');
 require_once 'vendor/autoload.php';
+
 use Dompdf\Dompdf;
 use Dompdf\Options;
+
 class Cinvoice extends CI_Controller {
     private $id;
 
@@ -2005,10 +2007,11 @@ if ($invoice_id != "") {
         foreach ($items as $item) {
             $edit   = '<a href="' . base_url('Cinvoice/invoice_update_form?id=' . $encodedId. '&invoice_id=' . $item['invoice_id']) . '" class="btnclr btn btn-sm" style="margin-right: 5px;"><i class="fa fa-pencil" aria-hidden="true"></i></a>';
             $delete = '<a style="margin-right: 5px;" onClick=deleteInvoicedata('.$item["invoice_id"].') class="btnclr btn btn-sm" ><i class="fa fa-trash" aria-hidden="true"></i></a>' ;
-            //$mail = '<a href="' . base_url('Cinvoice/invoice_update_form?id=' . $encodedId. '&invoice_id=' . $item['invoice_id']) . '" class="btn btn-sm btn-danger" ><i class="fa fa-trash" aria-hidden="true"></i></a>';
-            $mail = '<a data-toggle="modal" data-target="#sendemailmodal" onClick=sendEmailproforma('.$item["invoice_id"].') class="btnclr btn btn-sm" style="margin-right: 5px;"><i class="fa fa-envelope" aria-hidden="true"></i></a>';
-            $download = '<a href="' . base_url('Cinvoice/invoice_inserted_data?id=' . $encodedId. '&invoice_id=' . $item['invoice_id']) . '" class="btnclr btn btn-sm" ><i class="fa fa-download" aria-hidden="true"></i></a>';
-            $row = [
+             $mail = '<a data-toggle="modal" data-target="#sendemailmodal" onClick=sendEmailproforma('.$item["invoice_id"].') class="btnclr btn btn-sm" style="margin-right: 5px;"><i class="fa fa-envelope" aria-hidden="true"></i></a>';
+          
+             $download = '<a href="' . base_url('Cinvoice/invoice_inserted_data?id=' . $encodedId. '&invoice_id=' . $item['invoice_id']) . '" class="btnclr btn btn-sm" ><i class="fa fa-download" aria-hidden="true"></i></a>';
+         
+             $row = [
                 'sl'               => $i,
                 "commercial_invoice_number"   => $item['commercial_invoice_number'],
                 "invoice_id"   => $item['invoice_id'],
@@ -2176,8 +2179,7 @@ public function PaymentTerms() {
         $CI->load->model('Invoices');
         $invoice_id = $CI->Invoices->update_invoice();
         $this->session->set_userdata(array('message' => display('successfully_updated')));
-        // $this->invoice_inserted_data($invoice_id);
-          redirect(base_url('Cinvoice/manage_invoice'));
+        redirect(base_url('Cinvoice/manage_invoice'));
     }
        // purchase Update
     public function update_ocean_export() {
@@ -2675,25 +2677,30 @@ $this->db->update('bootgrid_data');
         $this->template->full_admin_html_view($content);
     }
   //Retrive right now inserted data to cretae html
-    public function invoice_inserted_data($invoice_id) {
+    public function invoice_inserted_data() {
+
+        $invoice_id       = isset($_GET['invoice_id']) ? $_GET['invoice_id'] : null;
+         
+        $encodedId       = isset($_GET['id']) ? $_GET['id'] : null;
+        $decodedId       = decodeBase64UrlParameter($encodedId);
+
         $CI = & get_instance();
         $CC = & get_instance();
         $CA = & get_instance();
         $w = & get_instance();
         $w->load->model('Ppurchases');
-        $company_info = $w->Ppurchases->retrieve_company();
+        $company_info = $w->Ppurchases->retrieve_company($decodedId);
         $CI->load->model('Invoices');
         $CI->load->model('Web_settings');
         $CA->load->model('invoice_design');
         $CC->load->model('invoice_content');
-        
-         $invoice_detail = $CI->Invoices->invoice_pdf($invoice_id);
-         $all_invoice = $CI->Invoices->all_invoice($invoice_id);
-         $setting=  $CI->Web_settings->retrieve_setting_editdata(); 
-         $dataw = $CA->invoice_design->retrieve_data();
-        //  print_r($dataw); 
-        //  die();
-         $datacontent = $CC->invoice_content->retrieve_data();
+
+ 
+        $invoice_detail = $CI->Invoices->invoice_pdf($invoice_id);
+        $all_invoice = $CI->Invoices->all_invoice($invoice_id);
+        $setting=  $CI->Web_settings->retrieve_setting_editdata(); 
+         $dataw = $CA->invoice_design->retrieve_data($decodedId);
+         $datacontent = $CC->invoice_content->retrieve_data($decodedId);
          $customer = $this->db->select('*')->from('customer_information')->where("customer_id",$invoice_detail[0]['customer_id'])->get()->result_array();
          $currency_details = $CI->Web_settings->retrieve_setting_editdata();
          $curn_info_default = $CI->db->select('*')->from('currency_tbl')->where('icon',$currency_details[0]['currency'])->get()->result_array();
@@ -2759,11 +2766,29 @@ $this->db->update('bootgrid_data');
             'paytype'         => $invoice_detail[0]['payment_type'],
             'invoice_detail'=>$invoice_detail
         );
-//  print_r($data);die();
-      //   print_r($dataw[0]['color']);
-    $content = $this->load->view('invoice/new_invoice_pdf_html', $data, true);
+     $content = $this->load->view('invoice/new_invoice_pdf_html', $data, true);
     $this->template->full_admin_html_view($content);
     }
+   
+    // $dompdf = new Dompdf();
+    // $dompdf->loadHtml($content);
+    // $dompdf->setPaper('A4', 'portrait');
+    // $dompdf->render();
+    // $filename = 'invoice_' . $invoice_detail[0]['invoice_id'] . '.pdf';
+    // if (empty($pdf)) {
+    //     $dompdf->stream($filename, array('Attachment' => 0));
+    // } else {
+    //     return $content;
+    // }
+    // }
+
+
+
+    
+ 
+
+
+
     public function invoice_inserted_data_print($invoice_id) {
   // echo $invoice_id; die();
         $CI = & get_instance();

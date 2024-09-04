@@ -67,7 +67,7 @@
                                             $total += $invoices_list['total_amount']; ?></td>
                                            
                                     </tr>
-                                 
+                
                                     <?php
                                 }
                                 }
