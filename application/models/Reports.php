@@ -1822,6 +1822,18 @@ public function overall_admins() {
         return $records;
     }
 
+
+
+    // $this->db->select('a.*,b.supplier_price,c.supplier_name');
+    // $this->db->from('product_information a');
+    // $this->db->join('supplier_product b', 'b.product_id = a.product_id');
+    // $this->db->join('supplier_information c', 'b.supplier_id =c.supplier_id');
+    // $this->db->where('a.created_by',$this->session->userdata('user_id'));
+
+
+
+
+
     public function getProductReportCount($searchValue,$adminId,$msearch){
         $searchQuery = "";
         if($searchValue != ''){
@@ -1829,16 +1841,22 @@ public function overall_admins() {
                 a.product_id LIKE '%" . $searchValue . "%' OR
                 a.product_name LIKE '%" . $searchValue . "%' OR
                 a.product_model LIKE '%" . $searchValue . "%' OR
-                b.supplier_name LIKE '%" . $searchValue . "%' OR
-                a.supplier_id LIKE '%" . $searchValue . "%' OR
-                a.unit LIKE '%" . $searchValue . "%' OR
-                a.category_name LIKE '%" . $searchValue . "%'
+                
             )";               
         }
-        $this->db->select("a.id");
-        $this->db->from("product_information a");
-        $this->db->join("supplier_information b","b.supplier_id = a.supplier_id","left");
+        // $this->db->select("a.id,a.product_name,a.product_id ,a.product_model,a.p_quantity");
+        // $this->db->from("product_information a");
+        // $this->db->join("supplier_information b","b.supplier_id = a.supplier_id","left");
+        // $this->db->where("a.created_by", $adminId);
+      
+        $this->db->select('a.*,b.supplier_price');
+        $this->db->from('product_information a');
+        $this->db->join('supplier_product b', 'b.product_id = a.product_id');
+        // $this->db->join('supplier_information c', 'b.supplier_id =c.supplier_id');
         $this->db->where("a.created_by", $adminId);
+
+         
+
         if($searchValue != ''){
             $this->db->where($searchQuery);
         }
@@ -1849,10 +1867,15 @@ public function overall_admins() {
         $this->db->group_by("a.product_id, a.supplier_id");
         
         $query = $this->db->get();
-       // echo $this->db->last_query();
+    //    echo $this->db->last_query(); die();
         return $query->num_rows();
     }
 
+
+
+
+
+     
 
     public function getProductReportData($limit, $start, $orderField, $orderDirection, $searchValue, $adminId,$msearch){
         $searchQuery = "";
@@ -1861,15 +1884,12 @@ public function overall_admins() {
                 a.product_id LIKE '%" . $searchValue . "%' OR
                 a.product_name LIKE '%" . $searchValue . "%' OR
                 a.product_model LIKE '%" . $searchValue . "%' OR
-                b.supplier_name LIKE '%" . $searchValue . "%' OR
-                a.supplier_id LIKE '%" . $searchValue . "%' OR
-                a.unit LIKE '%" . $searchValue . "%' OR
-                a.category_name LIKE '%" . $searchValue . "%'
-            )";           
+             )";           
         }
-        $this->db->select("a.product_id,a.product_name,a.product_model,b.supplier_name,b.supplier_id,a.unit,a.category_name");
-        $this->db->from("product_information a");
-        $this->db->join("supplier_information b","b.supplier_id = a.supplier_id","left");
+        $this->db->select('a.*,b.supplier_price ,COUNT(*) as available');
+        $this->db->from('product_information a');
+        $this->db->join('supplier_product b', 'b.product_id = a.product_id');
+        // $this->db->join('supplier_information c', 'b.supplier_id =c.supplier_id');
         $this->db->where("a.created_by", $adminId);
         if($msearch['supplier_id'] !=""){
             $this->db->where('b.supplier_id', $msearch['supplier_id']);
@@ -1881,7 +1901,11 @@ public function overall_admins() {
         $this->db->group_by("a.product_id, a.supplier_id");
         $this->db->order_by($orderField, $orderDirection);
         $this->db->limit($limit,$start);
-        $records = $this->db->get()->result_array();
+
+
+        $records =
+         $this->db->get()->result_array();
+        //  echo $this->db->last_query(); die();
         return $records;
     }
 }
