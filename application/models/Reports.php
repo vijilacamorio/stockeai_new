@@ -1653,16 +1653,18 @@ public function overall_admins() {
         $searchQuery = "";
         if($searchValue != ''){
             $searchQuery = "(
-                a.supplier_name LIKE '%" . $searchValue . "%' OR
-                a.address LIKE '%" . $searchValue . "%' OR
-                a.mobile LIKE '%" . $searchValue . "%' OR
-                a.businessphone LIKE '%" . $searchValue . "%' OR
-                a.primaryemail LIKE '%" . $searchValue . "%' OR
-                a.city LIKE '%" . $searchValue . "%' OR
-                a.country LIKE '%" . $searchValue . "%'
-            )";         
+                s.supplier_id LIKE '%" . $searchValue . "%' OR
+                p.chalan_no LIKE '%" . $searchValue . "%' OR
+                p.purchase_date LIKE '%" . $searchValue . "%' OR
+                p.grand_total_amount LIKE '%" . $searchValue . "%' OR
+                p.payment_due_date LIKE '%" . $searchValue . "%' OR
+                p.balance LIKE '%" . $searchValue . "%' OR
+                p.due_amount_usd LIKE '%" . $searchValue . "%' OR
+                p.payment_terms LIKE '%" . $searchValue . "%' OR
+                p.paid_amount LIKE '%" . $searchValue . "%'
+            )";              
         }
-        $this->db->select('s.id');
+        $this->db->select('s.supplier_id');
         $this->db->from('supplier_information s');
         $this->db->join('product_purchase p','s.supplier_id=p.supplier_id');
         if($supplier_id){
@@ -1672,6 +1674,7 @@ public function overall_admins() {
         if($searchValue != ''){
             $this->db->where($searchQuery);
         }
+        //echo $this->db->get_compiled_select(); exit;
         $query = $this->db->get();
         return $query->num_rows();
     }
@@ -1681,21 +1684,20 @@ public function overall_admins() {
         $searchQuery = "";
         if($searchValue != ''){
             $searchQuery = "(
-                a.customer_name LIKE '%" . $searchValue . "%' OR
-                a.id LIKE '%" . $searchValue . "%' OR
-                a.chalan_no LIKE '%" . $searchValue . "%' OR
-                a.purchase_date LIKE '%" . $searchValue . "%' OR
-                a.grand_total_amount LIKE '%" . $searchValue . "%' OR
-                a.payment_due_date LIKE '%" . $searchValue . "%' OR
-                a.balance LIKE '%" . $searchValue . "%' OR
-                a.due_amount LIKE '%" . $searchValue . "%' OR
-                a.payment_terms LIKE '%" . $searchValue . "%' OR
-                a.paid_amount LIKE '%" . $searchValue . "%'
+                s.supplier_id LIKE '%" . $searchValue . "%' OR
+                p.chalan_no LIKE '%" . $searchValue . "%' OR
+                p.purchase_date LIKE '%" . $searchValue . "%' OR
+                p.grand_total_amount LIKE '%" . $searchValue . "%' OR
+                p.payment_due_date LIKE '%" . $searchValue . "%' OR
+                p.balance LIKE '%" . $searchValue . "%' OR
+                p.due_amount_usd LIKE '%" . $searchValue . "%' OR
+                p.payment_terms LIKE '%" . $searchValue . "%' OR
+                p.paid_amount LIKE '%" . $searchValue . "%'
             )";         
         }
         
     
-        $this->db->select('s.*,p.*');
+        $this->db->select('s.supplier_name,s.supplier_id,p.chalan_no,p.purchase_date, p.grand_total_amount,p.payment_due_date,p.balance,p.due_amount_usd,p.payment_terms,p.paid_amount');
         $this->db->from('supplier_information s');
         $this->db->join('product_purchase p','s.supplier_id=p.supplier_id');
         if($supplier_id){
@@ -1712,4 +1714,174 @@ public function overall_admins() {
         return $records;
     }
 
+    public function getSupplierTransactCount($searchValue,$adminId,$msearch){
+        $searchQuery = "";
+        if($searchValue != ''){
+            $searchQuery = "(
+                p.total_amt LIKE '%" . $searchValue . "%' OR
+                s.amt_paid LIKE '%" . $searchValue . "%' OR
+                p.balance LIKE '%" . $searchValue . "%' OR
+                s.supplier_name LIKE '%" . $searchValue . "%' OR
+                p.chalan_no LIKE '%" . $searchValue . "%' OR
+                py.payment_id LIKE '%" . $searchValue . "%' OR
+                py.payment_date LIKE '%" . $searchValue . "%' OR
+                p.balance LIKE '%" . $searchValue . "%' OR
+                s.details LIKE '%" . $searchValue . "%'
+            )";             
+        }
+        $this->db->select('s.supplier_id');
+        $this->db->from('supplier_information s');
+        $this->db->join('product_purchase p','s.supplier_id=p.supplier_id');
+        if($msearch['supplier_id'] !=""){
+            $this->db->where('s.supplier_id', $msearch['supplier_id']);
+
+        }   
+        if(trim($msearch['paydate'])!="") {
+            $split=explode(' to ',$msearch['paydate']);
+            $start_date  =  $split[0];
+            $end_date    = $split[1];
+
+            $dateObject = DateTime::createFromFormat('m-d-Y', $start_date);
+
+            if ($dateObject !== false) {
+                $formattedDate = $dateObject->format('Y-m-d');
+                $start_date =  $formattedDate; 
+            }
+
+            $dateObject = DateTime::createFromFormat('m-d-Y', $end_date);
+
+            if ($dateObject !== false) {
+                $formattedDate = $dateObject->format('Y-m-d');
+                $end_date =  $formattedDate; 
+            }
+            $this->db->where("py.payment_date >='$start_date'");
+            $this->db->where("py.payment_date <='$end_date'");
+        }
+        $this->db->join('payment py','p.payment_id=py.payment_id');
+        $this->db->where('s.created_by',$adminId);
+        if($searchValue != ''){
+            $this->db->where($searchQuery);
+        }
+        //echo $this->db->get_compiled_select(); exit;
+        $query = $this->db->get();
+        return $query->num_rows();
+    }
+
+
+    public function getSupplierTransactData($limit, $start, $orderField, $orderDirection, $searchValue, $adminId,$msearch){
+        $searchQuery = "";
+        if($searchValue != ''){
+            $searchQuery = "(
+                p.total_amt LIKE '%" . $searchValue . "%' OR
+                py.amt_paid LIKE '%" . $searchValue . "%' OR
+                p.balance LIKE '%" . $searchValue . "%' OR
+                s.supplier_name LIKE '%" . $searchValue . "%' OR
+                p.chalan_no LIKE '%" . $searchValue . "%' OR
+                py.payment_id LIKE '%" . $searchValue . "%' OR
+                py.payment_date LIKE '%" . $searchValue . "%' OR
+                p.balance LIKE '%" . $searchValue . "%' OR
+                s.details LIKE '%" . $searchValue . "%'
+            )";         
+        }
+        
+    
+        $this->db->select('p.total_amt,py.amt_paid,p.balance as due_amount, s.supplier_name, s.supplier_id,p.chalan_no,py.payment_id,py.payment_date,p.balance,s.details');
+        $this->db->from('supplier_information s');
+        $this->db->join('product_purchase p','s.supplier_id=p.supplier_id');
+        if($msearch['supplier_id'] !=""){
+            $this->db->where('s.supplier_id', $msearch['supplier_id']);
+
+        }   
+        if(trim($msearch['paydate'])!="") {
+            $split=explode(' to ',$msearch['paydate']);
+            $start_date  =  $split[0];
+            $end_date    = $split[1];
+
+            $dateObject = DateTime::createFromFormat('m-d-Y', $start_date);
+
+            if ($dateObject !== false) {
+                $formattedDate = $dateObject->format('Y-m-d');
+                $start_date =  $formattedDate; 
+            }
+
+            $dateObject = DateTime::createFromFormat('m-d-Y', $end_date);
+
+            if ($dateObject !== false) {
+                $formattedDate = $dateObject->format('Y-m-d');
+                $end_date =  $formattedDate; 
+            }
+            $this->db->where("py.payment_date >='$start_date'");
+            $this->db->where("py.payment_date <='$end_date'");
+        }
+      
+        $this->db->join('payment py','p.payment_id=py.payment_id');
+        $this->db->where('s.created_by',$adminId);
+        $this->db->order_by($orderField, $orderDirection);
+        $this->db->limit($limit,$start);
+        $records = $this->db->get()->result_array();
+        return $records;
+    }
+
+    public function getProductReportCount($searchValue,$adminId,$msearch){
+        $searchQuery = "";
+        if($searchValue != ''){
+            $searchQuery = "(
+                a.product_id LIKE '%" . $searchValue . "%' OR
+                a.product_name LIKE '%" . $searchValue . "%' OR
+                a.product_model LIKE '%" . $searchValue . "%' OR
+                b.supplier_name LIKE '%" . $searchValue . "%' OR
+                a.supplier_id LIKE '%" . $searchValue . "%' OR
+                a.unit LIKE '%" . $searchValue . "%' OR
+                a.category_name LIKE '%" . $searchValue . "%'
+            )";               
+        }
+        $this->db->select("a.id");
+        $this->db->from("product_information a");
+        $this->db->join("supplier_information b","b.supplier_id = a.supplier_id","left");
+        $this->db->where("a.created_by", $adminId);
+        if($searchValue != ''){
+            $this->db->where($searchQuery);
+        }
+        if($msearch['supplier_id'] !=""){
+            $this->db->where('b.supplier_id', $msearch['supplier_id']);
+
+        }   
+        $this->db->group_by("a.product_id, a.supplier_id");
+        
+        $query = $this->db->get();
+       // echo $this->db->last_query();
+        return $query->num_rows();
+    }
+
+
+    public function getProductReportData($limit, $start, $orderField, $orderDirection, $searchValue, $adminId,$msearch){
+        $searchQuery = "";
+        if($searchValue != ''){
+            $searchQuery = "(
+                a.product_id LIKE '%" . $searchValue . "%' OR
+                a.product_name LIKE '%" . $searchValue . "%' OR
+                a.product_model LIKE '%" . $searchValue . "%' OR
+                b.supplier_name LIKE '%" . $searchValue . "%' OR
+                a.supplier_id LIKE '%" . $searchValue . "%' OR
+                a.unit LIKE '%" . $searchValue . "%' OR
+                a.category_name LIKE '%" . $searchValue . "%'
+            )";           
+        }
+        $this->db->select("a.product_id,a.product_name,a.product_model,b.supplier_name,b.supplier_id,a.unit,a.category_name");
+        $this->db->from("product_information a");
+        $this->db->join("supplier_information b","b.supplier_id = a.supplier_id","left");
+        $this->db->where("a.created_by", $adminId);
+        if($msearch['supplier_id'] !=""){
+            $this->db->where('b.supplier_id', $msearch['supplier_id']);
+
+        }   
+        if($searchValue != ''){
+            $this->db->where($searchQuery);
+        }
+        $this->db->group_by("a.product_id, a.supplier_id");
+        $this->db->order_by($orderField, $orderDirection);
+        $this->db->limit($limit,$start);
+        $records = $this->db->get()->result_array();
+        return $records;
+    }
 }

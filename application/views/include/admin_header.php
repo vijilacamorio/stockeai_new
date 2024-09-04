@@ -715,7 +715,7 @@ $(document).ready(function() {
 									</li>
 								</ul>
 							</li>
-							<li class="treeview <?php echo ($this->uri->segment(2) == 'vendorList') ? 'active' : ''; ?>">
+							<li class="treeview <?php echo ($this->uri->segment(2) == 'vendorList' || $this->uri->segment(2) == 'purchaseByvendorList' || $this->uri->segment(2) == 'supplierTransactionList') ? 'active' : ''; ?>">
 								<a href="fa fa-asl-interpreting">
 									<i class="ti-user"></i><span><?php echo "Vendor" ?></span>
 								</a>
@@ -724,21 +724,21 @@ $(document).ready(function() {
 										<a href="<?php echo base_url('Creport/vendorList?id='.$encode_com_id) ?>"><?php echo 'Vendor Information'; ?>
 										</a>
 									</li>
-									<li class="treeview <?php echo ($this->uri->segment(2) == 'vendorList') ? 'active' : ''; ?>">							
+									<li class="treeview <?php echo ($this->uri->segment(2) == 'purchaseByvendorList') ? 'active' : ''; ?>">							
 						          	  <a href="<?php echo base_url('Creport/purchaseByvendorList?id='.$encode_com_id) ?>"><?php echo 'Purchase By Vendor'; ?></a> 
 									</li>
-									<li class="treeview">
-										<a href="<?php echo base_url('Csupplier/transaction_list') ?>"><?php echo 'Transaction to Vendor'; ?></a>
+									<li class="treeview <?php echo ($this->uri->segment(2) == 'supplierTransactionList') ? 'active' : ''; ?>">
+										<a href="<?php echo base_url('Creport/supplierTransactionList?id='.$encode_com_id) ?>"><?php echo 'Transaction to Vendor'; ?></a>
 									</li>
 								</ul>
 							</li>
-							<li class="treeview">
+							<li class="treeview  <?php echo ($this->uri->segment(2) == 'productReport') ? 'active' : ''; ?>">
 								<a href="fa fa-asl-interpreting">
 									<i class="ti-user"></i><span><?php echo "Product" ?></span>
 								</a>
 								<ul class="treeview-menu">
-									<li class="treeview">
-										<a href="<?php echo base_url('Cproduct/product_info') ?>"><?php echo 'Product Information'; ?>
+									<li class="treeview <?php echo ($this->uri->segment(2) == 'productReport') ? 'active' : ''; ?>">
+										<a href="<?php echo base_url('Creport/productReport?id='.$encode_com_id) ?>"><?php echo 'Product Information'; ?>
 										</a>
 									</li>
 									<li class="treeview">

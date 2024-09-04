@@ -35,10 +35,10 @@ class Suppliers extends CI_Model {
         $query = $this->db->get();
         return $query->row_array(); 
     }
-    public function get_all_supplier() {
+    public function get_all_supplier($admin_id) {
         $this->db->select('*');
         $this->db->from('supplier_information');
-        $this->db->where('created_by' ,$this->session->userdata('user_id'));
+        $this->db->where('created_by' ,$admin_id);
         $query = $this->db->get();  
             return $query->result_array();
     }
@@ -82,7 +82,7 @@ class Suppliers extends CI_Model {
         }
         return false;
     }
-     public function transaction_supplier($supplier=null,$date=null){
+     public function transaction_supplier($admin_id, $supplier=null,$date=null){
         if($date) {
             $split=explode(' to ',$date);
             $start =  $split[0];
@@ -99,9 +99,10 @@ class Suppliers extends CI_Model {
             $this->db->where('py.payment_date <=',$end);
         }
         $this->db->join('payment py','p.payment_id=py.payment_id');
-        $this->db->where('s.created_by',$this->session->userdata('user_id'));
+        $this->db->where('s.created_by',$admin_id);
         $query = $this->db->get();
-     if ($query->num_rows() > 0) {
+        //echo $this->db->last_query();
+        if ($query->num_rows() > 0) {
             return $query->result_array();
         }
         return false;
