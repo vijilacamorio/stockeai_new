@@ -36,7 +36,7 @@
    
       </section>
 
-   
+    <?php $date = date('Y-m-d');  ?>
    
    
    
@@ -111,7 +111,7 @@
                            </form>
                         </div>
                         <div class="Column" style="float: right;">
-                           <a   href="<?php echo base_url('Cpurchase/manage_purchase') ?>" class="btnclr btn  m-b-5 m-r-2"><i class="ti-align-justify"> </i> <?php echo display('manage_expense'); ?> </a>
+                           <a  href="<?php  echo base_url(); ?>Cpurchase/manage_purchase?id=<?php echo $_GET['id']; ?>" class="btnclr btn  m-b-5 m-r-2"><i class="ti-align-justify"> </i> <?php echo display('manage_expense'); ?> </a>
                         </div>
                      </div>
                   </div>
@@ -123,7 +123,7 @@
                            <div class="form-group row">
                               <label for="service_provider_name" class="col-sm-4 col-form-label">Service Provider Name <i class="text-danger">*</i> </label>
                               <div class="col-sm-8">
-                                 <select name="service_provider_name" id="supplier_id "  class="service_provider_2 form-control "  style="width:100%;border:2px solid #d7d4d6;" required=""  tabindex="1">
+                                 <select name="service_provider_name" id="supplier_id"  class="service_provider_2 form-control "  style="width:100%;border:2px solid #d7d4d6;" required=""  tabindex="1">
                                     <option value="<?php  echo $info_service[0]['supplier_id']; ?>"><?php  echo $info_service[0]['supplier_name']; ?></option>
                                     {supplier_info}
                                     <option value="{supplier_id}">{supplier_name}</option>
@@ -301,7 +301,7 @@
                               <?php echo display('Live Rate') ?> :
                            </td>
                            <td class="hiden btnclr" style="width:13%;text-align-last: center;padding:5px; border:none;font-weight:bold;color:white;">1 <?php echo $curn_info_default; ?>
-                              = <input style="width: 80px;text-align:center;color:black;padding:5px;" type="text" class="custocurrency_rate_provider"/>&nbsp;<label for="custocurrency"  ></label>
+                              = <input style="width: 80px;text-align:center;color:black;padding:5px;" id="custocurrency_rate_provider" type="text" class="custocurrency_rate_provider"/>&nbsp;<label for="custocurrency"  ></label>
                            </td>
                            <td style="border:none;text-align:right;font-weight:bold;"><?php echo display('Tax') ?> :
                            </td>
@@ -418,6 +418,7 @@ foreach ($expensetax as $tx) {?>
          </div>
          <div class="modal-body1">
             <form id='bulk_payment_form' action="<?php echo base_url(); ?>Cpurchase/bulk_payment_ser_pro" method="post">
+                 <div id="payment_error"></div>
                <input type="hidden" name="<?php echo $this->security->get_csrf_token_name();?>" value="<?php echo $this->security->get_csrf_hash();?>">
                <div id="salle_list"></div>
             </form>
@@ -432,7 +433,7 @@ foreach ($expensetax as $tx) {?>
    $(document).ready(function(){
     
              var data = {
-                 value: $('.service_provider_2').val()
+                 value: $('#supplier_id').val()
          
               };
              data[csrfName] = csrfHash;
@@ -448,7 +449,7 @@ foreach ($expensetax as $tx) {?>
                         csrfHash = result.csrfHash;
                      }
                   console.log(result[0]['currency_type']);
-                 $("#custocurrency_rate").html(result[0]['currency_type']);
+                 $("#custocurrency_rate_provider").html(result[0]['currency_type']);
                  $("#autocomplete_supplier_id").val(result[0]['supplier_id']);
                  $("label[for='custocurrency']").html(result[0]['currency_type']);
               
@@ -460,45 +461,12 @@ foreach ($expensetax as $tx) {?>
           Rate = isNaN(Rate) ? 0 : Rate;
            console.log(Rate);
            $('.hiden').show();
-           $(".custocurrency_rate").val(Rate);
+           $(".custocurrency_rate_provider").val(Rate);
          });
                
                  }
              });
-   var data = {
-                 value: $('#supplier_name').val()
-         
-              };
-             data[csrfName] = csrfHash;
-             $.ajax({
-                 type:'POST',
-                 data: data,
-               dataType:"json",
-                 url:'<?php echo base_url();?>Cinvoice/getvendor',
-                 success: function(result, statut) {
-                     console.log(result);
-                     if(result.csrfName){
-                       csrfName = result.csrfName;
-                        csrfHash = result.csrfHash;
-                     }
-                  console.log(result[0]['currency_type']);
-                 $(".custocurrency_rate").html(result[0]['currency_type']);
-                 $("#autocomplete_supplier_id").val(result[0]['supplier_id']);
-                 $("label[for='custocurrency']").html(result[0]['currency_type']);
-              
-                $.getJSON('https://open.er-api.com/v6/latest/<?php echo $curn_info_default; ?>', 
-         function(data) {
-          var custo_currency=result[0]['currency_type'];
-             var x=data['rates'][custo_currency];
-          var Rate =parseFloat(x).toFixed(3);
-          Rate = isNaN(Rate) ? 0 : Rate;
-           console.log(Rate);
-           $('.hiden').show();
-           $(".custocurrency_rate").val(Rate);
-         });
-               
-                 }
-             });
+   
    $('#download_provider').hide();
    $('#final_submit_provider').hide();
    $('#print_provider').hide();
@@ -554,8 +522,6 @@ foreach ($expensetax as $tx) {?>
    $('.modal-backdrop').remove();
    },2500);
    window.setTimeout(function(){
-   
-   
    window.location = "<?php  echo base_url(); ?>Cpurchase/manage_purchase";
    }, 2500);
    
@@ -605,69 +571,69 @@ foreach ($expensetax as $tx) {?>
    
    
    
-   $('#add_payment_infos').submit(function (event) {    
-      var dataString = {
-          dataString : $("#add_payment_infos").serialize()
-     };
-     dataString[csrfName] = csrfHash;
+   // $('#add_payment_infos').submit(function (event) {    
+   //    var dataString = {
+   //        dataString : $("#add_payment_infos").serialize()
+   //   };
+   //   dataString[csrfName] = csrfHash;
     
-      $.ajax({
-          type:"POST",
-          dataType:"json",
-          url:"<?php echo base_url(); ?>Cinvoice/add_payment_infos",
-          data:$("#add_payment_infos").serialize(),
+   //    $.ajax({
+   //        type:"POST",
+   //        dataType:"json",
+   //        url:"<?php echo base_url(); ?>Cinvoice/add_payment_infos",
+   //        data:$("#add_payment_infos").serialize(),
    
-          success:function (data) {
-    $('.amt').show();
+   //        success:function (data) {
+   //  $('.amt').show();
    
-       $('#service_payment_modal').modal('hide');
-       $("#bodyModal1").html("<?php echo display('Payment Successfully Completed');?>");
-          $('#myModal1').modal('show');
-          var b=$('#balance_modals').val();
-          var a=$('#payment_from_modals').val();
-       $('#balances').val(b);
-       $('#amount_paids').val(a);
-       window.setTimeout(function(){
-           $('#myModal1').modal('hide');
-   },2500);
-   
-   
+   //     $('#service_payment_modal').modal('hide');
+   //     $("#bodyModal1").html("<?php echo display('Payment Successfully Completed');?>");
+   //        $('#myModal1').modal('show');
+   //        var b=$('#balance_modals').val();
+   //        var a=$('#payment_from_modals').val();
+   //     $('#balances').val(b);
+   //     $('#amount_paids').val(a);
+   //     window.setTimeout(function(){
+   //         $('#myModal1').modal('hide');
+   // },2500);
    
    
-      var dataString = {
-          dataString : $("#histroy").serialize()
+   
+   
+   //    var dataString = {
+   //        dataString : $("#histroy").serialize()
       
-     };
-     dataString[csrfName] = csrfHash;
+   //   };
+   //   dataString[csrfName] = csrfHash;
     
-      $.ajax({
-          type:"POST",
-          dataType:"json",
-          url:"<?php echo base_url(); ?>Cpurchase/payment_history_purchase_serv_provider",
-          data:$("#histroy").serialize(),
+   //    $.ajax({
+   //        type:"POST",
+   //        dataType:"json",
+   //        url:"<?php echo base_url(); ?>Cpurchase/payment_history_purchase_serv_provider",
+   //        data:$("#histroy").serialize(),
    
-          success:function (data) {
-           console.log(data);
-           var gt=$('#vendor_gtotalss').val();
-           var amtpd=data.amt_paid;
-           console.log(data);
-           var bal= $('#vendor_gtotalss').val() - data.amt_paid;
-    $('#balance').val(bal);
-      $('#amount_paid').val(amtpd);
-         var t_rate=$('.custocurrency_rate').val();
-      document.getElementById("paid_convert").value=
-    	(amtpd /t_rate ).toFixed(2);
-       document.getElementById("bal_convert").value=
-    	(bal /t_rate ).toFixed(2);
+   //        success:function (data) {
+   //         console.log(data);
+   //         var gt=$('#vendor_gtotalss').val();
+   //         var amtpd=data.amt_paid;
+   //         console.log(data);
+   //         var bal= $('#vendor_gtotalss').val() - data.amt_paid;
+   //  $('#balance').val(bal);
+   //    $('#amount_paid').val(amtpd);
+   //       var t_rate=$('.custocurrency_rate').val();
+   //    document.getElementById("paid_convert").value=
+   //  	(amtpd /t_rate ).toFixed(2);
+   //     document.getElementById("bal_convert").value=
+   //  	(bal /t_rate ).toFixed(2);
    
-         }
-       });
-         $('#add_payment_info')[0].reset();
-         }
+   //       }
+   //     });
+   //       $('#add_payment_info')[0].reset();
+   //       }
    
-      });
-      event.preventDefault();
-   });
+   //    });
+   //    event.preventDefault();
+   // });
                   
    
    
@@ -692,15 +658,22 @@ foreach ($expensetax as $tx) {?>
         $.ajax({
             type: 'POST',
             data: formData, 
-            dataType: 'text',
+            dataType: 'json',
             url: $('#bulk_payment_form').attr('action'), 
-            success: function(result) {
-                
-                  $('#payment_error').html('<div class="alert alert-success alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>' + "Payment Completed Successfully" + '</div>');
-                window.setTimeout(function() {
-                  $('#payment_history_modal').modal('hide');
-                    location.reload(); 
-                }, 2000);
+            success: function(response) {
+               debugger;
+                    if (response.status == 'success') {
+
+        payment_update();
+         $('#payment_error').html('<div class="alert alert-success alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>' + 'Payment Details Updated Successfully' + '</div>');
+        window.setTimeout(function() {
+                  location.reload(); 
+                }, 2000);   
+      }else{
+             $('#payment_error').html('<div class="alert alert-danger alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>' + 'Failed to Update.Try Again..' + '</div>');
+    
+          }
+          
       
              }
         });
@@ -738,16 +711,58 @@ foreach ($expensetax as $tx) {?>
         url: "<?php echo base_url(); ?>Cinvoice/payment_edit_serv_pro",
         data: postData,
         success: function (response) {
+          if (response.status == 'success') {
         payment_update();
-         $('#payment_error').html('<div class="alert alert-success alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>' + 'Updated Successfully' + '</div>');
-        },
+         $('#payment_error').html('<div class="alert alert-success alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>' + 'Payment for the Current Bill is Updated Successfully' + '</div>');
+        window.setTimeout(function() {
+                  location.reload(); 
+                }, 2000);   
+      }else{
+             $('#payment_error').html('<div class="alert alert-danger alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>' + 'Failed to Update.Try Again..' + '</div>');
+    
+          }
+      },
         error: function (error) {
-           $('#payment_error').html('<div class="alert alert-danger alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>' + 'Failed to Updated Successfully' + '</div>');
+           $('#payment_error').html('<div class="alert alert-danger alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>' + 'Failed to Updated.Try Again..' + '</div>');
         }
     });
   
     event.preventDefault();
    });
+       function payment_update(){
+    $('.hidden_button').hide();
+       var dataString = {
+           dataString : $("#histroy").serialize()
+      };
+      dataString[csrfName] = csrfHash;
+       $.ajax({
+           type:"POST",
+           dataType:"json",
+           url:"<?php echo base_url(); ?>Cinvoice/payment_history",
+           data:$("#histroy").serialize(),
+           success:function (data) {
+          debugger;
+            var gt=$('#customer_gtotal_provider').val();
+            var amtpd=parseFloat(data.amt_paid);
+            if (isNaN(amtpd) || amtpd === '') {
+    amtpd = 0.00;
+}
+            console.log(data);
+            var bal= gt - amtpd;
+    if(amtpd){
+    $('#amount_paid_provider').val(amtpd.toFixed(2));
+    }else{
+       $('#amount_paid_provider').val("0.00"); 
+    }
+    $('#balance_provider').val(bal.toFixed(2));
+    $('#amount_to_pay').val(bal.toFixed(2));
+     }
+       });
+       event.preventDefault();
+         }
+ $(document).ready(function(){
+        payment_update();
+    });
    $('#payment_history').click(function (event) {
         $('#current_in_id').val($('#bill_number').val());
     var dataString = {
@@ -790,7 +805,7 @@ foreach ($expensetax as $tx) {?>
                   count++;
             });
                 var all = total + table_header + html + table_footer +table_header1;
-             var total1 = "<input type='hidden' name='<?php echo $this->security->get_csrf_token_name();?>' value='<?php echo $this->security->get_csrf_hash();?>'><table id='table1'  class='table table-striped table-bordered'><tr><td colspan='3' style='border-top: hidden!important;background-color: white;text-align:center;font-weight:bold;font-size:18px;'>LIST OF DUE INVOICES</td></tr><tr><td rowspan='2' style='vertical-align: middle;text-align-last: center;'><b>Grand Total :  <?php  echo $currency;  ?>"+overallGTotal.toFixed(2)+"<b></td><td class='td' style='text-align:center;border-right: hidden;'><b>Total Amount Paid :<b></td><td><?php  echo $currency;  ?>"+overall_paid.toFixed(2)+"</td></tr></tr><td class='td' style='border-right: hidden;'><b>Balance :<b></td><td style='text-align:start;' id='balance-cell'  class='bcm'   data-currency='<?php  echo $currency;  ?>'>"+parseFloat(overall_due.toFixed(2)) +"</td></tr></table>"
+             var total1 = "<input type='hidden' name='<?php echo $this->security->get_csrf_token_name();?>' value='<?php echo $this->security->get_csrf_hash();?>'><table id='table1'  class='table table-striped table-bordered'><tr><td colspan='3' style='border-top: hidden!important;background-color: white;text-align:center;font-weight:bold;font-size:18px;'>LIST OF DUE INVOICES</td></tr><tr><td rowspan='2' style='vertical-align: middle;text-align-last: center;'><b>Grand Total :  <?php  echo $currency;  ?>"+overallGTotal.toFixed(2)+"<b></td><td class='td' style='text-align:center;border-right: hidden;'><b>Total Amount Paid :<b></td><td style='text-align:justify'><?php  echo $currency;  ?>"+overall_paid.toFixed(2)+"</td></tr></tr><td class='td' style='border-right: hidden;'><b>Balance :<b></td><td style='text-align:start;' id='balance-cell'  class='bcm'   data-currency='<?php  echo $currency;  ?>'>"+parseFloat(overall_due.toFixed(2)) +"</td></tr></table>"
                var table_header1='';
          var table_footer1='';
             if (basedOnCustomer && basedOnCustomer.length > 0) {
@@ -801,7 +816,8 @@ foreach ($expensetax as $tx) {?>
     table_header1 = "<div style='font-size:larger;text-align:center;'><b>No Dues</b>  &#x1F60A;</div>";
    }
              var html1 = "";
-            var count1 = 1;
+             debugger;
+            var increment = 1;
             for (var invoiceId in basedOnCustomer) {
     if (basedOnCustomer.hasOwnProperty(invoiceId)) {
         var element = basedOnCustomer[invoiceId];
@@ -813,8 +829,8 @@ foreach ($expensetax as $tx) {?>
       }else{
          random10DigitNumber=pay_id;
       }
-            html1 += "<tr><td style='display:none;'><input type='hidden' value='"+random10DigitNumber+"' name='payment_id[]'/></td><td> <input type='checkbox' id='<?php echo $count1; ?>' class='checkbox-distribute'></td><td><input type='text' readonly style='text-align:center;'  value='" + element.bill_number + "' name='invoice_no[]'/></td><td><input type='text' readonly  class='g_pament' value='" + element.gtotals + "' name='total_amt[]' style='text-align:center;'/></td><td>" + element.amount_paids + "</td><td class='due_pay' data-currency='<?php echo $currency; ?>'>" + element.balances + "</td><td  data-currency='<?php echo $currency; ?>'><input type='text' id='amount_pay' class='amount_pay' style='text-align:center;' name='amount_pay[]'/></td><td    class='balance-column' data-currency='<?php echo $currency; ?>'><input type='text' name='updated_bal[]' readonly class='balance-col'/></td></tr>";
-            count1++;
+            html1 += "<tr><td style='display:none;'><input type='hidden' value='"+random10DigitNumber+"' name='payment_id[]'/></td><td> <input type='checkbox' id='"+increment+"' class='checkbox-distribute'></td><td><input type='text' readonly style='text-align:center;'  value='" + element.bill_number + "' name='invoice_no[]'/></td><td><input type='text' readonly  class='g_pament' value='" + element.gtotals + "' name='total_amt[]' style='text-align:center;'/></td><td>" + element.amount_paids + "</td><td class='due_pay' data-currency='<?php echo $currency; ?>'>" + element.balances + "</td><td  data-currency='<?php echo $currency; ?>'><input type='text' id='amount_pay' class='amount_pay' style='text-align:center;' name='amount_pay[]'/></td><td    class='balance-column' data-currency='<?php echo $currency; ?>'><input type='text' name='updated_bal[]' readonly class='balance-col'/></td></tr>";
+            increment++;
     }
    }
    all +=  total1 + table_header1 + html1 + table_footer1;
@@ -902,6 +918,7 @@ foreach ($expensetax as $tx) {?>
     }
         });
    $(document).on('change', '.checkbox-distribute', function () {
+      debugger;
         if (!$(this).prop('checked')) {
             $(this).closest('tr').find('.amount_pay').val('');
             var due_pay= $(this).closest('tr').find('.due_pay').val();
@@ -1385,4 +1402,5 @@ foreach ($expensetax as $tx) {?>
     const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
     return randomNumber;
 }
+ 
 </script>

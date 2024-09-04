@@ -169,8 +169,8 @@ class Cpurchase extends CI_Controller {
         $i              = $start + 1;
        
         foreach ($items as $item) {
-            if($item['invoice_id'] != ''){
-            $edit   = '<a href="' . base_url('Cpurchase/invoice_update_form?id=' . $encodedId. '&invoice_id=' . $item['purchase_id']) . '" class="btnclr btn btn-sm" style="margin-right: 5px;"><i class="fa fa-pencil" aria-hidden="true"></i></a>';
+            if($item['source'] == 'Product Purchase'){
+            $edit   = '<a href="' . base_url('Cpurchase/purchase_update_form?id=' . $encodedId. '&invoice_id=' . $item['purchase_id']) . '" class="btnclr btn btn-sm" style="margin-right: 5px;"><i class="fa fa-pencil" aria-hidden="true"></i></a>';
             }else{
             $edit   = '<a href="' . base_url('Cpurchase/serviceprovider_update_form?id=' . $encodedId. '&invoice_id=' . $item['purchase_id']) . '" class="btnclr btn btn-sm" style="margin-right: 5px;"><i class="fa fa-pencil" aria-hidden="true"></i></a>';
             }
@@ -620,12 +620,27 @@ $payment = $this->Purchases->bulk_payment_unique($payment_unique);
 
 
 //To Make the Payment for Service Provider - Surya
-      public function bulk_payment_ser_pro(){
-     $payment_id=$this->input->post('payment_id');
- $payment = $this->Purchases->bulk_payment_ser_provider_unique($payment_unique);
+public function bulk_payment_ser_pro() {
+    $this->db->trans_begin(); 
+
+    try {
+        $payment_id = $this->input->post('payment_id');
+        $payment = $this->Purchases->bulk_payment_ser_provider_unique($payment_id);
         $payment = $this->Purchases->bulk_payment_ser_provider();
-     echo json_encode($payment);
-  }
+         if ($this->db->trans_status() === FALSE) {
+            $this->db->trans_rollback(); 
+            $response = array('status' => 'error', 'message' => 'Database operation failed.');
+        } else {
+            $this->db->trans_commit(); 
+            $response = array('status' => 'success', 'message' => 'Data processed successfully.', 'data' => $payment);
+        }
+    } catch (Exception $e) {
+       $this->db->trans_rollback();
+        $response = array('status' => 'error', 'message' => 'An error occurred: ' . $e->getMessage());
+    }
+  echo json_encode($response);
+}
+
  
  public function payment_history_purchase_serv_provider(){
     $payment_id=$this->input->post('payment_id');
@@ -989,17 +1004,18 @@ $CI = & get_instance();
        $currency_details = $this->Web_settings->retrieve_setting_editdata(); 
        $curn_info_default = $this->db->select('*')->from('currency_tbl')->where('icon',$currency_details[0]['currency'])->get()->result_array();
         $all_product_list = $this->Products->get_all_products(decodeBase64UrlParameter($_GET['id']));
-        $payment_type_dropdown = $this->Invoices->payment_type();;
-      $payment_terms_dropdown = $this->Suppliers->payment_terms_dropdown();
-     //  $sale_costpersqft_per = $this->Invoices->sales_cost_permission();
-        $expense_tax =  $this->Purchases->getexpense_taxinfo(decodeBase64UrlParameter($_GET['id']));
+        $payment_type_dropdown = $this->Invoices->payment_type();
+        $po_number =  $this->Purchases->get_po_num(decodeBase64UrlParameter($_GET['id']));
+       $payment_terms_dropdown = $this->Suppliers->payment_terms_dropdown();
+       $sale_costpersqft_per = $this->Invoices->sales_cost_permission();
+        $expense_tax =  $this->Purchases->expense_tax(decodeBase64UrlParameter($_GET['id']));
        $country_code = $this->db->select('*')->from('country')->get()->result_array();
         $data = array(
             'curn_info_default' =>$curn_info_default[0]['currency_name'],
             'supplier_list' => $supplier_list,
             'product_list'  => $all_product_list,
             'expense_tax' => $expense_tax,
-           
+              'po_number' =>$po_number,
            
         
             'country_code' => $country_code,
@@ -1009,7 +1025,7 @@ $CI = & get_instance();
                        'setting_detail' => $setting_detail
 
         );
-       
+      
         $purchaseForm = $this->parser->parse('purchase/add_purchase_form', $data, true);
         $this->template->full_admin_html_view($purchaseForm);
     }
@@ -1176,12 +1192,10 @@ $result = $CI->Purchases->servicepro($date) ;
        
     }
     public function get_po_details(){
-         $CI = & get_instance();
-          $CI->load->library('lpurchase');
+       
         $po_num = $this->input->post('po');
-     //   echo $po_num;
-       // $data = $this->Purchases->get_po_details($po_num);
-              $content = $CI->lpurchase->po_details($po_num);
+        $admin_company_id=$this->input->post('admin_company_id');
+     $content = $this->lpurchase->po_details($admin_company_id,$po_num);
         $this->template->full_admin_html_view($content);
        // echo json_encode($data);
 
@@ -1788,15 +1802,31 @@ public function uploadCsv_Serviceprovider_second()
          
            echo json_encode($purchaseid);
       }
+  //To pass data to Expense Edit Page - Surya 
+    public function purchase_update_form() {
+        $setting_detail =$this->Web_settings->retrieve_setting_editdata();
+        $purchase_detail = $this->Purchases->retrieve_purchase_editdata(decodeBase64UrlParameter($_GET['id']),$_GET['invoice_id']);
+        $expense_attachment = $this->Purchases->getEditExpensesData($purchase_detail[0]['chalan_no']);
+        $supplier_list =$this->Suppliers->supplier_list(decodeBase64UrlParameter($_GET['id']));
+        $tax = $this->Purchases->expense_tax(decodeBase64UrlParameter($_GET['id']));
+        $all_product_list = $this->Products->get_all_products(decodeBase64UrlParameter($_GET['id']));
+        $currency_details = $this->Web_settings->retrieve_setting_editdata();
+        $curn_info_default = $this->db->select('*')->from('currency_tbl')->where('icon',$currency_details[0]['currency'])->get()->result_array();
+        $sale_costpersqft_per = $this->Invoices->sales_cost_permission();
+        $data = array(
+            'tax_data'     =>  $tax,
+            'attachments'   => $expense_attachment,
+            'curn_info_default' =>$curn_info_default[0]['currency_name'],
+            'currency' => $currency_details[0]['currency'],
+            'price'  =>$sale_costpersqft_per[1]['price'],
+            'all_supplier'  => $supplier_list,
+            'product_list'  => $all_product_list,
+            'purchase_info' => $purchase_detail,
+           'setting_detail' => $setting_detail
+         );
 
-
-    //purchase Update Form
-    public function purchase_update_form($purchase_id) {
-        $CI = & get_instance();
-        $CI->auth->check_admin_auth();
-        $CI->load->library('lpurchase');
-        $content = $CI->lpurchase->purchase_edit_data($purchase_id);
-        $this->template->full_admin_html_view($content);
+        $purchaseForm = $this->parser->parse('purchase/edit_purchase_form', $data, true);
+        $this->template->full_admin_html_view($purchaseForm);
     }
 
       //purchase order Update Form

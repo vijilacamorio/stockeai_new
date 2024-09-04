@@ -260,7 +260,9 @@ $this->db->where('a.supplier_id', $customer_id);
       $amount_pay =$this->input->post('amount_pay_1',TRUE);
         $balance =$this->input->post('my_bal_1',TRUE);
         $t_amt_paid=$this->input->post('tl_amt_pd',TRUE);
-        $tl_amt=$t_amt_paid+$amount_pay;
+        $amount_pay = floatval($amount_pay);
+         $t_amt_paid = floatval($t_amt_paid);
+       $tl_amt = $t_amt_paid + $amount_pay;
         
           $unq_inv=$this->input->post('unq_inv',TRUE);
            $updated_balance = $balance-$amount_pay;
@@ -277,7 +279,7 @@ $this->db->where('a.supplier_id', $customer_id);
                  $this->db->where('bill_number', $unq_inv);
                  $this->db->update('service', $data1);
                 
-                 echo $this->db->last_query();
+               //  echo $this->db->last_query();
                                $bulk_payment_date =$this->input->post('bulk_payment_date',TRUE);
   $bulk_pay_ref=$this->input->post('bulk_pay_ref',TRUE);
   $bulk_bank=$this->input->post('bulk_bank',TRUE);
@@ -293,7 +295,7 @@ $this->db->where('a.supplier_id', $customer_id);
                  'create_by' =>$this->session->userdata('user_id')
                  );
                  $this->db->insert('payment', $data2);
-                  echo $this->db->last_query();
+               //   echo $this->db->last_query();
     }
     
     
@@ -341,7 +343,7 @@ $this->db->where('a.supplier_id', $customer_id);
              //    print_r($data1);
                  $this->db->where('bill_number', $invoice_no[$i]);
                  $this->db->update('service', $data1);
-              echo $this->db->last_query();
+             // echo $this->db->last_query();
    $data2 = array(
                 'payment_id' =>$payment_id[$i],
                 'payment_date'        =>$bulk_payment_date,
@@ -358,7 +360,7 @@ $this->db->where('a.supplier_id', $customer_id);
 //
 
                 }
-       echo 'done';
+      // echo 'done';
            // $this->db->insert('product_purchase_details', $data1);
     }//die();
 }
@@ -549,22 +551,22 @@ $this->db->where('a.supplier_id', $customer_id);
         return false;
     }
     
-    public function getexpense_taxinfo()
-     {
-        $user_id = $this->session->userdata('user_id');
-     $sql="SELECT * FROM `tax_information` WHERE (`status_type` = 'expenses' OR `status_type` = 'Both') AND `created_by` = $user_id";
+    // public function getexpense_taxinfo()
+    //  {
+    //     $user_id = $this->session->userdata('user_id');
+    //  $sql="SELECT * FROM `tax_information` WHERE (`status_type` = 'expenses' OR `status_type` = 'Both') AND `created_by` = $user_id";
 
-        $query = $this->db->query($sql);
-        // echo $this->db->last_query();
+    //     $query = $this->db->query($sql);
+    //     // echo $this->db->last_query();
 
-        if ($query->num_rows() > 0) {
+    //     if ($query->num_rows() > 0) {
 
-            return $query->result_array();
+    //         return $query->result_array();
 
-        }
+    //     }
 
-        return false;
-     }
+    //     return false;
+    //  }
     
     
     public function get_allexpense() {
@@ -617,114 +619,7 @@ $this->db->where('a.supplier_id', $customer_id);
     
     
 
-    
-    public function getTruckingExpenseallData()
-    {
-        $user_id = $this->session->userdata('user_id');
-
-        $sql="SELECT * FROM `tax_information` WHERE (`status_type` = 'expenses' OR `status_type` = 'Both') AND `created_by` = $user_id";
-
-        $query = $this->db->query($sql);
-
-        if ($query->num_rows() > 0) {
-
-            return $query->result_array();
-
-        }
-
-        return false;
-    }
-    
-    
-     public function editPurchaseGetdata()
-    {
-       $user_id = $this->session->userdata('user_id');
-
-        $sql="SELECT * FROM `tax_information` WHERE (`status_type` = 'expenses' OR `status_type` = 'Both') AND `created_by` = $user_id";
-
-        $query = $this->db->query($sql);
-
-        if ($query->num_rows() > 0) {
-
-            return $query->result_array();
-
-        }
-
-        return false;
-    }
-    
-    public function getpurchasetaxdetails()
-    {
-       $user_id = $this->session->userdata('user_id');
-
-        $sql="SELECT * FROM `tax_information` WHERE (`status_type` = 'expenses' OR `status_type` = 'Both') AND `created_by` = $user_id";
-
-        $query = $this->db->query($sql);
-
-        if ($query->num_rows() > 0) {
-
-            return $query->result_array();
-
-        }
-
-        return false;
-    }
-    
-    
-    public function editPurchaseallData()
-    {
-        $user_id = $this->session->userdata('user_id');
-
-        $sql="SELECT * FROM `tax_information` WHERE (`status_type` = 'expenses' OR `status_type` = 'Both') AND `created_by` = $user_id";
-
-        $query = $this->db->query($sql);
-
-
-//  echo $this->db->last_query();
-
-        if ($query->num_rows() > 0) {
-
-            return $query->result_array();
-
-        }
-
-        return false;
-    }
-    
-    
-    public function editPurallData()
-    {
-       $user_id = $this->session->userdata('user_id');
-
-        $sql="SELECT * FROM `tax_information` WHERE (`status_type` = 'expenses' OR `status_type` = 'Both') AND `created_by` = $user_id";
-
-        $query = $this->db->query($sql);
-
-        if ($query->num_rows() > 0) {
-
-            return $query->result_array();
-
-        }
-
-        return false;
-    }
-
-
-
-
-  public function tax_info() {
-      $this->db->select('tax_id,tax');
-      $this->db->from('tax_information');
-      $this->db->where('created_by',$this->session->userdata('user_id'));
-      $query = $this->db->get();
-    //  echo $this->db->last_query(); die();
-      return $query->result_array();
-  }
-
-
-
-
-   public function edit_oceanimport() {
+    public function edit_oceanimport() {
         $this->db->select('*');
         $this->db->from('customer_information');
         $query = $this->db->get();
@@ -2251,7 +2146,7 @@ function adjustDatesBasedOnNotifications_truck($delivery_date,$container_pickup_
             'create_by' => $createdby,
             'chalan_no' => $chalan_no,
             'supplier_id' => $supplier_id,
-            'total_amt' => $this->input->post('overall_total', TRUE),
+            'total_amt' => $this->input->post('Over_all_Total', TRUE),
             'grand_total_amount' => $this->input->post('gtotal', TRUE),
             'g_weight' => $this->input->post('hidden_weight', TRUE),
             'purchase_date' => $this->input->post('bill_date', TRUE),
@@ -3289,68 +3184,23 @@ $delivery_date = date('Y-m-d', strtotime($this->input->post('delivery_date',TRUE
 
         return $purchase_id."/".$invoice_no;
     }
-    //Retrieve purchase Edit Data
-    public function retrieve_purchase_editdata($purchase_id) {
+    //To get data of Specific Purchase to show in Edit Page - Surya 
+    public function retrieve_purchase_editdata($id,$purchase_id) {
 
-        $this->db->select('a.*,b.*,c.*,d.supplier_id,d.supplier_name');
+        $this->db->select('a.*,b.*,c.product_name,d.supplier_id,d.supplier_name');
         $this->db->from('product_purchase a');
         $this->db->join('product_purchase_details b', 'b.purchase_id =a.purchase_id');
         $this->db->join('product_information c', 'c.product_id =b.product_id');
         $this->db->join('supplier_information d', 'd.supplier_id = a.supplier_id');
-       $this->db->where('a.create_by',$this->session->userdata('user_id'));
+       $this->db->where('a.create_by',$id);
         $this->db->where('a.purchase_id', $purchase_id);
-       // $this->db->order_by('a.purchase_details', 'asc');
         $query = $this->db->get();
-
-    //   echo $this->db->last_query(); die();
-  
-        if ($query->num_rows() > 0) {
+       if ($query->num_rows() > 0) {
             return $query->result_array();
         }
       
     }
-    
-    public function retrieve_purchasedata($purchase_id)
-    {
-        $this->db->select('*');
-        $this->db->from('product_purchase');
-        $this->db->where('purchase_id', $purchase_id);
-        $this->db->where('create_by',$this->session->userdata('user_id'));
-        $query = $this->db->get();
-
-        if ($query->num_rows() > 0) {
-            return $query->result_array();
-        }
-    }
-
-
-    //    //To - Create Expense Page - Surya
-    // public function retrieve_purchase_order_editdata($purchase_id) {
-    //     $this->db->select('a.*,
-    //                     b.*,
-    //                     c.product_id,
-    //                     c.product_name,
-    //                     c.product_model,
-    //                     d.supplier_id,
-    //                     d.supplier_name'
-    //     );
-    //     $this->db->from('purchase_order a');
-    //     $this->db->join('purchase_order_details b', 'b.purchase_id =a.purchase_order_id');
-    //     $this->db->join('product_information c', 'c.product_id =b.product_id');
-    //     $this->db->join('supplier_information d', 'd.supplier_id = a.supplier_id');
-    //     $this->db->where('a.create_by',$this->session->userdata('user_id'));
-    //     $this->db->where('a.purchase_order_id', $purchase_id);
-    //     $this->db->order_by('a.purchase_details', 'asc');
-    //     $query = $this->db->get();
-    // //  echo $this->db->last_query();
-    //     if ($query->num_rows() > 0) {
-    //         return $query->result_array();
-    //     }
-     
-    //     return true;
-    // }
-
-
+   
        //Retrieve ocean import tracking Edit Data
     public function retrieve_ocean_import_tracking_editdata($purchase_id) {
         $this->db->select('a.*,b.*');
