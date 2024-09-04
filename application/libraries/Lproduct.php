@@ -170,8 +170,8 @@ class Lproduct
         $product_detail = $CI->Products->retrieve_product_editdata($product_id);
         $country_list = $CI->Web_settings->getCountryDetails();
         $product_table = $CI->Products->product_table($product_id);
-        $currency_details = $CI->Web_settings->retrieve_setting_editdata();
-        $supplier_list = $CI->Suppliers->supplier_list();
+        $currency_details = $CI->Web_settings->retrieve_setting_editdata($created_by);
+        $supplier_list = $CI->Suppliers->supplier_list($created_by);
         $view_attachments = $CI->Invoices->editMultiplefiles(
             $product_id,
             "product",
@@ -179,7 +179,7 @@ class Lproduct
         );
         $category_list = $CI->Categories->category_list_product($created_by);
         $unit_list = $CI->Units->unit_list();
-        $setting_detail = $CI->Web_settings->retrieve_setting_editdata();
+        $setting_detail = $CI->Web_settings->retrieve_setting_editdata($created_by);
         $data["supplier_list"] = $supplier_list;
         $data["country_list"] = $country_list;
         $data["unit_list"] = $unit_list;

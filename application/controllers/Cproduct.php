@@ -14,6 +14,8 @@ class Cproduct extends CI_Controller {
         $this->load->model("Units");
         $this->load->library("auth");
         $this->load->library("lproduct");
+        $encodedId = $_GET['id'];
+        $this->admin_id   = decodeBase64UrlParameter($encodedId);
     }
     //Index page load
     public function index() {
@@ -25,11 +27,11 @@ class Cproduct extends CI_Controller {
         $CI->load->model("Web_settings");
        $encodedId     = isset($_GET["id"]) ? $_GET["id"] : null;
        $decodedId     = decodeBase64UrlParameter($encodedId);
-        $currency_details = $CI->Web_settings->retrieve_setting_editdata();
-        $supplier = $CI->Suppliers->supplier_list();
+        $currency_details = $CI->Web_settings->retrieve_setting_editdata($decodedId);
+        $supplier = $CI->Suppliers->supplier_list($decodedId);
         $category_list = $CI->Categories->category_list_product($decodedId);
         $unit_list = $CI->Units->unit_list();
-        $setting_detail = $CI->Web_settings->retrieve_setting_editdata();
+        $setting_detail = $CI->Web_settings->retrieve_setting_editdata($decodedId);
         $country_list = $CI->Web_settings->getCountryDetails();
         $data = [
             "currency" => $currency_details[0]["currency"],
@@ -61,8 +63,8 @@ class Cproduct extends CI_Controller {
             $search,
             $decodedId
         );
-        $sales_count   = $this->Products->sales_product_all();
-        $expense_count = $this->Products->expense_product_all();
+        $sales_count   = $this->Products->sales_product_all($decodedId);
+        $expense_count = $this->Products->expense_product_all($decodedId);
         $data          = [];
         $i             = $start + 1;
         $edit          = "";
@@ -544,7 +546,7 @@ public function product_delete_form() {
         $CI         = &get_instance();
         $CI->auth->check_admin_auth();
         $CI->load->library("lproduct");
-        $content = $CI->lproduct->product_edit_data( $product_id,decodeBase64UrlParameter($created_by));
+        $content = $CI->lproduct->product_edit_data( $product_id,$this->admin_id);
         $this->template->full_admin_html_view($content);
     }
     //Manage Product
@@ -552,7 +554,7 @@ public function product_delete_form() {
         $this->auth->check_admin_auth();
         $this->load->library("lproduct");
         $this->load->model("Products");
-        $content = $this->lproduct->product_list();
+        $content = $this->lproduct->product_list($this->admin_id);
         $this->template->full_admin_html_view($content);
     }
     public function get_all_tax() {
