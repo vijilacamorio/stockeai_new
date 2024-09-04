@@ -24,7 +24,15 @@
       </div>
  
 </section>
-
+           <style>
+           #bulk_payment_form input[type="text"]  { border: none; 
+    background: inherit;
+    padding: 0; 
+    margin: 0; 
+    box-shadow: none; 
+    outline: none; 
+}
+            </style>
 <section class="content">
 <?php
    $message = $this->session->userdata('message');
@@ -68,7 +76,7 @@
                   <div class="Column" style="float: right;">
                      <form id="histroy" method="post" >
                               <input type="hidden" name="<?php echo $this->security->get_csrf_token_name();?>" value="<?php echo $this->security->get_csrf_hash();?>">
-                              <input type="hidden"  value="<?php if($payment_id){ echo $payment_id; }else{ echo $payment_id_new;}?>" name="payment_id" class="payment_id" id="payment_id"/>
+                              <input type="hidden"  value="<?php if($purchase_info[0]['payment_id']){ echo $purchase_info[0]['payment_id']; }else{ echo $payment_id_new;}?>" name="makepaymentId" class="payment_id" id="makepaymentId"/>
                                 <input type="hidden" id='current_in_id' name="current_in_id"/>
                     <input type="hidden" value="<?php  echo  $purchase_info[0]['supplier_id']; ?>" name="supplier_id_payment"/>
                               <input type="submit" id="payment_history" name="payment_history" class="btnclr btn" style="float:right;float:right;margin-bottom:30px;"   value="<?php echo display('Payment History') ?>"/>
@@ -801,6 +809,7 @@ foreach ($tax_data as $tx) {?>
       </div>
    </div>
 </div>
+ <?php $date = date('Y-m-d');  ?>
 <input type="hidden" id="invoice_hdn"/> <input type="hidden" id="invoice_hdn1"/>
 <script type="text/javascript">
    var csrfName = '<?php echo $this->security->get_csrf_token_name();?>';
@@ -811,6 +820,11 @@ foreach ($tax_data as $tx) {?>
            $(this).hide()
        }
     })
+                        $('.normalinvoice tbody tr').each(function() {
+        var tableId = $(this).closest('table').attr('id');
+    updateTableTotals(tableId);
+  updateOverallTotals(true);
+                    });
    $(".sidebar-mini").addClass('sidebar-collapse') ;
    });
   $(document).ready(function(){
@@ -866,13 +880,47 @@ foreach ($tax_data as $tx) {?>
    }).trigger("change");
    
   
-   
+       function payment_update(){
+    $('.hidden_button').hide();
+       var dataString = {
+           dataString : $("#histroy").serialize()
+      };
+      dataString[csrfName] = csrfHash;
+       $.ajax({
+           type:"POST",
+           dataType:"json",
+           url:"<?php echo base_url(); ?>Cpurchase/payment_history_purchase",
+           data:$("#histroy").serialize(),
+           success:function (data) {
+          debugger;
+            var gt=$('#customer_gtotal').val();
+            var amtpd=parseFloat(data.amt_paid);
+            if (isNaN(amtpd) || amtpd === '') {
+    amtpd = 0.00;
+}
+            console.log(data);
+            var bal= gt - amtpd;
+    if(amtpd){
+    $('#amount_paid').val(amtpd.toFixed(2));
+    }else{
+       $('#amount_paid').val("0.00"); 
+    }
+    $('#balance').val(bal.toFixed(2));
+    $('#amount_to_pay').val(bal.toFixed(2));
+     }
+       });
+       event.preventDefault();
+         }
+ $(document).ready(function(){
+    $('#current_in_id').val($('#invoice_no').val());
+        payment_update();
+    });
    
    
   function payment_info(){
       
      var data = {
-          gtotal:$('#vendor_gtotal').val(),
+          gtotal:$('#customer_gtotal').val(),
           customer_name:$('#customer_name').val()
      
        };
@@ -882,7 +930,7 @@ foreach ($tax_data as $tx) {?>
            type:'POST',
            data: data, 
         dataType:"json",
-           url:'<?php echo base_url();?>Cinvoice/get_payment_info',
+           url:'<?php echo base_url();?>Cpurchase/payment_history_purchase',
            success: function(result, statut) {
                if(result[0]['amt_paid']){
       $('#amount_paid').val(amtpd);
@@ -1076,11 +1124,12 @@ var csrf_token = {
             amountPaid: $(this).find('td:eq(3)').text(),
              balanceamount: $(this).find('td:eq(4)').text(),
               detail: $(this).find('td:eq(5)').text(),
-             payment : $('#payment_id').val(),
-             gtotal : $('#vendor_gtotal').val(),
+             payment : $('#payment_id_this_invoice').val(),
+             gtotal : $('#customer_gtotal').val(),
                t_amt_paid : $('#tl_amt_pd').val(),
             t_bal_amt : $('#my_bal_1').val(),
-            bill_bo : $('#invoice_no').val()
+            bill_bo : $('#invoice_no').val(),
+            create_by : $('#admin_company_id').val()
         };
         tableData.push(rowData);
     });
@@ -1141,16 +1190,16 @@ var overallGTotal = parseFloat(data.overall[0].overall_gtotal);
 var overall_due = parseFloat(data.overall[0].overall_due);
 var overall_paid = parseFloat(data.overall[0].overall_paid);
  console.log("OVER : "+overallGTotal);
- var gt = $('#vendor_gtotal').val();
+ var gt = $('#customer_gtotal').val();
             var amtpd = data.amt_paid;
 
-            var bal = $('#vendor_gtotal').val() - data.amt_paid;
+            var bal = $('#customer_gtotal').val() - data.amt_paid;
             
             
           
-               var total = "<table id='table2' class='newtable table table-striped table-bordered'><tbody><tr><td rowspan='2' style='vertical-align: middle;text-align-last: center;'><b>Grand Total :  <?php  echo $currency;  ?>"+$('#vendor_gtotal').val()+"<b></td><td class='td' style='text-align:end;border-right: hidden;'><b>Total Amount Paid :<b></td><td style='text-align:start;'><?php  echo $currency;  ?><span class='amt_paid_update'><input type='text' id='tl_amt_pd' value='"+data.amt_paid+"' name='tl_amt_pd'/></span></td><td><input type='hidden' value='"+$('#vendor_gtotal').val()+"' name='t_unique'/><span style='font-weight:bold;'>INVOICE NO</span> :<input type='hidden' id='unq_inv' value='"+$('#invoice_no').val()+"' name='unq_inv'/>"+$('#invoice_no').val()+"</td>               <td rowspan='2' style='vertical-align: middle;text-align-last: center;'><b>Advance :   <input type='text' name='advanceamount' id='advanceamount' readonly ></td>                                                      </tr><tr><td class='td' style='text-align:end;'><b>Balance :<input type='text' id='my_bal_1' value='"+bal+"' name='my_bal_1'/><b></td><td class='due_pay' style='display:none;' id='balance-cell' data-currency='<?php  echo $currency;  ?>'>"+bal +"</td><td  data-currency='<?php echo $currency; ?>'><span style='font-weight:bold;'>Amount to Pay : </span><input type='text' id='amount_pay_unique' class='amount_pay' readonly='readonly' style='text-align:center;' name='amount_pay_1'/></td><td style='display:none'><input type='text'  value='<?php if($payment_id){ echo $payment_id; }else{ echo $payment_id_new;}?>' name='payment_id_this_invoice' class='payment_id_val' id='payment_id'/></td><td style='display:none' class='' data-currency='<?php echo $currency; ?>'><input type='text' name='updated_bal_uniq' class='balance-col'/></td><td> <input type='text' id='total-amount' placeholder='Enter Amount To Distribute'></td></tr></tbody></table>"
-             var table_header1 = "<div> </div>  <thead><tr><td ><input type='hidden'  value='<?php  echo $supplier_id;  ?>' name='supplier_id' /></tr></thead><tbody>";
-                   var table_header = "<div class='toggle-button' onclick='toggleTable()'>Payment History &#9660;</div><table id='toggle_table' class='table table-striped table-bordered'><thead style='FONT-WEIGHT:BOLD;'><tr><td style='display:none;'><input type='text'  value='<?php if($all_invoice[0]['payment_id']){ echo $all_invoice[0]['payment_id']; }else{ echo $payment_id_new;}?>' name='payment_id_this_invoice' class='payment_id_val' id='payment_id'/></td><td>Payment Date</td><td>Reference.NO</td><td>Bank Name</td><td>Amount Paid</td><td>Balance</td><td>Details</td> <td>Payment Id</td> <td>Delete</td> </tr></thead><tbody>";
+               var total = "<table id='table2' class='newtable table table-striped table-bordered'><tbody><tr><td rowspan='2' style='vertical-align: middle;text-align-last: center;'><b>Grand Total :  <?php  echo $currency;  ?>"+$('#customer_gtotal').val()+"<b></td><td class='td' style='text-align:end;border-right: hidden;'><b>Total Amount Paid :<b></td><td style='text-align:start;'><?php  echo $currency;  ?><span class='amt_paid_update'><input type='text' id='tl_amt_pd' value='"+data.amt_paid+"' name='tl_amt_pd'/></span></td><td><input type='hidden' value='"+$('#customer_gtotal').val()+"' name='t_unique'/><span style='font-weight:bold;'>INVOICE NO</span> :<input type='hidden' id='unq_inv' value='"+$('#invoice_no').val()+"' name='unq_inv'/>"+$('#invoice_no').val()+"</td>               <td rowspan='2' style='vertical-align: middle;text-align-last: center;'><b>Advance :   <input type='text' name='advanceamount' id='advanceamount' readonly ></td>                                                      </tr><tr><td class='td' style='text-align:end;'><b>Balance :<input type='text' id='my_bal_1' value='"+bal+"' name='my_bal_1'/><b></td><td class='due_pay' style='display:none;' id='balance-cell' data-currency='<?php  echo $currency;  ?>'>"+bal +"</td><td  data-currency='<?php echo $currency; ?>'><span style='font-weight:bold;'>Amount to Pay : </span><input type='text' id='amount_pay_unique' class='amount_pay' readonly='readonly' style='text-align:center;' name='amount_pay_1'/></td><td style='display:none'><input type='text'  value='<?php if($purchase_info[0]['payment_id']){ echo $purchase_info[0]['payment_id']; }else{ echo $payment_id_new;}?>' name='payment_id_this_invoice' class='payment_id_val' id='payment_id'/></td><td style='display:none' class='' data-currency='<?php echo $currency; ?>'><input type='text' name='updated_bal_uniq' class='balance-col'/></td><td> <input type='text' id='total-amount' placeholder='Enter Amount To Distribute'></td></tr></tbody></table>"
+             var table_header1 = "<div> </div>  <thead><tr><td ><input type='hidden'  value='<?php  echo $purchase_info[0]['supplier_id'];  ?>' name='supplier_id' /></tr></thead><tbody>";
+                   var table_header = "<div class='toggle-button' onclick='toggleTable()'>Payment History &#9660;</div><table id='toggle_table' class='table table-striped table-bordered'><thead style='FONT-WEIGHT:BOLD;'><tr><td style='display:none;'><input type='text'  value='<?php if($purchase_info[0]['payment_id']){ echo $purchase_info[0]['payment_id']; }else{ echo $payment_id_new;}?>' name='payment_id_this_invoice' class='payment_id_val' id='payment_id_this_invoice'/></td><td>Payment Date</td><td>Reference.NO</td><td>Bank Name</td><td>Amount Paid</td><td>Balance</td><td>Details</td>   </tr></thead><tbody>";
                    
                        var table_footer = "</tbody><tfoot><tr><td style='text-align: center;vertical-align: middle;' colspan='7' ><input type='button' class='btn' style='text-align:center;color:white;background-color:#38469f;font-weight:bold';  value='Update' id='edit_payment'/></td></tr></tfoot></table>";
 
@@ -1166,15 +1215,11 @@ var overall_paid = parseFloat(data.overall[0].overall_paid);
     "<td contenteditable='true'>" + element.bank_name + "</td>" +
     "<td class='editable-amount-paid' contenteditable='true' data-currency='<?php echo $currency; ?>'>" +  "<span class='palist'>" + element.amt_paid + "</span>" +
     "<input type='hidden' class='editable-input-4' name='editable-input-4' /></td>" +
-    "<td class='balance-cell' contenteditable='false'>" + "<span class='balist'>" +  element.balance +"</span>" +
+    "<td class='balance-cell' contenteditable='false'>" + "<span class='balist' style='pointer-events: none;'>" +  element.balance +"</span>" +
     "<input type='text' class='edit_balance' name='edit_balance' /></td>" +
     "<td contenteditable='true'>" + element.details + "</td>" +
     "<td style='display:none;'><input type='text' class='payment_id_val' id='payment_id'/></td>" +
-    "<td><input type='text' value='<?php  if($payment_id){ echo $payment_id; }else{ echo $payment_id_new;}?>'  name='pay_id' class='pay_id' id='pay_id'/></td>" +
-    "<td>" +
-    "<a class='payinfodelete btnclr btn btn-sm'   id='payinfodelete'    onclick='return confirm(\"<?php echo display('are_you_sure') ?>\")' " +
-    "<i class='fa fa-trash-o' aria-hidden='true'>Delete</i></a>"
-    +"</td>" +  "</tr>";
+     "</tr>";
                 count++;
             });
             
@@ -1185,7 +1230,7 @@ var overall_paid = parseFloat(data.overall[0].overall_paid);
             var total1 = "<input type='hidden' name='<?php echo $this->security->get_csrf_token_name();?>' value='<?php echo $this->security->get_csrf_hash();?>'><table id='table1'  class='table table-striped table-bordered'><tr><td colspan='3' style='border-top: hidden!important;background-color: white;text-align:center;font-weight:bold;font-size:18px;'>LIST OF DUE INVOICES</td></tr><tr><td rowspan='2' style='vertical-align: middle;text-align-last: center;'><b>Grand Total :  <?php  echo $currency;  ?>"+overallGTotal.toFixed(2)+"<b></td><td class='td' style='text-align:center;border-right: hidden;'><b>Total Amount Paid :<b></td><td><?php  echo $currency;  ?>"+overall_paid.toFixed(2)+"</td></tr></tr><td class='td' style='border-right: hidden;'><b>Balance :<b></td><td style='text-align:start;' class='bcm'  id='balance-cell' data-currency='<?php  echo $currency;  ?>'>"+parseFloat(overall_due.toFixed(2)) +"</td></tr></table>"
 
           
-            var table_header1 = "<table class='newtable-second table table-striped table-bordered'><thead style='FONT-WEIGHT:BOLD;'><tr><td><div id='distribute-container'> </div></td><td style='width:60px;'>Invoice No</td><td style='width:100px;'>Total Amount</td><td style='width:200px;'>Amount Paid</td><td style='width:200px;'>Balance</td><td style='width:200px;'>Amount to Pay</td><td class='balance-column' style='width:200px;'>Updated Balance</td></tr></thead><tbody>";
+            var table_header1 = "<table class='newtable-second table table-striped table-bordered'><thead style='FONT-WEIGHT:BOLD;'><tr><td style='width:30px;'><div id='distribute-container'> </div></td><td style='width:60px;'>Invoice No</td><td style='width:100px;'>Total Amount</td><td style='width:200px;'>Amount Paid</td><td style='width:200px;'>Balance</td><td style='width:200px;'>Amount to Pay</td><td class='balance-column' style='width:200px;'>Updated Balance</td></tr></thead><tbody>";
             var table_footer1 = "</tbody><tfoot><tr><td colspan='5'></td><td class='t_amt_pay'></td><td  style='display:none;' class='balance-col t_bal_pay'></td></tr></tfoot></table>";
 
            
@@ -1205,7 +1250,7 @@ var overall_paid = parseFloat(data.overall[0].overall_paid);
       }else{
          random10DigitNumber=pay_id;
       }
-            html1 += "<tr><td style='display:none;'><input type='hidden' value='"+random10DigitNumber+"' name='payment_id[]'/></td><td> <input type='checkbox' id='<?php echo $count1; ?>' class='checkbox-distribute'></td><td><input type='text' readonly style='text-align:center;'  value='" + element.chalan_no + "' name='invoice_no[]'/></td><td><input type='text' readonly  class='g_pament' value='" + element.grand_total_amount + "' name='total_amt[]' style='text-align:center;'/></td><td>" + element.paid_amount + "</td><td class='due_pay' data-currency='<?php echo $currency; ?>'>" + element.balance + "</td><td  data-currency='<?php echo $currency; ?>'><input type='text' id='amount_pay' class='amount_pay' style='text-align:center;' name='amount_pay[]'/></td><td    class='balance-column' data-currency='<?php echo $currency; ?>'><input type='text' name='updated_bal[]' readonly class='balance-col'/></td></tr>";
+            html1 += "<tr><td style='display:none;'><input type='hidden' value='"+random10DigitNumber+"' name='payment_id[]'/></td><td> <input type='text'  value='"+count1+"' class='checkbox-distribute'></td><td><input type='text' readonly style='text-align:center;'  value='" + element.chalan_no + "' name='invoice_no[]'/></td><td><input type='text' readonly  class='g_pament' value='" + element.grand_total_amount + "' name='total_amt[]' style='text-align:center;'/></td><td>" + element.paid_amount + "</td><td class='due_pay' data-currency='<?php echo $currency; ?>'>" + element.balance + "</td><td  data-currency='<?php echo $currency; ?>'><input type='text' id='amount_pay' class='amount_pay' style='text-align:center;' name='amount_pay[]'/></td><td    class='balance-column' data-currency='<?php echo $currency; ?>'><input type='text' name='updated_bal[]' readonly class='balance-col'/></td></tr>";
                 count1++;
     }
 }
@@ -1612,7 +1657,7 @@ function editRow(button) {
 
 $(document).on('keyup', '.editable-amount-paid', function () {
   
-   var gtotal=$('#vendor_gtotal').val();
+   var gtotal=$('#customer_gtotal').val();
     const grandTotal = parseFloat(gtotal) || 0;
     console.log("grandTotal :"+grandTotal);
     let cumulativePayment = 0;

@@ -590,18 +590,14 @@ class Cpurchase extends CI_Controller {
     }
      public function payment_history_purchase(){
    
-    $payment_id=$this->input->post('payment_id');
+    $payment_id=$this->input->post('makepaymentId');
      $customer_id=$this->input->post('supplier_id_payment');
           $current_in_id=$this->input->post('current_in_id');
 $overall_payment = $this->Purchases->get_cust_payment_overall_info($customer_id);
   $get_cust_payment = $this->Purchases->get_cust_payment_info($customer_id,$current_in_id);
- // print_r($get_cust_payment);
-    $payment_get = $this->Invoices->get_payment_info($payment_id);
-
+  $payment_get = $this->Invoices->get_payment_info($payment_id);
     $amt_paid = $this->db->select('sum(amt_paid) as amt_paid')->from('payment')->where('payment_id',$payment_id)->get()->row()->amt_paid;
-  // echo $this->db->last_query();
-  
-    $data=array(
+   $data=array(
         'overall'  => $overall_payment,
         'based_on_customer' => $get_cust_payment,
         'payment_get'  =>$payment_get,
@@ -612,7 +608,8 @@ echo json_encode($data);//die();
 
 }
  public function bulk_payment(){
- $payment_id=$this->input->post('pay_id');
+    $payment_unique=$this->input->post('payment_id_this_invoice');
+ //$payment_id=$this->input->post('payment_id');
  $payment = $this->Purchases->bulk_payment();
 $payment = $this->Purchases->bulk_payment_unique($payment_unique);
  echo json_encode($payment);
