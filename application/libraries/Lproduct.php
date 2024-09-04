@@ -3,19 +3,24 @@ if (!defined("BASEPATH")) {
     exit("No direct script access allowed");
 }
 
-class Lproduct
+class Lproduct 
 {
-    public function product_list()
+  
+  
+    public function product_list($admin_id)
     {
         $CI = &get_instance();
         $CI->load->model("Products");
         $CI->load->model("Web_settings");
-        $setting_detail = $CI->Web_settings->retrieve_setting_editdata();
-        $data["sale_count"] = $CI->Products->sales_product_all();
-        $data["expense_count"] = $CI->Products->expense_product_all();
+        $setting_detail = $CI->Web_settings->retrieve_setting_editdata($admin_id);
+        $data["sale_count"] = $CI->Products->sales_product_all($admin_id);
+        $data["expense_count"] = $CI->Products->expense_product_all($admin_id);
         $productList = $CI->parser->parse("product/product", $data, true);
         return $productList;
     }
+
+
+
     public function product_view($id, $company_id)
     {
         $CI = &get_instance();
@@ -128,7 +133,7 @@ class Lproduct
             $product_details_pdv[0]["product_id"],
             $company_id
         );
-        $data["sale_count"] = $CI->Products->sales_product_all();
+        $data["sale_count"] = $CI->Products->sales_product_all($admin_id);
         $data["expense_count"] = $CI->Products->expense_product_all();
         $data[
             "setting_detail"
