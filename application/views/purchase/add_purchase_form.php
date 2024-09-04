@@ -33,7 +33,7 @@ $this->load->view('include/bootstrap_model', $modaldata);
                   <div class="col-sm-2">
                      <select name="module_selection" class="form-control getvaluedata"  id="module_selection" tabindex="3" >
                         <option value="" selected disabled><?php  echo display('Select Option');?></option>
-                           <?php  foreach($po as $p){   ?>
+                           <?php  foreach($po_number as $p){   ?>
                         <option value="<?php  echo $p['chalan_no'] ; ?>"><?php  echo $p['chalan_no'] ; ?></option>
                         <?php   }  ?>
                         <option value="New Expense"> <?php echo ('New Expense'); ?></option>
@@ -61,7 +61,8 @@ $this->load->view('include/bootstrap_model', $modaldata);
                      </form>
                   </div>
                   <div class="col-sm-2">
-                     <a   href="<?php echo base_url('Cpurchase/manage_purchase') ?>" class="btnclr btn  m-b-5 m-r-2"><i class="ti-align-justify"> </i> <?php echo display('manage_expense'); ?> </a>
+                    
+                    <a  href="<?php  echo base_url(); ?>Cpurchase/manage_purchase?id=<?php echo $_GET['id']; ?>" class="btnclr btn  m-b-5 m-r-2"><i class="ti-align-justify"> </i> <?php echo display('manage_expense'); ?> </a>
                   </div>
                </div>
             </div>
@@ -378,7 +379,7 @@ $this->load->view('include/bootstrap_model', $modaldata);
                            </div>
                             <div class="table-responsive">
                               <div id="content">
-                                 <table class="table normalinvoice table-bordered table-hover" id="normalinvoice_1"   style="border:2px solid #d7d4d6;" >
+                                 <table class="table normalinvoice table-bordered table-hover" id="linvoice_1"   style="border:2px solid #d7d4d6;" >
                                     <thead>
                                        <tr class="btnclr">
                                           <th rowspan="2" class="text-center" style="width:180px;" ><?php echo display('product_name'); ?><i class="text-danger">*</i>  &nbsp;&nbsp; <a href="#" class="btn btnclr"   aria-hidden="true" data-toggle="modal" data-target="#product_info"><i class="ti-plus m-r-2" style="border:2px;"></i></a></th>
@@ -408,7 +409,7 @@ $this->load->view('include/bootstrap_model', $modaldata);
                                           <th class="text-center btnclr" ><?php echo display('Height');?></th>
                                        </tr>
                                     </thead>
-                                    <tbody id="addPurchaseItem_1">
+                                    <tbody id="addItem_1">
                                        <tr>
                                           <td>
                                              <input type="hidden" class="table_id" name="tableid[]" id="tableid_1"/>
@@ -481,7 +482,7 @@ $this->load->view('include/bootstrap_model', $modaldata);
                                              </select>
                                           </td>
                                           <td >
-                                             <span class="input-symbol-euro"><input  type="text" class="total_price_provider form-control" style="width:80px;" readonly  value="0.00"  id="total_amt_1"     name="total_amt[]"/></span>
+                                             <span class="input-symbol-euro"><input  type="text" class="total_price form-control" style="width:80px;" readonly  value="0.00"  id="total_amt_1"     name="total_amt[]"/></span>
                                           </td>
                                           <td style="text-align:center;">
                                              <button  class='btn btn-danger delete' id="delete_1" type='button' value='Delete' ><i class="fa fa-trash"></i></button>
@@ -789,7 +790,7 @@ foreach ($tax_data as $tx) {?>
                                        <label for="bill_number" class="col-sm-4 col-form-label"><?php  echo  ('Phone Number');?> <i class="text-danger"></i>
                                        </label>
                                        <div class="col-sm-8">
-                                          <input type="number" required tabindex="2" class="form-control phone_num" name="phone_num" style="border:2px solid #d7d4d6;"   id="phone_num"  />
+                                          <input type="number"  tabindex="2" class="form-control phone_num" name="phone_num" style="border:2px solid #d7d4d6;"   id="phone_num"  />
                                           <div id="loadingText" class="loading-text"></div>
                                        </div>
                                     </div>
@@ -1001,7 +1002,7 @@ foreach ($tax_data as $tx) {?>
 <input type="hidden" id="Final_invoice_number" /> 
 <input type="hidden" id="Final_invoice_id" /> 
 
-<script type="text/javascript">
+<script>
    $(document).ready(function(){
     $('#main').hide();
     $('#expense_drop').hide();
@@ -1011,7 +1012,21 @@ foreach ($tax_data as $tx) {?>
     $('#service_provider_data').hide();
    $('.with_po').hide();
    $('.without_po').show();
+   debugger;
       $('#main').show();
+      var tid=$('.table').closest('table').attr('id');
+   const indexLast = tid.lastIndexOf('_');
+   var id = tid.slice(indexLast + 1);
+   for (j = 0; j < 6; j++) {
+      var $last = $('#addItem_1 tr:last');
+   var num = id+($last.index()+1);
+    $('#addItem_1 tr:last').clone().find('input,select,button').attr('id', function(i, current) {
+       return current.replace(/\d+$/, num);
+   }).end().appendTo('#addItem_1');
+    $.each($('#linvoice_1 > tbody > tr'), function (index, el) {
+           $(this).find(".slab_no").val(index + 1); // Simply couse the first "prototype" is not counted in the list
+       })
+   }
    var data = {
    expense_drop:$('#expense_drop').val()
    };
@@ -1033,7 +1048,8 @@ foreach ($tax_data as $tx) {?>
    $('.with_po').show();
    $('.without_po').hide();
    var data = {
-   po:$('#expense_drop').val()
+   po:$('#expense_drop').val(),
+   admin_company_id : $('#admin_company_id').val()
    };
    data[csrfName] = csrfHash;
    $.ajax({ 
@@ -1055,6 +1071,7 @@ foreach ($tax_data as $tx) {?>
    }
   
    });
+
 function getSupplierInfo(supplier_id){
 
       var data = {
@@ -1258,13 +1275,13 @@ $(document).on('keyup','.normalinvoice tbody tr:last',function (e) {
    var tid=$(this).closest('table').attr('id');
    const indexLast = tid.lastIndexOf('_');
    var id = tid.slice(indexLast + 1);
-   var $last = $('#addPurchaseItem_'+id + ' tr:last');
+   var $last = $('#addItem_'+id + ' tr:last');
    var num = id+($last.index()+1);
-   $('#addPurchaseItem_'+id  + ' tr:last').clone().find('input,select').attr('id', function(i, current) {
+   $('#addItem_'+id  + ' tr:last').clone().find('input,select').attr('id', function(i, current) {
    return current.replace(/\d+$/, num);
    
-   }).end().appendTo('#addPurchaseItem_'+id );
-   $.each($('#normalinvoice_'+id  +  '> tbody > tr'), function (index, el) {
+   }).end().appendTo('#addItem_'+id );
+   $.each($('#linvoice_'+id  +  '> tbody > tr'), function (index, el) {
       $(this).find(".slab_no").val(index + 1);      
    });
    });
