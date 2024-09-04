@@ -527,7 +527,8 @@
                                  <input type="text" id="weight_<?php  echo $m.$n; ?>" name="weight[]"  value="<?php  echo $inv['weight'];  ?>" class="weight form-control" />
                               </td>
                               <td >
-                                                <select id="origin_1" name="origin[]" class="origin form-control">      
+                                                <select id="origin_<?php  echo $m.$n; ?>" name="origin[]" class="origin form-control">   
+                                                    <option value="<?php echo $inv['origin']; ?>"><?php echo $inv['origin']; ?></option>   
                                                 <?php foreach ($country_code as $key => $value) { ?>
                                                    <option value="<?php echo $value['iso']; ?>"><?php echo $value['iso']; ?></option>
                                                 <?php } ?> </select>
@@ -821,6 +822,13 @@ foreach ($tax_data as $tx) {?>
     var csrfHash = '<?php echo $this->security->get_csrf_hash();?>';
    $(document).ready(function(){
       $(".normalinvoice").each(function(i,v){
+          $(this).find('select').each(function() {
+    var $select = $(this);
+   if ($select.data('select2')) {
+        $select.select2('destroy');
+    }
+    $select.select2();
+});
        if($(this).find("tbody").html().trim().length === 0){
            $(this).hide()
        }
