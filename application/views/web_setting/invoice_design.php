@@ -196,13 +196,13 @@
   <div class="col-sm-8" > <div class="panel panel-default" style="height: 710px;">
     <div class="panel-body">
         <div class="row">
-              <div class="col-sm-3" id='company_info'>
+              <div class="col-sm-4" id='company_info'>
                   <?php echo display('Company name') ?>:<?php echo $cname; ?><br>
                   <?php echo display('Address') ?>:<?php echo $address; ?><br>
                   <?php echo display('Email') ?>:<?php echo $email; ?><br>
                   <?php echo display('Contact') ?>:<?php echo $mobile; ?><br>
               </div>
-            <div class="col-sm-6 text-center"><h3><?php echo $header; ?></h3></div>
+            <div class="col-sm-5 text-center"><h3><?php echo $header; ?></h3></div>
           
             <div class="col-sm-3">
              <img src="<?php echo base_url().$logo; ?>" style="width: 40%;">
@@ -211,20 +211,12 @@
         <br>
         <div class="col-sm-6">
         <table id="one" >
-            <tr>
-               <td  class="key"><?php echo 'Invoice No' ?></td>
-               <td style="width:10px;">:</td>
-               <td calss="value"><?php  echo '000000'; ?></td>
-            </tr>
+            
          </table>
         </div>
       <div class="col-sm-6">
         <table id="two">
-         <tr>
-            <td  class="key"><?php echo 'Invoice Date' ?></td>
-            <td style="width:10px;">:</td>
-            <td calss="value"><?php  echo '00/00/0000'; ?></td>
-            </tr> 
+     
          </table>
       </div>    
       <div class="row">
@@ -280,20 +272,12 @@
         <div></div>
         <div class="col-sm-6">
         <table id="one" >
-            <tr>
-               <td  class="key"><?php echo 'Invoice No' ?></td>
-               <td style="width:10px;">:</td>
-               <td calss="value"><?php  echo '000000'; ?></td>
-            </tr>
+            
          </table>
         </div>
       <div class="col-sm-6">
         <table id="two">
-         <tr>
-            <td  class="key"><?php echo 'Invoice Date' ?></td>
-            <td style="width:10px;">:</td>
-            <td calss="value"><?php  echo '00/00/0000'; ?></td>
-            </tr> 
+  
          </table>
       </div>    
       <div class="row">
@@ -337,7 +321,7 @@
         <div class="row">    
             <div class="col-sm-3 text-center" style="text-align: left;"><h3><?php echo $header; ?></h3></div>
             <div class="col-sm-4" style="text-align: center;"><img src="<?php echo  base_url().$logo; ?>" style='width: 40%;'></div>
-             <div class="col-sm-3" id='company_info'>
+             <div class="col-sm-5" id='company_info'>
                   <?php echo display('Company name') ?>:<?php echo $cname; ?><br>
                   <?php echo display('Address') ?>:<?php echo $address; ?><br>
                   <?php echo display('Email') ?>:<?php echo $email; ?><br>
@@ -347,20 +331,20 @@
         <br>
         <div class="col-sm-6">
         <table id="one" >
-            <tr>
+            <!-- <tr>
                <td  class="key"><?php echo 'Invoice No' ?></td>
                <td style="width:10px;">:</td>
                <td calss="value"><?php  echo '000000'; ?></td>
-            </tr>
+            </tr> -->
          </table>
         </div>
       <div class="col-sm-6">
         <table id="two">
-         <tr>
+         <!-- <tr>
             <td  class="key"><?php echo 'Invoice Date' ?></td>
             <td style="width:10px;">:</td>
             <td calss="value"><?php  echo '00/00/0000'; ?></td>
-            </tr> 
+            </tr>  -->
          </table>
       </div>    
       <div class="row">
