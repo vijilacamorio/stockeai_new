@@ -15,6 +15,8 @@ class Csupplier extends CI_Controller {
         $this->load->library('session');
         $this->load->model('Suppliers');
         $this->auth->check_admin_auth();
+        $encodedId = $_GET['id'];
+        $this->admin_id   = decodeBase64UrlParameter($encodedId);
     }
     public function add_payment_terms(){
         $this->load->model('Suppliers');
@@ -107,7 +109,7 @@ class Csupplier extends CI_Controller {
        
     public function manage_supplier() {
         $this->auth->check_admin_auth();
-        $content =$this->lsupplier->supplier_list();
+        $content =$this->lsupplier->supplier_list($this->admin_id);
         $this->template->full_admin_html_view($content);
     }
 

@@ -14,7 +14,7 @@ class Cproduct extends CI_Controller {
         $this->load->model("Units");
         $this->load->library("auth");
         $this->load->library("lproduct");
-        $encodedId = $_GET['id'];
+        $encodedId = isset($_GET['id'])? $_GET["id"] : null;
         $this->admin_id   = decodeBase64UrlParameter($encodedId);
     }
     //Index page load
