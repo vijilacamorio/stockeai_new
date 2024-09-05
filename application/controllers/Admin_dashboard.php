@@ -10,6 +10,8 @@ class Admin_dashboard extends CI_Controller {
         $this->load->model('Web_settings');
         $this->load->model('Reports');
         $this->load->database();
+        $encodedId = $_GET['id'];
+        $this->admin_id   = decodeBase64UrlParameter($encodedId);
     }
 public function dashboardsetting()
     {
@@ -106,7 +108,7 @@ public function dashboardsetting()
         $CI->load->model('Reports');
         $CI->load->model('Web_settings');
         $total_customer      = $CI->Customers->count_customer();
-        $total_product       = $CI->Products->count_product();
+        $total_product       = $CI->Products->count_product($this->admin_id);
         $total_suppliers     = $CI->Suppliers->count_supplier();
          $todays_sales_report_detail = '';
 

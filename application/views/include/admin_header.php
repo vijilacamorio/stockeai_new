@@ -294,8 +294,7 @@ $(document).ready(function() {
 											if (trim($split[0]) == 'setting') {
 												?>
 												<li class="menu-title" style="color:#17202a"><b>SMS</b></li>
-												<li><a href=" <?php echo base_url('Csms/configure') ?>"><i
-															class="pe-7s-users"></i><?php echo display('sms_configure'); ?></a>
+												<li><a href=" <?php echo base_url('Csms/configure') ?>"><i class="pe-7s-users"></i><?php echo display('sms_configure'); ?></a>
 												</li>
 												<li><a href="<?php echo base_url('') ?>"><i
 															class="pe-7s-users"></i>&nbsp;&nbsp;Email Template </a></li>
@@ -512,7 +511,7 @@ $(document).ready(function() {
         if ($_SESSION['u_type'] == 2) { ?>
 			<ul class="sidebar-menu">
 				<li class="<?php echo ($this->uri->segment(2) == '') ? 'active' : ''; ?>">
-					<a href="<?php echo base_url(); ?>"><i class="ti-dashboard"></i>
+					<a href="<?php echo base_url(); ?>?id=<?php echo $encode_com_id; ?>"><i class="ti-dashboard"></i>
 						<span><?php echo display('dashboard'); ?></span>
 						<span class="pull-right-container">
 							<span class="label label-success pull-right"></span>
