@@ -170,7 +170,7 @@ class Lproduct
         $product_detail = $CI->Products->retrieve_product_editdata($product_id);
         $country_list = $CI->Web_settings->getCountryDetails();
         $product_table = $CI->Products->product_table($product_id);
-        $currency_details = $CI->Web_settings->retrieve_setting_editdata($created_by);
+        $currency_details = $CI->Web_settings->retrieve_setting_editdata();
         $supplier_list = $CI->Suppliers->supplier_list($created_by);
         $view_attachments = $CI->Invoices->editMultiplefiles(
             $product_id,
