@@ -1840,19 +1840,14 @@ public function overall_admins() {
             $searchQuery = "(
                 a.product_id LIKE '%" . $searchValue . "%' OR
                 a.product_name LIKE '%" . $searchValue . "%' OR
-                a.product_model LIKE '%" . $searchValue . "%' OR
+                a.product_model LIKE '%" . $searchValue . "%'
                 
             )";               
         }
-        // $this->db->select("a.id,a.product_name,a.product_id ,a.product_model,a.p_quantity");
-        // $this->db->from("product_information a");
-        // $this->db->join("supplier_information b","b.supplier_id = a.supplier_id","left");
-        // $this->db->where("a.created_by", $adminId);
       
         $this->db->select('a.*,b.supplier_price');
         $this->db->from('product_information a');
         $this->db->join('supplier_product b', 'b.product_id = a.product_id');
-        // $this->db->join('supplier_information c', 'b.supplier_id =c.supplier_id');
         $this->db->where("a.created_by", $adminId);
 
          
@@ -1867,7 +1862,6 @@ public function overall_admins() {
         $this->db->group_by("a.product_id, a.supplier_id");
         
         $query = $this->db->get();
-    //    echo $this->db->last_query(); die();
         return $query->num_rows();
     }
 
@@ -1883,13 +1877,12 @@ public function overall_admins() {
             $searchQuery = "(
                 a.product_id LIKE '%" . $searchValue . "%' OR
                 a.product_name LIKE '%" . $searchValue . "%' OR
-                a.product_model LIKE '%" . $searchValue . "%' OR
+                a.product_model LIKE '%" . $searchValue . "%'
              )";           
         }
         $this->db->select('a.*,b.supplier_price ,COUNT(*) as available');
         $this->db->from('product_information a');
         $this->db->join('supplier_product b', 'b.product_id = a.product_id');
-        // $this->db->join('supplier_information c', 'b.supplier_id =c.supplier_id');
         $this->db->where("a.created_by", $adminId);
         if($msearch['supplier_id'] !=""){
             $this->db->where('b.supplier_id', $msearch['supplier_id']);
@@ -1903,9 +1896,7 @@ public function overall_admins() {
         $this->db->limit($limit,$start);
 
 
-        $records =
-         $this->db->get()->result_array();
-        //  echo $this->db->last_query(); die();
+        $records = $this->db->get()->result_array();
         return $records;
     }
 }
