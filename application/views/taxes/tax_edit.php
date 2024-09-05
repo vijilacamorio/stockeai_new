@@ -29,7 +29,7 @@
          <div class="panel-heading">
             <div class="panel-title">
                <div id="block_container">
-                  <div id="bloc2" style="float:right;">
+                  <div id="bloc2" style="float:right; position: relative;bottom: 18px;">
                      <a href="<?php echo base_url('Caccounts/manage_tax?id=' . $_GET['id']); ?>" class="btnclr btn m-b-5 m-r-2"><i class="ti-align-justify"> </i> <?php echo 'Manage Tax'; ?> </a>
                   </div>
                </div>
@@ -71,11 +71,11 @@
                      <?php 
                         foreach (getAllStates() as $state) {
                            $selected = '';
-                           if (isset($getTaxdata[0]['state']) && $getTaxdata[0]['state'] == $state['state_name']) {
+                           if (isset($getTaxdata[0]['state']) && $getTaxdata[0]['state'] == $state['id']) {
                                $selected = 'selected';
                            }
                            ?>
-                          <option value="<?php echo htmlspecialchars($state['state_name']); ?>" <?php echo $selected; ?>>
+                          <option value="<?php echo htmlspecialchars($state['id']); ?>" <?php echo $selected; ?>>
                        <?php echo htmlspecialchars($state['state_name']); ?>
                     </option>
                     <?php } ?>
@@ -250,3 +250,9 @@
         }
     });
 </script>
+
+<style type="text/css">
+   .panel-heading{
+      padding: 25px 15px !important;
+   }
+</style>
