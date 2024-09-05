@@ -29,7 +29,7 @@
          <div class="panel-heading">
             <div class="panel-title">
                <div id="block_container">
-                  <div id="bloc2" style="float:right;">
+                  <div id="bloc2" style="float:right; position: relative;bottom: 18px;">
                      <a href="<?php echo base_url('Caccounts/manage_tax?id=' . $_GET['id']); ?>" class="btnclr btn m-b-5 m-r-2"><i class="ti-align-justify"> </i> <?php echo 'Manage Tax'; ?> </a>
                   </div>
                </div>
@@ -68,7 +68,7 @@
                   <select name="state" id="state" class="form-control" style="width:100%;border:2px solid #d7d4d6;">
                      <option selected="true" disabled="disabled" value="">Please Select State</option>
                      <?php foreach (getAllStates() as $state) { ?>
-                        <option value="<?php echo $state['state_name']; ?>"><?php echo $state['state_name']; ?></option>
+                        <option value="<?php echo $state['id']; ?>"><?php echo $state['state_name']; ?></option>
                      <?php } ?>
                   </select>
                </div>
@@ -217,3 +217,9 @@
         }
     });
 </script>
+
+<style type="text/css">
+   .panel-heading{
+      padding: 25px 15px !important;
+   }
+</style>
