@@ -136,17 +136,20 @@ public function editurldata($company_id)
         }
         return false;
     }
+
 public function company_info()
 	{
 		$this->db->select('*');
 		$this->db->from('company_information');
 		$this->db->where('company_id', $this->session->userdata('user_id'));
 		$query = $this->db->get();
-		if ($query->num_rows() > 0) {
+ 		if ($query->num_rows() > 0) {
 			return $query->result_array();	
 		}
 		return false;
 	}
+
+
 	public function company_admin_info()
 	{
 		$this->db->select('*');

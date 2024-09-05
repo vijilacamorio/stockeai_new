@@ -53,6 +53,12 @@
            <input type="text" name="name" class="form-control" value="<?php if($cname!=''){echo $cname ; }?>">
        </div>
        <div class="form-group">
+           <label>Buisness Address</label>
+           <input type="text" name="address" class="form-control" value="<?php if($address!=''){
+            echo $address;
+             }?>">
+       </div>
+       <div class="form-group">
            <label>Buisness Phone</label>
            <input type="text" name="phone" class="form-control" value="<?php if($phone!=''){echo $phone ; }?>">
        </div>
@@ -60,12 +66,7 @@
            <label>Buisness Email</label>
            <input type="text" name="email" class="form-control" value="<?php if($email!=''){echo $email ; }?>">
        </div>
-       <div class="form-group">
-           <label>Buisness Address</label>
-           <input type="text" name="address" class="form-control" value="<?php if($address!=''){
-            echo $address;
-             }?>">
-       </div>
+      
        <div class="form-group">
            <label>Buisness Register no</label>
            <input type="text" name="regno" class="form-control" value="<?php if($reg_number!=''){
@@ -99,54 +100,48 @@
             { 
             echo $address; 
         }; ?>   <br> 
-                  REg no:<?php if($reg_number!=='')
-            { 
-            echo $reg_number; 
-        }; ?><br>
-                   phone:<?php if($phone!=='')
-            {  echo $phone; } ?>   <br> 
-                  <?php
-                  if($website!=='')
-            {
-                   echo $website;
-               }
-                    ?><br>
-                  <?php
+            
+   <?php if($phone!=='')
+            {  echo $phone; } ?> 
+
+        <br>
+
+        <?php
 if($email!=='')
             {
                    echo $email;
                }
                     ?><br>
+ 
+        <?php if($reg_number!=='')
+            { 
+            echo $reg_number; 
+        }; ?>
+            <br> 
+                
+                 
+                <?php
+                  if($website!=='')
+            {
+                   echo $website;
+               }
+                    ?><br>
+              
                    <br>
                    <br>
                 </p>
               </div>
              <div class="col-sm-6 text-center"><?php echo $header; ?></div>
             <div class="col-sm-3">
-           <img src="<?php echo base_url() .$invoice_logo[0]['invoice_logo']; ?>" style="width: 40%;">
+           <!-- <img src="<?php //echo base_url() .$invoice_logo[0]['invoice_logo']; ?>" style="width: 40%;"> -->
+           <img src="<?php echo base_url().$logo; ?>" style="width: 40%;">
 
           </div>
         </div>
         <div class="row">
-<table width="100%" height='100%' border="1">
-  <tr style="background-color: #<?php echo $color; ?>;color: white;">
-    <td>Commercial</td>
-    <td>Date</td>
-    <td>Total Due</td>
-    <td>enclosed</td>
-  </tr>
-  <tr>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-  </tr>
-</table>
-<br>
-<br>
-<table width="100%" height='100%' border="1">
-  <tr style="background-color: #<?php echo $color; ?>;color: white;">
-    <td>Material</td>
+<table width="95%" height='100%'  style="margin-left:19px;" border="1">
+  <tr style="background-color: #<?php echo $color; ?>;color: black;">
+    <td>Product Name</td>
     <td>Description</td>
     <td>Qty</td>
     <td>Rate</td>
@@ -159,11 +154,28 @@ if($email!=='')
     <td>&nbsp;</td>
     <td>&nbsp;</td>
   </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+  </tr>
 </table>
- <br>
- <br>
+<br>
+<br>
+ 
+ <div class="form-group"  style="margin-left:20px;" >
+
+ <th class="heading avoid-page-break " style="font-size: 9px;"><b><?php echo display('Account Details/Additional Information') ?></b> : </th>
+      </br> <textarea name="example" readonly id="example"></textarea><br/>
+      <th class="heading avoid-page-break" style="font-size: 9px;"><b><?php echo display('Remarks/Conditions') ?>:</b> </th>
+      </br> <textarea name="example" readonly id="example"></textarea><br/>
+      </div>
+
+
 <div class="form-group"  style="margin-left:15px;" >
-           <label>Remarks :</label>
+           <!-- <label>Remarks :</label> -->
            <td>&nbsp;</td>
        </div>
         </div>

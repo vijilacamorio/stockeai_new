@@ -2093,6 +2093,8 @@ $company_email_id = $this->db->select('email')->from('company_information')->whe
         $query = $this->db->get();
         return $query->result_array();
     }
+
+
 //For Create Sale - to show the product information in the Table  - Surya
   public function all_invoice($invoice_id) {
         $this->db->select('a.*,b.*');
@@ -2104,6 +2106,8 @@ $company_email_id = $this->db->select('email')->from('company_information')->whe
               return $query->result_array();
           }
     }
+
+
 //For Create Sale - to show the Sale information  - Surya
     public function retrieve_invoice_editdata($invoice_id) {
    $this->db->select('a.*,b.customer_name,c.*,d.product_name,d.product_model,d.tax,d.unit');

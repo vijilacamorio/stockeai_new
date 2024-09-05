@@ -1617,7 +1617,7 @@ public function insert_email() {
         $decodedId                 = decodeBase64UrlParameter($encodedId);
         $content = $this->lweb_setting->invoice_setting($encodedId);
         $setting_detail = $this->Web_settings->retrieve_setting_editdata($decodedId);
-        $this->Web_settings->update_invoice_set($decodedId);
+        // $this->Web_settings->update_invoice_set($decodedId);
         $data=array(
             'setting_detail' => $setting_detail, 
         );
@@ -1627,6 +1627,8 @@ public function insert_email() {
         $content = $this->lweb_setting->expense_invoice_setting();
         $this->template->full_admin_html_view($content);
     }
+
+
    public function web_Invoice(){
         $CI = & get_instance();
         $CI->auth->check_admin_auth();
@@ -1644,6 +1646,10 @@ public function insert_email() {
            exit;
         }
     }
+
+
+    
+
   public function invoice_desgn(){
         $CI = & get_instance();
         $CI->auth->check_admin_auth();
