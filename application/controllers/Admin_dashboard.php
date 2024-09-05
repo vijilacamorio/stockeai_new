@@ -10,7 +10,7 @@ class Admin_dashboard extends CI_Controller {
         $this->load->model('Web_settings');
         $this->load->model('Reports');
         $this->load->database();
-        $encodedId = $_GET['id'];
+        $encodedId = isset($_GET['id']) ? $_GET['id'] : '';
         $this->admin_id   = decodeBase64UrlParameter($encodedId);
     }
 public function dashboardsetting()
