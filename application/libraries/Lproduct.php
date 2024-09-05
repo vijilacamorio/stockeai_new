@@ -166,7 +166,7 @@ class Lproduct
         $country_list = $CI->Web_settings->getCountryDetails();
         $product_table = $CI->Products->product_table($product_id);
         $currency_details = $CI->Web_settings->retrieve_setting_editdata();
-        $supplier_list = $CI->Suppliers->supplier_list();
+        $supplier_list = $CI->Suppliers->supplier_list($created_by);
         $view_attachments = $CI->Invoices->editMultiplefiles(
             $product_id,
             "product",
