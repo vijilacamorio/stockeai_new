@@ -708,11 +708,11 @@ $this->db->insert('payroll_tax_setup',$data);
             $this->db->or_like("created_date", $search);
             $this->db->group_end();
         }
-        if (!empty($date)) {
+       if (!empty($date)) {
             $dates = explode(' - ', $date);
             if (count($dates) == 2) {
-                $start_date = date('Y-m-d', strtotime($dates[0]));
-                $end_date = date('Y-m-d', strtotime($dates[1]));
+                $start_date = date('Y-d-m', strtotime($dates[0]));
+                $end_date = date('Y-d-m', strtotime($dates[1]));
                 if ($start_date && $end_date) {
                     $this->db->where("DATE(created_date) >=", $start_date);
                     $this->db->where("DATE(created_date) <=", $end_date);
@@ -749,8 +749,8 @@ $this->db->insert('payroll_tax_setup',$data);
         if (!empty($date)) {
             $dates = explode(' - ', $date);
             if (count($dates) == 2) {
-                $start_date = date('Y-m-d', strtotime($dates[0]));
-                $end_date = date('Y-m-d', strtotime($dates[1]));
+                $start_date = date('Y-d-m', strtotime($dates[0]));
+                $end_date = date('Y-d-m', strtotime($dates[1]));
                 if ($start_date && $end_date) {
                     $this->db->where("DATE(created_date) >=", $start_date);
                     $this->db->where("DATE(created_date) <=", $end_date);
