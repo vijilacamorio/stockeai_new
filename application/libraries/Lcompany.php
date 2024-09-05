@@ -2,21 +2,15 @@
 class Lcompany {
 
 	#==============Company list================#
-	public function company_list($limit,$page,$links)
-	{
-$CI =& get_instance();
+	// changed by ajith on 29/08/2024
+	public function company_list($limit,$page,$links, $encodedId ,$decodedId) {
+        $CI =& get_instance();
 		$CI->load->model('Companies');
 		$CI->load->model('Web_settings');
-
-
 		$company_list = $CI->Companies->company_list($limit,$page);
-
-
 		$company_info = $CI->Companies->company_info();
 		$company_admin_info = $CI->Companies->company_admin_info();
 		$setting_detail = $CI->Web_settings->retrieve_setting_editdata();
-
-
 		$i=$page;
 		if(!empty($company_list)){	
 			foreach($company_list as $k=>$v){$i++;
@@ -26,15 +20,12 @@ $CI =& get_instance();
 		$data = array(
 				'title'        => display('manage_company'),
 				'company_list' => $company_list,
-
-
 				'company_info' => $company_info,
-				'company_id' =>$company_info[0]['company_id'],
-				'company_admin_info' => $company_admin_info,
-
+ 				'company_admin_info' => $company_admin_info,
 				'links'        => $links,
-				'setting_detail' => $setting_detail
-
+				'setting_detail' => $setting_detail,
+				'encodedId'        => $encodedId,
+				'decodedId'        => $decodedId,
 			);
 		$companyList = $CI->parser->parse('company/company',$data,true);
 		return $companyList;
@@ -48,16 +39,18 @@ $CI =& get_instance();
 	#=============Company Search item===============#
 	public function company_branch_total($encodedId  , $decodedId)
 	{ 
-		   $CI = & get_instance();
-           $CI->load->model('Web_settings');
-           $setting_detail = $CI->Web_settings->retrieve_setting_editdata($decodedId);
-		   $state_list = $CI->Companies->retrieve_statetax($decodedId);
-		   $local_list = $CI->Companies->retrieve_localtax($decodedId);
-           $data = array(
+			$CI = & get_instance();
+			$CI->load->model('Web_settings');
+			$setting_detail = $CI->Web_settings->retrieve_setting_editdata($decodedId);
+			$state_list = $CI->Companies->retrieve_statetax($decodedId);
+			$local_list = $CI->Companies->retrieve_localtax($decodedId);
+			$data = array(
             'title' => display('manage_users'),
 			'setting_detail' => $setting_detail,
 			'state' => $state_list,
 			'local' => $local_list,
+			'encodedId' => $encodedId,
+			'decodedId' => $decodedId,
           );
           $userForm = $CI->parser->parse('company/companybranch', $data, true);
           return $userForm;
@@ -87,26 +80,18 @@ $CI =& get_instance();
 		return $companyList;
 	}
 #===============Company edit form==============#
-public function company_edit_data($company_id)
+public function company_edit_data($company_id ,$encodedId , $decodedId )
 	{
 		$CI =& get_instance();
 		$CI->load->model('Companies');
 		$CI->load->model('Web_settings');
 		$company_detail = $CI->Companies->retrieve_company_editdata($company_id);
-	
-		$editstate = $CI->Companies->editstatedata();
-		$editlocal = $CI->Companies->editlocaldata();
-		
-	
-		$url = $CI->Companies->editurldata($company_id);
-	//print_r($url);echo "<br/>";
-		$url_st = $CI->Companies->editurlstdata($company_id);
-		//print_r($url_st);echo "<br/>";
+		$editstate = $CI->Companies->editstatedata( );
+		$editlocal = $CI->Companies->editlocaldata(); 
+		$url = $CI->Companies->editurldata($company_id  );
+		$url_st = $CI->Companies->editurlstdata($company_id );
 		$url_lctx = $CI->Companies->editurllctxdata($company_id);
-	//	print_r($url_lctx);echo "<br/>";
 		$url_sstx = $CI->Companies->editurlsstxdata($company_id);
-		//	print_r($url_sstx);echo "<br/>";
-//die();
 		$setting_detail = $CI->Web_settings->retrieve_setting_editdata();
 		$data=array(
 			'c_id' =>$company_id,
@@ -125,12 +110,10 @@ public function company_edit_data($company_id)
 			'Bank_Address' 		=> $company_detail[0]['Bank_Address'],
 			'Federal_Pin_Number'         => $company_detail[0]['Federal_Pin_Number'],
             'State_Tax_ID_Number'       => $company_detail[0]['State_Tax_ID_Number'],
-			
 			'url' 		=> $url,
 			'url_st' 		=> $url_st,
 			'url_lctx' 		=> $url_lctx,
 			'url_sstx' 		=> $url_sstx,
-			// 'url1' 		=> $company_detail[0]['url1'],
 			'st_tax_id' => $company_detail[0]['st_tax_id'],
 			'lc_tax_id' => $company_detail[0]['lc_tax_id'],
 			'State_Sales_Tax_Number' => $company_detail[0]['State_Sales_Tax_Number'],
@@ -138,12 +121,11 @@ public function company_edit_data($company_id)
 			'setting_detail' => $setting_detail,
 			'editState' => $editstate,
 			'editLocal' => $editlocal,
-			
-			
+			'encodedId' => $encodedId,
+			'decodedId' => $decodedId,
 			);
-	//	print_r($data);
-		$companyList = $CI->parser->parse('company/edit_company_form',$data,true);
-		return $companyList;
+ 			$companyList = $CI->parser->parse('company/edit_company_form',$data,true);
+			return $companyList;
 	}
 }
 ?>

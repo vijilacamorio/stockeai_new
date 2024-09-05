@@ -163,7 +163,7 @@
                                             <th width="5%"><?php echo display('Invoice Date') ?></th>
                                             <th width="5%"><?php echo display('Bill to') ?></th>
                                             <th width="5%"> <?php echo display('Trucking ID') ?></th>
-                                             <th width="5%"><?php echo display('Container Pickup Date') ?></th>
+                                             <th width="5%">Container Pickup Date</th>
                                             <th width="5%"><?php echo display('Delivery Date') ?></th>
                                             <th width="5%"><?php echo display('Shipment Company') ?></th>
                                             <th width="5%"><?php echo display('From') ?></th>

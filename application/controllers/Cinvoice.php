@@ -2,8 +2,10 @@
 if (!defined('BASEPATH'))
 exit('No direct script access allowed');
 require_once 'vendor/autoload.php';
+
 use Dompdf\Dompdf;
 use Dompdf\Options;
+
 class Cinvoice extends CI_Controller {
     private $id;
 
@@ -66,14 +68,17 @@ $tableData = $this->input->post('tableData');
             'create_by'  => $this->session->userdata('user_id')
            );
            $this->db->insert('payment', $data);
+           echo $this->db->last_query();
 }
 $data1=array(
   'paid_amount'  => $tableData[0]['t_amt_paid'],  
-  'balance'  => $tableData[0]['t_bal_amt']    
+  'balance'  => $tableData[0]['t_bal_amt']   ,
+    'payment_id' =>$tableData[0]['payment']   
 );
-$this->db->where('payment_id',$tableData[0]['payment']);
-$this->db->where('create_by',$this->session->userdata('user_id'));
+$this->db->where('chalan_no',$tableData[0]['bill_bo']);
+
  $this->db->update('product_purchase', $data1);
+   echo $this->db->last_query();
 }
 public function payment_edit_serv_pro(){
 $tableData = $this->input->post('tableData');
@@ -94,15 +99,16 @@ $tableData = $this->input->post('tableData');
             'create_by'  => $this->session->userdata('user_id')
            );
            $this->db->insert('payment', $data);
+    
 }
 $data1=array(
   'amount_paids'  => $tableData[0]['t_amt_paid'],  
-  'balances'  => $tableData[0]['t_bal_amt']    
+  'balances'  => $tableData[0]['t_bal_amt'] ,
+  'payment_id' =>$tableData[0]['payment']   
 );
-$this->db->where('payment_id',$tableData[0]['payment']);
-$this->db->where('create_by',$this->session->userdata('user_id'));
+$this->db->where('bill_number',$tableData[0]['inv_no']);
  $this->db->update('service', $data1);
- echo $this->db->last_query();
+
 }
     #==============sale delete==============#
     public function sale_invoice_delete($invoice_id)
@@ -332,39 +338,45 @@ public function insertPayment()
         'status'        => 'Paid',
         'create_by'     => $admin_comp_id,
     );
-    $paymentid = $this->Customers->payments_entry($data);
-    if ($paymentid) {
+   
         $upload_success = true;
+        $paymentid      = '';
         if (!empty($_FILES['payment_attachement']['name'])) {
             $upload_data = file_upload('payment_attachement', 'payment', PAYMENT_IMG_PATH);
             if (isset($upload_data['upload_data']['file_name'])) {
-                $update_data = array('attachement' => $upload_data['upload_data']['file_name']);
-                $this->Customers->update_payments($update_data, $paymentid);
+                //$update_data = array('attachement' => $upload_data['upload_data']['file_name']);
+                $data['attachement'] = $upload_data['upload_data']['file_name'];
+                //$this->Customers->update_payments($update_data, $paymentid);
+                
             } else {
                 $upload_success = false;
                 $upload_error = $upload_data['error'];
             }
         }
-        $paymentData = $this->Customers->fetchpaymentdata($paymentid, $admin_comp_id);
-        if ($upload_success) {
-            $response = array(
-                'status' => 'success',
-                'msg' => 'Payment has been added successfully.',
-                'paymentData' => $paymentData
-            );
+        if($upload_success ==true){
+            $paymentid = $this->Customers->payments_entry($data);
+        }
+        if ($paymentid!="") {
+            $paymentData = $this->Customers->fetchpaymentdata($paymentid, $admin_comp_id);
+            if ($upload_success) {
+                $response = array(
+                    'status' => 'success',
+                    'msg' => 'Payment has been added successfully.',
+                    'paymentData' => $paymentData
+                );
+            } else {
+                $response = array(
+                    'status' => 'partial_success',
+                    'msg' => 'File upload failed: ' . $upload_error,
+                    'paymentData' => $paymentData
+                );
+            }
         } else {
             $response = array(
-                'status' => 'partial_success',
-                'msg' => 'Payment added, but file upload failed: ' . $upload_error,
-                'paymentData' => $paymentData
+                'status' => 'error',
+                'msg' => 'Failed to add payment. Please try again.'
             );
         }
-    } else {
-        $response = array(
-            'status' => 'error',
-            'msg' => 'Failed to add payment. Please try again.'
-        );
-    }
     echo json_encode($response);
 }
     
@@ -534,7 +546,7 @@ echo json_encode($result, JSON_NUMERIC_CHECK);
         $curn_info_default = $this->db->select('*')->from('currency_tbl')->where('icon',$currency_details[0]['currency'])->get()->result_array();
       $get_agent_data = $this->Invoices->get_agent_data();
         $bank_list          = $this->Web_settings->bank_list();
-        $prodt = $this->Products->get_all_products();
+        $prodt = $this->Products->get_all_products($_GET['id']);
         $payment_terms_dropdown = $this->Suppliers->payment_terms_dropdown();
         $paytype=$this->Invoices->payment_type();
         $voucher_no = $this->Invoices->commercial_inv_number();
@@ -911,7 +923,7 @@ public function makepay()
     $all_supplier1 = $this->Purchases->select_all_supplier();
     $profarma_data = $this->Invoices->getAllProfarmadata();
     $country_code = $this->db->select('*')->from('country')->get()->result_array();
-    $prodt = $this->Products->get_all_products();
+    $prodt = $this->Products->get_all_products($_GET['id']);
     $cutomerData = $this->Invoices->pos_customer_setup($admin_comp_id);
     $data=array(
         'curn_info_default' =>$curn_info_default[0]['currency_name'],
@@ -1410,7 +1422,7 @@ public function deletesale(){
         $curn_info_default = $this->db->select('*')->from('currency_tbl')->where('icon',$currency_details[0]['currency'])->get()->result_array();
         $customer = $this->Invoices->pos_customer_setup($admin_comp_id);
         $taxfield1 = $this->db->select('tax_id,tax')->from('tax_information')->get()->result_array();
-        $prodt = $this->Products->get_all_products();
+        $prodt = $this->Products->get_all_products($_GET['id']);
         $bank_name = $this->db->select('bank_name')->from('bank_add')->get()->result_array();
         $data = array(
             'customer'  => $customer,
@@ -1999,10 +2011,11 @@ if ($invoice_id != "") {
         foreach ($items as $item) {
             $edit   = '<a href="' . base_url('Cinvoice/invoice_update_form?id=' . $encodedId. '&invoice_id=' . $item['invoice_id']) . '" class="btnclr btn btn-sm" style="margin-right: 5px;"><i class="fa fa-pencil" aria-hidden="true"></i></a>';
             $delete = '<a style="margin-right: 5px;" onClick=deleteInvoicedata('.$item["invoice_id"].') class="btnclr btn btn-sm" ><i class="fa fa-trash" aria-hidden="true"></i></a>' ;
-            //$mail = '<a href="' . base_url('Cinvoice/invoice_update_form?id=' . $encodedId. '&invoice_id=' . $item['invoice_id']) . '" class="btn btn-sm btn-danger" ><i class="fa fa-trash" aria-hidden="true"></i></a>';
-            $mail = '<a data-toggle="modal" data-target="#sendemailmodal" onClick=sendEmailproforma('.$item["invoice_id"].') class="btnclr btn btn-sm" style="margin-right: 5px;"><i class="fa fa-envelope" aria-hidden="true"></i></a>';
-            $download = '<a href="' . base_url('Cinvoice/invoice_inserted_data?id=' . $encodedId. '&invoice_id=' . $item['invoice_id']) . '" class="btnclr btn btn-sm" ><i class="fa fa-download" aria-hidden="true"></i></a>';
-            $row = [
+             $mail = '<a data-toggle="modal" data-target="#sendemailmodal" onClick=sendEmailproforma('.$item["invoice_id"].') class="btnclr btn btn-sm" style="margin-right: 5px;"><i class="fa fa-envelope" aria-hidden="true"></i></a>';
+          
+             $download = '<a href="' . base_url('Cinvoice/invoice_inserted_data?id=' . $encodedId. '&invoice_id=' . $item['invoice_id']) . '" class="btnclr btn btn-sm" ><i class="fa fa-download" aria-hidden="true"></i></a>';
+         
+             $row = [
                 'sl'               => $i,
                 "commercial_invoice_number"   => $item['commercial_invoice_number'],
                 "invoice_id"   => $item['invoice_id'],
@@ -2128,7 +2141,7 @@ public function PaymentTerms() {
         $supplier_block_no = $this->Invoices->get_product_supplier_block();
         $paytype=$this->Invoices->payment_type();
         $curn_info_default = $this->db->select('*')->from('currency_tbl')->where('icon',$currency_details[0]['currency'])->get()->result_array();
-        $prodt = $this->Products->get_all_products();
+        $prodt = $this->Products->get_all_products($_GET['id']);
         $all_invoice = $this->Invoices->all_invoice($invoice_id);
         $servic_provider = $this->Invoices->servic_provider_list();
         $payment_terms_dropdown = $this->Suppliers->payment_terms_dropdown();
@@ -2170,8 +2183,7 @@ public function PaymentTerms() {
         $CI->load->model('Invoices');
         $invoice_id = $CI->Invoices->update_invoice();
         $this->session->set_userdata(array('message' => display('successfully_updated')));
-        // $this->invoice_inserted_data($invoice_id);
-          redirect(base_url('Cinvoice/manage_invoice'));
+        redirect(base_url('Cinvoice/manage_invoice'));
     }
        // purchase Update
     public function update_ocean_export() {
@@ -2451,19 +2463,57 @@ $this->db->update('bootgrid_data');
     echo json_encode($response);
     }
 
-        public function add_state_tax_id(){
-        $this->load->model('Invoices');
-        $postData = $this->input->post('new_state_tax_id');
-        $data = $this->Invoices->add_state_tax_id($postData);
-        echo json_encode($data);
+
+  // manager company changed by ajith on 28/08/2024
+    public function add_state_tax_id() {
+        $this->form_validation->set_rules('new_state_tax_id', 'New State Tax ID', 'required');
+        $response = array();
+        if ($this->form_validation->run() == FALSE) {
+            $response['status'] = 'failure';
+            $response['msg']    = validation_errors();
+        } else {
+            $postData  = $this->input->post('new_state_tax_id');
+            $decodedId = $this->input->post('decodedId');
+            $data      = $this->Invoices->add_state_tax_id($postData, $decodedId);
+            if ($data) {
+                $response['status']          = 'success';
+                $response['msg']             = 'New State Tax ID has been added successfully';
+                $response['get_statetaxid'] = $data;
+            } else {
+                $response['status'] = 'failure';
+                $response['msg']    = 'Failed to add New State Tax ID. Please try again.';
+            }
+        }
+        echo json_encode($response);
     }
-     // manage my company--->add local tax number
-     public function add_local_tax_id(){
-        $this->load->model('Invoices');
-        $postData = $this->input->post('new_local_tax_id');
-        $data = $this->Invoices->add_local_tax_id($postData);
-        echo json_encode($data);
+   // manager company changed by ajith on 28/08/2024
+    public function add_local_tax_id() {
+        $this->form_validation->set_rules('new_local_tax_id', 'New Local Tax ID', 'required');
+        $response = array();
+        if ($this->form_validation->run() == FALSE) {
+            $response['status'] = 'failure';
+            $response['msg']    = validation_errors();
+        } else {
+            $postData  = $this->input->post('new_local_tax_id');
+            $decodedId = $this->input->post('decodedId');
+            $data      = $this->Invoices->add_local_tax_id($postData, $decodedId);
+            if ($data) {
+                $response['status']          = 'success';
+                $response['msg']             = 'New Local Tax ID has been added successfully';
+                $response['get_localtaxid'] = $data;
+            } else {
+                $response['status'] = 'failure';
+                $response['msg']    = 'Failed to add New Local Tax ID. Please try again.';
+            }
+        }
+        echo json_encode($response);
     }
+ 
+
+
+
+    
+
       public function add_city_tax(){
         $this->load->model('Invoices');
         $postData = $this->input->post('new_city_tax');
@@ -2631,24 +2681,30 @@ $this->db->update('bootgrid_data');
         $this->template->full_admin_html_view($content);
     }
   //Retrive right now inserted data to cretae html
-    public function invoice_inserted_data($invoice_id) {
+    public function invoice_inserted_data() {
+
+        $invoice_id       = isset($_GET['invoice_id']) ? $_GET['invoice_id'] : null;
+         
+        $encodedId       = isset($_GET['id']) ? $_GET['id'] : null;
+        $decodedId       = decodeBase64UrlParameter($encodedId);
+
         $CI = & get_instance();
         $CC = & get_instance();
         $CA = & get_instance();
         $w = & get_instance();
         $w->load->model('Ppurchases');
-        $company_info = $w->Ppurchases->retrieve_company();
+        $company_info = $w->Ppurchases->retrieve_company($decodedId);
         $CI->load->model('Invoices');
         $CI->load->model('Web_settings');
         $CA->load->model('invoice_design');
         $CC->load->model('invoice_content');
-         $invoice_detail = $CI->Invoices->invoice_pdf($invoice_id);
-         $all_invoice = $CI->Invoices->all_invoice($invoice_id);
-         $setting=  $CI->Web_settings->retrieve_setting_editdata(); 
-         $dataw = $CA->invoice_design->retrieve_data();
-        //  print_r($dataw); 
-        //  die();
-         $datacontent = $CC->invoice_content->retrieve_data();
+
+ 
+        $invoice_detail = $CI->Invoices->invoice_pdf($invoice_id);
+        $all_invoice = $CI->Invoices->all_invoice($invoice_id);
+        $setting=  $CI->Web_settings->retrieve_setting_editdata(); 
+         $dataw = $CA->invoice_design->retrieve_data($decodedId);
+         $datacontent = $CC->invoice_content->retrieve_data($decodedId);
          $customer = $this->db->select('*')->from('customer_information')->where("customer_id",$invoice_detail[0]['customer_id'])->get()->result_array();
          $currency_details = $CI->Web_settings->retrieve_setting_editdata();
          $curn_info_default = $CI->db->select('*')->from('currency_tbl')->where('icon',$currency_details[0]['currency'])->get()->result_array();
@@ -2714,11 +2770,29 @@ $this->db->update('bootgrid_data');
             'paytype'         => $invoice_detail[0]['payment_type'],
             'invoice_detail'=>$invoice_detail
         );
-//  print_r($data);die();
-      //   print_r($dataw[0]['color']);
-    $content = $this->load->view('invoice/new_invoice_pdf_html', $data, true);
+     $content = $this->load->view('invoice/new_invoice_pdf_html', $data, true);
     $this->template->full_admin_html_view($content);
     }
+   
+    // $dompdf = new Dompdf();
+    // $dompdf->loadHtml($content);
+    // $dompdf->setPaper('A4', 'portrait');
+    // $dompdf->render();
+    // $filename = 'invoice_' . $invoice_detail[0]['invoice_id'] . '.pdf';
+    // if (empty($pdf)) {
+    //     $dompdf->stream($filename, array('Attachment' => 0));
+    // } else {
+    //     return $content;
+    // }
+    // }
+
+
+
+    
+ 
+
+
+
     public function invoice_inserted_data_print($invoice_id) {
   // echo $invoice_id; die();
         $CI = & get_instance();
@@ -2830,14 +2904,14 @@ $this->db->update('bootgrid_data');
     $content = $this->load->view('invoice/packing_list_invoice_html', $data, true);
     $this->template->full_admin_html_view($content);
     }
- public function get_all_products() {
-      $CI = & get_instance();
- $prodt = $CI->db->select('product_name,product_model,p_quantity')
-        ->from('product_information')
-        ->get()
-        ->result_array();
-echo json_encode($prodt);
- }
+//  public function get_all_products() {
+//       $CI = & get_instance();
+//  $prodt = $CI->db->select('product_name,product_model,p_quantity')
+//         ->from('product_information')
+//         ->get()
+//         ->result_array();
+// echo json_encode($prodt);
+//  }
     public function pos_invoice_inserted_data_manual() {
         $CI = & get_instance();
         $CI->auth->check_admin_auth();
@@ -3773,21 +3847,5 @@ public function downloadQuotation()
     $dompdf->render();
     $dompdf->stream('proforma_invoice_' . $quotationId . '.pdf', array('Attachment' => 1));
 }
-public function customer_info_report(){
 
-    $CI = & get_instance();
-    $this->load->model('Invoices');
-    $this->load->model('Customers');
-    $CI->load->model('Web_settings');
-
-    $data['setting_detail'] = $CI->Web_settings->retrieve_setting_editdata($this->admin_id);
-    $data['customer_name'] = $this->Customers->all_customer($this->admin_id);
-    echo '<pre>';
-    echo $this->db->last_query(); 
-    print_r($data['customer_name']); exit;
-    $data['get_all_invoice_sale']= $this->Invoices->get_all_invoice_sale($this->admin_id);
-
-    $content = $CI->parser->parse('report/customer_info_report', $data, true);
-    $this->template->full_admin_html_view($content);
-}
 }

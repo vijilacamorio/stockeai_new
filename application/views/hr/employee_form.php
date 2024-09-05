@@ -228,6 +228,9 @@
                      </div>
                   </div>
                </div>
+
+
+
                 <div class="col-sm-6">
                   <div class="form-group row">
                      <label for="employee_type" class="col-sm-4 col-form-div">
@@ -247,6 +250,9 @@
                         <a  class="btnclr client-add-btn btn" aria-hidden="true"   data-toggle="modal" data-target="#employees_type" ><i class="fa fa-plus"></i></a>
                      </div>
                   </div>
+
+
+                  
                   <div class="form-group row" id="payment_from">
                      <label for="city" class="col-sm-4 col-form-div"><?php echo  ('Sales Commission') ?></label>
                      <div class="col-sm-8">
@@ -482,8 +488,7 @@
                </div>
             </div>
             <br><br><br>
-
-
+ 
             <div class="row">
                <div class="col-md-12">
                   <div class="form-group" style="text-align: center;" >
@@ -1423,6 +1428,10 @@ $("#add_designation").validate({
         });
     }
 });
+
+
+
+
  // Insert Employeee Type
    $("#add_employee_type").validate({
     rules: {

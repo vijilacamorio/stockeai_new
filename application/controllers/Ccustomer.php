@@ -201,8 +201,7 @@ $this->form_validation->set_message('required', 'The {field} field is required.'
             'created_date'      =>date('Y-m-d H:i:s'),
             'is_deleted'        => 0,
         );
-        print_r($data); exit;
-        $result      = $this->db->insert('customer_information', $data);
+       $result      = $this->db->insert('customer_information', $data);
         $customer_id = $this->db->insert_id();
          if($result)
             {   $response['admin'] = $this->input->post('admin_id', TRUE);
@@ -215,15 +214,6 @@ $this->form_validation->set_message('required', 'The {field} field is required.'
     }
      echo json_encode($response);
     }
-
-
-
-
-
-
-
-
-
 
     function uploadCsv_Customer() {
         $filename = $_FILES['upload_csv_file']['name'];

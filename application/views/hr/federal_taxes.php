@@ -133,7 +133,7 @@
          <div class="col-sm-12">
             <div class="panel panel-default" style="border:3px solid #d7d4d6;" >
                <div class="panel-body">
-                  <div class="row">
+                  <div class="row" style="margin-left:0px;">
                         <div>
    <select class="btnclr btn" id="timesheetSelect">
     <option>W2 Form - Select Employee</option>
@@ -248,45 +248,35 @@
                         <table class="table table-hover table-bordered" cellspacing="0" width="100%" id="">
                            <thead>
                               <tr style="height:25px;">
-                                 <th class='btnclr' style="width: 170px;"><?php echo display('sl') ?></th>
-                                 <th class='btnclr' class="text-center" style="text-align: justify;" >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Tax Name</th>
+                                 <th class='btnclr' ><?php echo display('sl') ?></th>
+                                 <th class='btnclr' class="text-center">Tax Name</th>
+                                 <th class='btnclr' class="text-center">Action</th>
                               </tr>
                            </thead>
                            <tbody>
                               <tr role="row" class="odd">
-                                 <td tabindex="0"  style="text-align: center;"  >1</td>
-                                 <td style="padding-left: 19%;">Federal Income Tax &nbsp;&nbsp;
-                                 <span style="margin-left: 66%;">  
-                                  <a href="<?php echo base_url('Chrm/add_taxes_detail?id='.$_GET['id']) ?>"  class="btn btnclr btn-sm federal_tax" data-toggle="tooltip" data-placement="left" title="" data-original-title="Add Taxes Detail"><i class="fa fa-window-restore"  aria-hidden="true"></i></a>
-                                  </span>
-                                  <input type="hidden" name="tax" id="federal_tax" value="Federal Income tax">
-                                 </td>
+                                 <td tabindex="0"  style="text-align:center;">1</td>
+                                 <td >Federal Income Tax </td>
+                                 <td><a href="<?php echo base_url('Chrm/add_taxes_detail?id='.$_GET['id']) ?>"  class="btn btnclr btn-sm federal_tax" id="federal_tax" data-toggle="tooltip" data-placement="left" title="" data-original-title="Add Taxes Detail"><i class="fa fa-window-restore"  aria-hidden="true"></i></a> </td>
+                                 <input type="hidden" name="tax" id="federal_tax" value="Federal Income tax">
                               </tr>
                               <tr role="row" class="odd">
                                  <td tabindex="0" style="text-align: center;" >2</td>
-                                 <td  style="padding-left: 19%;" >Social Security
-                                 &nbsp;&nbsp;&nbsp;&nbsp;<span style="margin-left: 68%;">  
-                                <a href="<?php echo base_url('Chrm/socialsecurity_detail?id='.$_GET['id']) ?>"  class="btn btnclr btn-sm social_security" id="social_security" data-toggle="tooltip" data-placement="left" title="" data-original-title="Add Taxes Detail"><i class="fa fa-window-restore" aria-hidden="true"></i></a>
-                                </span>
-                                <input type="hidden" name="tax" id="social_security" value="Social Security">
-                                 </td>
+                                 <td  >Social Security  </td>
+                                 <td><a href="<?php echo base_url('Chrm/socialsecurity_detail?id='.$_GET['id']) ?>"  class="btn btnclr btn-sm social_security" id="social_security" data-toggle="tooltip" data-placement="left" title="" data-original-title="Add Taxes Detail"><i class="fa fa-window-restore" aria-hidden="true"></i></a></td>
+                                 <input type="hidden" name="tax" id="social_security" value="Social Security">
                               </tr>
                               <tr role="row" class="odd">
                                  <td tabindex="0" style="text-align: center;" >3</td>
-                                 <td style="padding-left: 19%;" >Medicare &nbsp;&nbsp; 
-                                 <span style="margin-left: 72%;">  
-                                    <a href="<?php echo base_url('Chrm/medicare_detail?id='.$_GET['id']) ?>"  class="btn btnclr btn-sm medicare" data-toggle="tooltip" data-placement="left" title="" data-original-title="Add Taxes Detail"><i class="fa fa-window-restore" aria-hidden="true"></i></a>
-                                    </span>
-                                 </td>
+                                 <td  >Medicare  </td>                           
+                                 <td><a href="<?php echo base_url('Chrm/medicare_detail?id='.$_GET['id']) ?>"  class="btn btnclr btn-sm medicare" data-toggle="tooltip" data-placement="left" title="" data-original-title="Add Taxes Detail"><i class="fa fa-window-restore" aria-hidden="true"></i></a> </td>
                               </tr>
                               <tr role="row" class="odd">
                                  <td tabindex="0" style="text-align: center;" >4</td>
-                                 <td style="padding-left: 19%;" >Federal Unemployment &nbsp;&nbsp; 
-                                  <span style="margin-left: 64%;">  
-                                    <a href="<?php echo base_url('Chrm/federalunemployment_detail?id='.$_GET['id']) ?>"  class="btn btnclr btn-sm federal_unemployment" data-toggle="tooltip" data-placement="left" title="" data-original-title="Add Taxes Detail"><i class="fa fa-window-restore" aria-hidden="true"></i></a>
-                                 </span>
-                              </td>
+                                 <td >Federal Unemployment </td>  
+                                 <td> <a href="<?php echo base_url('Chrm/federalunemployment_detail?id='.$_GET['id']) ?>"  class="btn btnclr btn-sm federal_unemployment" data-toggle="tooltip" data-placement="left" title="" data-original-title="Add Taxes Detail"><i class="fa fa-window-restore" aria-hidden="true"></i></a> </td>
                               </tr>
+
                            </tbody>
                         </table>
                      </form>
@@ -355,13 +345,13 @@
                                                    <td style='width:450px;    text-align: center;' class='tax_value'>".$sp."</td>
                                                    <td> 
                                                    <a  href=".base_url('Chrm/add_state_taxes_detail?tax='.urlencode($states_list[$i]['state'])."-".urlencode($sp_url).'&id='.urlencode($_GET['id']) )." class='btn btnclr btn-sm' data-toggle='tooltip' data-placement='left'  data-original-title='Add Taxes Detail'><i class='fa fa-window-restore' aria-hidden='true'></i></a>
-                                                   <a  class='delete_item btn btn-danger  btn-sm' ><i class='fa fa-trash' aria-hidden='true'></i></a>                 
+                                                   <a  class='delete_item btn btnclr  btn-sm' ><i class='fa fa-trash' aria-hidden='true'></i></a>                 
                                                    </td>
                                                    </tr>                                            
                                                    </td>";
                                                } else {
                                                    echo "<tr><td style='display:none ;border: 1px solid #d7d4d6;    background: white;' class='state_name'>". $states_list[$i]['state']."</td><td style='width:485px;' style='display:none'>&nbsp</td> <td>  
-                                                       <a   class='delete_item btn btn-danger btn-sm'><i class='fa fa-trash' aria-hidden='true'></i></a></td></tr></td>";
+                                                       <a   class='delete_item btn btnclr btn-sm'><i class='fa fa-trash' aria-hidden='true'></i></a></td></tr></td>";
                                                    break;
                                                }
                                            }
@@ -428,11 +418,11 @@
                                      if(!empty($sp) && $sp !==','){
                                    $sp_url= str_replace(" "," ",$sp);
                                    echo "<tr ><td style='display:none;' class='citystate_name'>". $city_list[$i]['state']."</td><td style='width:450px;text-align: center;' class='citytax_value'>".$sp."</td> <td>  <a  href=".base_url('Chrm/add_state_taxes_detail?tax='.urlencode($city_list[$i]['state'])."-".urlencode($sp_url).'&id='.urlencode($_GET['id']) )."  class='btn btnclr btn-sm' data-toggle='tooltip' data-placement='left'  data-original-title='Add Taxes Detail'><i class='fa fa-window-restore' aria-hidden='true'></i></a>
-                                                               <a  class='delete_item_city btn btn-danger btn-sm' ><i class='fa fa-trash' aria-hidden='true'></i></a>     </td></tr></td>";
+                                                               <a  class='delete_item_city btn btnclr  btn-sm' ><i class='fa fa-trash' aria-hidden='true'></i></a>     </td></tr></td>";
                                          }
                                        else{
                          echo "<tr><td style='display:none' class='citystate_name'>". $city_list[$i]['state']."</td><td style='width:485px;' style='display:none'>&nbsp</td> <td>  
-                         <a   class='delete_item_city btn btn-danger btn-sm'><i class='fa fa-trash' aria-hidden='true'></i></a>     </td></tr></td>";
+                         <a   class='delete_item_city btn btnclr  btn-sm'><i class='fa fa-trash' aria-hidden='true'></i></a>     </td></tr></td>";
                         break;
                                        }
                                        }
@@ -498,11 +488,11 @@
                                      if(!empty($sp) && $sp !==','){
                                    $sp_url= str_replace(" "," ",$sp);
                                    echo "<tr><td style='display:none' class='county_name'>". $county_list[$i]['state']."</td><td style='width:450px;text-align:center;' class='countytax_value'>".$sp."</td> <td>  <a  href=".base_url('Chrm/add_state_taxes_detail?tax='.urlencode($county_list[$i]['state'])."-".urlencode($sp_url).'&id='.urlencode($_GET['id']) )."  class='btn btnclr btn-sm' data-toggle='tooltip' data-placement='left'  data-original-title='Add Taxes Detail'><i class='fa fa-window-restore' aria-hidden='true'></i></a>
-                                                               <a  class='delete_itemcounty btn btn-danger btn-sm' ><i class='fa fa-trash' aria-hidden='true'></i></a>     </td></tr></td>";
+                                                               <a  class='delete_itemcounty btn btnclr btn-sm' ><i class='fa fa-trash' aria-hidden='true'></i></a>     </td></tr></td>";
                                          }
                                        else{
                          echo "<tr><td style='display:none' class='county_name'>". $county_list[$i]['state']."</td><td style='width:485px;' style='display:none'>&nbsp</td> <td>  
-                         <a   class='delete_itemcounty btn btn-danger btn-sm'><i class='fa fa-trash' aria-hidden='true'></i></a>     </td></tr></td>";
+                         <a   class='delete_itemcounty btn btnclr btn-sm'><i class='fa fa-trash' aria-hidden='true'></i></a>     </td></tr></td>";
                         break;
                                        }
                                        }

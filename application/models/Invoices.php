@@ -165,6 +165,11 @@ public function tax_inf() {
         }
         return false;
     }
+
+
+
+
+    
     public function open_invoices_exp(){
           $this->db->select('i.*,cs.*');
     $this->db->from('product_purchase i');
@@ -319,16 +324,7 @@ public function additional_cost_details($invoice_no){
          return $query->result_array();
      }
 }
-    public function get_all_invoice_sale() {
-        $this->db->select('i.*,cs.*,i.payment_terms as pterms');
-        $this->db->from('invoice i');
-        $this->db->join('customer_information cs' , 'i.customer_id=cs.customer_id');
-        $this->db->where('sales_by' ,$this->session->userdata('user_id'));
-        $query = $this->db->get();
-        if ($query->num_rows() > 0) {
-            return $query->result_array();
-        }
-    }
+    
     public function getprofarma_data() {
         $this->db->select('*');
         $this->db->from('profarma_invoice i');
@@ -710,31 +706,39 @@ public function add_payment_term($postData,$id){
     $query = $this->db->get();
     return $query->result_array();
 }
-public function add_state_tax_id($postData){
-    $data=array(
+
+ 
+  // manager company changed by ajith on 28/08/2024
+  public function add_state_tax_id($postData, $decodedId) {
+    $data = array(
         'state_tax_id' => $postData,
-        'create_by' => $this->session->userdata('user_id')
+        'create_by'   => $decodedId,
     );
     $this->db->insert('state_tax_id', $data);
     $this->db->select('*');
     $this->db->from('state_tax_id');
-    $this->db->where('create_by' ,$this->session->userdata('user_id'));
+    $this->db->where('create_by', $decodedId);
     $query = $this->db->get();
     return $query->result_array();
 }
-//manage my company--->add local tax id number
-public function add_local_tax_id($postData){
+
+  
+  // manager company changed by ajith on 28/08/2024
+  public function add_local_tax_id($postData , $decodedId){
     $data=array(
         'local_tax_id' => $postData,
-        'create_by' => $this->session->userdata('user_id')
+        'create_by' => $decodedId
     );
     $this->db->insert('local_tax_id', $data);
+
     $this->db->select('*');
     $this->db->from('local_tax_id');
-    $this->db->where('create_by' ,$this->session->userdata('user_id'));
+    $this->db->where('create_by',$decodedId);
     $query = $this->db->get();
     return $query->result_array();
 }
+
+ 
 public function add_city_tax($postData){
     $data=array(
         'city_tax' => $postData,
@@ -2089,6 +2093,8 @@ $company_email_id = $this->db->select('email')->from('company_information')->whe
         $query = $this->db->get();
         return $query->result_array();
     }
+
+
 //For Create Sale - to show the product information in the Table  - Surya
   public function all_invoice($invoice_id) {
         $this->db->select('a.*,b.*');
@@ -2100,6 +2106,8 @@ $company_email_id = $this->db->select('email')->from('company_information')->whe
               return $query->result_array();
           }
     }
+
+
 //For Create Sale - to show the Sale information  - Surya
     public function retrieve_invoice_editdata($invoice_id) {
    $this->db->select('a.*,b.customer_name,c.*,d.product_name,d.product_model,d.tax,d.unit');
@@ -2436,6 +2444,7 @@ if(!empty($this->input->post('paid_amount',TRUE))){
         $this->db->where('payment_id',$payment_id);
         $this->db->order_by('id', 'asc');
         $query = $this->db->get();
+        
         if ($query->num_rows() > 0) {
             return $query->result_array();
         }

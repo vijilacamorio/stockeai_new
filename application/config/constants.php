@@ -89,7 +89,7 @@ define('CUSTOMER_TYPE', array('Distributor' =>'Distributor','Fabricator' =>'Fabr
 define('COMPANY_ENCRYPT_KEY','amorio@2024');
 
 define('PAYMENT_TYPE', array('CAD','COD','ADVANCE','7DAYS','15DAYS','30DAYS','45DAYS','60DAYS','75DAYS','90DAYS','180DAYS'));
-
+define('ACC_NAME',array('ASSETS','RECEIVABLES','INVENTORIES','PREPAID EXPENSES & OTHER CURRENT ASSETS','PROPERTY PLANT & EQUIPMENT','ACCUMULATED DEPRECIATION & AMORTIZATION','NON – CURRENT RECEIVABLES','INTERCOMPANY RECEIVABLES & OTHER NON-CURRENT ASSETS','LIABILITIES & 2100 PAYABLES','ACCRUED COMPENSATION & RELATED ITEMS','OTHER ACCRUED EXPENSES','ACCRUED TAXES','DEFERRED TAXES','LONG-TERM DEBT','INTERCOMPANY PAYABLES & OTHER NON CURRENT LIABILITIES & OWNERS EQUITIES','REVENUE','COST OF GOODS SOLD','OPERATING EXPENSES'));
 
 define('SUPPLIER_IMG_PATH','./uploads/supplier/');
 
@@ -98,6 +98,8 @@ define('CUSTOMER_IMG_PATH','./uploads/customer/');
 define('PAYMENT_IMG_PATH','./uploads/payment/');
 
 define('INVOICE_IMG_PATH', './uploads/invoice/');
+
+define('EXPENSE_IMG_PATH', './uploads/expense/');
 
 define('PROFORMA_IMG_PATH','./uploads/proforma/');
 
@@ -109,6 +111,8 @@ define('TRUCK_IMG_PATH','./uploads/road_truck/');
 
 define('SALESPARTNER_IMG_PATH','./uploads/salespartner/');
 
+
+define('InvoiceDesign_IMG_PATH','./ my-assets/image/logo/');
 
 define('BOOTSTRAP_MODELS',array('payment_type'=>'payment_type','vendor'=>'vendor','customer'=>'customer','payment_terms'=>'payment_terms','payment_model'=>'payment_model','tax_info'=>'tax_info', 'bank_info' => 'bank_info', 'sendemailmodal' => 'sendemailmodal'));
 define('IMAGE_ALLOWED_TYPES','gif|jpg|png|pdf|docx|doc|jpeg');

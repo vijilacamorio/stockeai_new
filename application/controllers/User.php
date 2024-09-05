@@ -269,71 +269,65 @@ $company_assign_role = $this->db->update('company_assignrole', $update_data);
         }
         echo json_encode($response);
     }
-
-
-
-
-
-
-
-public function company_insert_branch(){
-        $uid=$_SESSION['user_id'];
+    // Change By Ajith on 28/08/2024
+    public function company_insert_branch(){
+        $uid = $this->input->post('decodedId',TRUE);
         $url=$this->input->post('url',TRUE);
         $url_st=$this->input->post('url_st',TRUE);
         $url_lctx=$this->input->post('url_lctx',TRUE);
         $url_sstx=$this->input->post('url_sstx',TRUE);
-   $c_id=$this->input->post('company_id',TRUE);
-   $this->db->where('company_id',$c_id,TRUE);
-   $this->db->delete('company_information');
-   $this->db->where('company_id',$c_id,TRUE);
-   $this->db->delete('url');
-   $this->db->where('company_id',$c_id,TRUE);
-   $this->db->delete('url_st');
-   $this->db->where('company_id',$c_id,TRUE);
-   $this->db->delete('url_lctx');
-   $this->db->where('company_id',$c_id,TRUE);
-   $this->db->delete('url_sstx');
-    $data = array(
-        'company_name'    =>$this->input->post('company_name',true),
-        'email' => $this->input->post('email',true),
-        'address'      => $this->input->post('address',true),
-        'mobile'   => $this->input->post('mobile',true),
-        'website'  => $this->input->post('website',true),
-        'c_city'      => $this->input->post('c_city',true),
-        'c_state'      => $this->input->post('c_state',true),
-        'Bank_Name'      => $this->input->post('Bank_Name',true),
-        'Account_Number'      => $this->input->post('Account_Number',true),
-        'Bank_Routing_Number'      => $this->input->post('Bank_Routing_Number',true),
-        'Bank_Address'      => $this->input->post('Bank_Address',true),
-        'Federal_Pin_Number'      => $this->input->post('Federal_Pin_Number',true),
-        'st_tax_id'      => $this->input->post('statetx',true),
-        'lc_tax_id'      => $this->input->post('localtx',true),
-        'State_Sales_Tax_Number'      => $this->input->post('State_Sales_Tax_Number',true),
-        'create_by'     => $uid,
-        'status'     => 0
-    );
-    $insert=  $this->db->insert('company_information',$data); 
-    $insert_id = $this->db->insert_id();
-    $user_name=$this->input->post('user_name',TRUE);
-    $password=$this->input->post('password',TRUE);
-    $pin_number=$this->input->post('pin_number',TRUE);
-      if($url){
-    for ($i = 0, $n = count($url); $i < $n; $i++) {
-        $url1 = $url[$i];
-        $user_name1 = $user_name[$i];
-        $password1 = $password[$i];
-        $pin_number1 = $pin_number[$i];
+        $c_id=$this->input->post('company_id',TRUE);
+        $this->db->where('company_id',$c_id,TRUE);
+        $this->db->delete('company_information');
+        $this->db->where('company_id',$c_id,TRUE);
+        $this->db->delete('url');
+        $this->db->where('company_id',$c_id,TRUE);
+        $this->db->delete('url_st');
+        $this->db->where('company_id',$c_id,TRUE);
+        $this->db->delete('url_lctx');
+        $this->db->where('company_id',$c_id,TRUE);
+        $this->db->delete('url_sstx');
         $data = array(
-        'url'         =>$url1,
-        'user_name'         =>$user_name1,
-        'password'         =>$password1,
-        'create_by'     => $uid,
-        'company_id'  =>$insert_id,
-        'pin_number'         =>$pin_number1
+            'company_name'    =>$this->input->post('company_name',true),
+            'email' => $this->input->post('email',true),
+            'address'      => $this->input->post('address',true),
+            'mobile'   => $this->input->post('mobile',true),
+            'website'  => $this->input->post('website',true),
+            'c_city'      => $this->input->post('c_city',true),
+            'c_state'      => $this->input->post('c_state',true),
+            'Bank_Name'      => $this->input->post('Bank_Name',true),
+            'Account_Number'      => $this->input->post('Account_Number',true),
+            'Bank_Routing_Number'      => $this->input->post('Bank_Routing_Number',true),
+            'Bank_Address'      => $this->input->post('Bank_Address',true),
+            'Federal_Pin_Number'      => $this->input->post('Federal_Pin_Number',true),
+            'st_tax_id'      => $this->input->post('statetx',true),
+            'lc_tax_id'      => $this->input->post('localtx',true),
+            'State_Sales_Tax_Number'      => $this->input->post('State_Sales_Tax_Number',true),
+            'create_by'     => $uid,
+            'status'     => 0
         );
-        $this->db->insert('url', $data);
+        $insert=  $this->db->insert('company_information',$data); 
+        $insert_id = $this->db->insert_id();
+        $user_name=$this->input->post('user_name',TRUE);
+        $password=$this->input->post('password',TRUE);
+        $pin_number=$this->input->post('pin_number',TRUE);
+        if($url){
+        for ($i = 0, $n = count($url); $i < $n; $i++) {
+            $url1 = $url[$i];
+            $user_name1 = $user_name[$i];
+            $password1 = $password[$i];
+            $pin_number1 = $pin_number[$i];
+            $data = array(
+            'url'         =>$url1,
+            'user_name'         =>$user_name1,
+            'password'         =>$password1,
+            'create_by'     => $uid,
+            'company_id'  =>$insert_id,
+            'pin_number'         =>$pin_number1
+            );
+            $this->db->insert('url', $data);
+        }
     }
-}
         $user_name_st=$this->input->post('user_name_st',TRUE);
         $password_st=$this->input->post('password_st',TRUE);
         $pin_number_st=$this->input->post('pin_number_st',TRUE);
@@ -357,7 +351,7 @@ public function company_insert_branch(){
         $user_name_lctx=$this->input->post('user_name_lctx',TRUE);
         $password_lctx=$this->input->post('password_lctx',TRUE);
         $pin_number_lctx=$this->input->post('pin_number_lctx',TRUE);
-          if($url_lctx){
+        if($url_lctx){
         for ($i = 0, $n = count($url_lctx); $i < $n; $i++) {
             $url_lctx1 = $url_lctx[$i];
             $user_name_lctx1 = $user_name_lctx[$i];
@@ -372,13 +366,13 @@ public function company_insert_branch(){
             'pin_number_lctx'         =>$pin_number_lctx1
             );
             $this->db->insert('url_lctx', $data);
-        } 
-    }
+            } 
+        }
         $user_name_sstx=$this->input->post('user_name_sstx',TRUE);
         $password_sstx=$this->input->post('password_sstx',TRUE);
         $pin_number_sstx=$this->input->post('pin_number_sstx',TRUE);
           if($url_sstx){
-        for ($i = 0, $n = count($url_sstx); $i < $n; $i++) {
+           for ($i = 0, $n = count($url_sstx); $i < $n; $i++) {
             $url_sstx1 = $url_sstx[$i];
             $user_name_sstx1 = $user_name_sstx[$i];
             $password_sstx1 = $password_sstx[$i];
@@ -391,147 +385,148 @@ public function company_insert_branch(){
             'company_id'  =>$insert_id,
             'pin_number_sstx'         =>$pin_number_sstx1
             );
-            $this->db->insert('url_sstx', $data);
-        } 
-    }
-    if($insert)
-    {
-       redirect('Company_setup/manage_company');
-    }
-}
+            $result =  $this->db->insert('url_sstx', $data);
+                } 
+            }
+            $response['status'] = 'success';
+            $response['msg'] = 'Company has been added successfully';
+            echo json_encode($response);
+        }
 
-
-
-
-
-
-
-public function company_update_branch($company_id){
-        $uid=$_SESSION['user_id'];
-     $id=$company_id;
+    // Change By Ajith on 28/08/2024
+    public function company_update_branch($company_id){
+ 
+        $uid = $this->input->post('decodedId',TRUE);
+        $id=$company_id;
         $url=$this->input->post('url',TRUE);
         $url_st=$this->input->post('url_st',TRUE);
         $url_lctx=$this->input->post('url_lctx',TRUE);
         $url_sstx=$this->input->post('url_sstx',TRUE);
-   $c_id=$this->input->post('company_id',TRUE);
-   $this->db->where('company_id',$c_id,TRUE);
-   $this->db->delete('company_information');
-   $this->db->where('company_id',$c_id,TRUE);
-   $this->db->delete('url');
-   $this->db->where('company_id',$c_id,TRUE);
-   $this->db->delete('url_st');
-   $this->db->where('company_id',$c_id,TRUE);
-   $this->db->delete('url_lctx');
-   $this->db->where('company_id',$c_id,TRUE);
-   $this->db->delete('url_sstx');
-    $data = array(
-        'company_id'   => $id,
-        'company_name'    =>$this->input->post('company_name',true),
-        'email' => $this->input->post('email',true),
-        'address'      => $this->input->post('address',true),
-        'mobile'   => $this->input->post('mobile',true),
-        'website'  => $this->input->post('website',true),
-        'Bank_Name'      => $this->input->post('Bank_Name',true),
-        'Account_Number'      => $this->input->post('Account_Number',true),
-        'Bank_Routing_Number'      => $this->input->post('Bank_Routing_Number',true),
-        'Bank_Address'      => $this->input->post('Bank_Address',true),
-        'Federal_Pin_Number'      => $this->input->post('Federal_Pin_Number',true),
-        'st_tax_id'      => $this->input->post('statetx',true),
-        'lc_tax_id'      => $this->input->post('localtx',true),
-        'State_Sales_Tax_Number'      => $this->input->post('State_Sales_Tax_Number',true),
-        'create_by'     => $uid,
-        'status'     => 0
-    );
-    $insert=  $this->db->insert('company_information',$data);  
-    $insert_id = $this->db->insert_id();
-    $user_name=$this->input->post('user_name',TRUE);
-    $password=$this->input->post('password',TRUE);
-    $pin_number=$this->input->post('pin_number',TRUE);
-    if($url){
-    for ($i = 0, $n = count($url); $i < $n; $i++) {
-        $url1 = $url[$i];
-        $user_name1 = $user_name[$i];
-        $password1 = $password[$i];
-        $pin_number1 = $pin_number[$i];
-        $data = array(
-            'company_id'   => $id,
-        'url'         =>$url1,
-        'user_name'         =>$user_name1,
-        'password'         =>$password1,
-        'create_by'     => $uid,
-        'company_id'  =>$insert_id,
-        'pin_number'         =>$pin_number1
-        );
-        $this->db->insert('url', $data);
-    }
-}
-        $user_name_st=$this->input->post('user_name_st',TRUE);
-        $password_st=$this->input->post('password_st',TRUE);
-        $pin_number_st=$this->input->post('pin_number_st',TRUE);
-           if($url_st){
-        for ($i = 0, $n = count($url_st); $i < $n; $i++) {
-            $url_st1 = $url_st[$i];
-            $user_name_st1 = $user_name_st[$i];
-            $password_st1 = $password_st[$i];
-            $pin_number_st1 = $pin_number_st[$i];
+        $c_id=$this->input->post('company_id',TRUE);
+        $this->db->where('company_id',$c_id,TRUE);
+        $this->db->delete('company_information');
+        $this->db->where('company_id',$c_id,TRUE);
+        $this->db->delete('url');
+        $this->db->where('company_id',$c_id,TRUE);
+        $this->db->delete('url_st');
+        $this->db->where('company_id',$c_id,TRUE);
+        $this->db->delete('url_lctx');
+        $this->db->where('company_id',$c_id,TRUE);
+        $this->db->delete('url_sstx');
             $data = array(
                 'company_id'   => $id,
-            'url_st'         =>$url_st1,
-            'user_name_st'    =>$user_name_st1,
-            'password_st'         =>$password_st1,
-            'create_by'     => $uid,
-            'company_id'  =>$insert_id,
-            'pin_number_st'         =>$pin_number_st1
+                'company_name'    =>$this->input->post('company_name',true),
+                'email' => $this->input->post('email',true),
+                'address'      => $this->input->post('address',true),
+                'mobile'   => $this->input->post('mobile',true),
+                'website'  => $this->input->post('website',true),
+                'c_city'      => $this->input->post('c_city',true),
+                'c_state'      => $this->input->post('c_state',true),
+                'Bank_Name'      => $this->input->post('Bank_Name',true),
+                'Account_Number'      => $this->input->post('Account_Number',true),
+                'Bank_Routing_Number'      => $this->input->post('Bank_Routing_Number',true),
+                'Bank_Address'      => $this->input->post('Bank_Address',true),
+                'Federal_Pin_Number'      => $this->input->post('Federal_Pin_Number',true),
+                'st_tax_id'      => $this->input->post('statetx',true),
+                'lc_tax_id'      => $this->input->post('localtx',true),
+                'State_Sales_Tax_Number'      => $this->input->post('State_Sales_Tax_Number',true),
+                'create_by'     => $uid,
+                'status'     => 0
             );
-            $this->db->insert('url_st', $data);
-        }}
-        $user_name_lctx=$this->input->post('user_name_lctx',TRUE);
-        $password_lctx=$this->input->post('password_lctx',TRUE);
-        $pin_number_lctx=$this->input->post('pin_number_lctx',TRUE);
-          if($url_lctx){
-        for ($i = 0, $n = count($url_lctx); $i < $n; $i++) {
-            $url_lctx1 = $url_lctx[$i];
-            $user_name_lctx1 = $user_name_lctx[$i];
-            $password_lctx1 = $password_lctx[$i];
-            $pin_number_lctx1 = $pin_number_lctx[$i];
-            $data = array(
-                'company_id'   => $id,
-            'url_lctx'         =>$url_lctx1,
-            'user_name_lctx'    =>$user_name_lctx1,
-            'password_lctx'         =>$password_lctx1,
-            'create_by'     => $uid,
-            'company_id'  =>$insert_id,
-            'pin_number_lctx'         =>$pin_number_lctx1
-            );
-            $this->db->insert('url_lctx', $data);
+            $insert=  $this->db->insert('company_information',$data);  
+
+            echo $this->db->last_query(); die();
+
+            $insert_id = $this->db->insert_id();
+            $user_name=$this->input->post('user_name',TRUE);
+            $password=$this->input->post('password',TRUE);
+            $pin_number=$this->input->post('pin_number',TRUE);
+            if($url){
+            for ($i = 0, $n = count($url); $i < $n; $i++) {
+                $url1 = $url[$i];
+                $user_name1 = $user_name[$i];
+                $password1 = $password[$i];
+                $pin_number1 = $pin_number[$i];
+                $data = array(
+                    'company_id'   => $id,
+                'url'         =>$url1,
+                'user_name'         =>$user_name1,
+                'password'         =>$password1,
+                'create_by'     => $uid,
+                'company_id'  =>$insert_id,
+                'pin_number'         =>$pin_number1
+                );
+                $this->db->insert('url', $data);
+            }
         }
-    }
-        $user_name_sstx=$this->input->post('user_name_sstx',TRUE);
-        $password_sstx=$this->input->post('password_sstx',TRUE);
-        $pin_number_sstx=$this->input->post('pin_number_sstx',TRUE);
-         if($url_sstx){
-        for ($i = 0, $n = count($url_sstx); $i < $n; $i++) {
-            $url_sstx1 = $url_sstx[$i];
-            $user_name_sstx1 = $user_name_sstx[$i];
-            $password_sstx1 = $password_sstx[$i];
-            $pin_number_sstx1 = $pin_number_sstx[$i];
-            $data = array(
-                'company_id'   => $id,
-            'url_sstx'         =>$url_sstx1,
-            'user_name_sstx'    =>$user_name_sstx1,
-            'password_sstx'         =>$password_sstx1,
-            'create_by'     => $uid,
-            'company_id'  =>$insert_id,
-            'pin_number_sstx'         =>$pin_number_sstx1
-            );
-            $this->db->insert('url_sstx', $data);
+                $user_name_st=$this->input->post('user_name_st',TRUE);
+                $password_st=$this->input->post('password_st',TRUE);
+                $pin_number_st=$this->input->post('pin_number_st',TRUE);
+                if($url_st){
+                for ($i = 0, $n = count($url_st); $i < $n; $i++) {
+                    $url_st1 = $url_st[$i];
+                    $user_name_st1 = $user_name_st[$i];
+                    $password_st1 = $password_st[$i];
+                    $pin_number_st1 = $pin_number_st[$i];
+                    $data = array(
+                        'company_id'   => $id,
+                    'url_st'         =>$url_st1,
+                    'user_name_st'    =>$user_name_st1,
+                    'password_st'         =>$password_st1,
+                    'create_by'     => $uid,
+                    'company_id'  =>$insert_id,
+                    'pin_number_st'         =>$pin_number_st1
+                    );
+                    $this->db->insert('url_st', $data);
+                }}
+                $user_name_lctx=$this->input->post('user_name_lctx',TRUE);
+                $password_lctx=$this->input->post('password_lctx',TRUE);
+                $pin_number_lctx=$this->input->post('pin_number_lctx',TRUE);
+                if($url_lctx){
+                for ($i = 0, $n = count($url_lctx); $i < $n; $i++) {
+                    $url_lctx1 = $url_lctx[$i];
+                    $user_name_lctx1 = $user_name_lctx[$i];
+                    $password_lctx1 = $password_lctx[$i];
+                    $pin_number_lctx1 = $pin_number_lctx[$i];
+                    $data = array(
+                        'company_id'   => $id,
+                    'url_lctx'         =>$url_lctx1,
+                    'user_name_lctx'    =>$user_name_lctx1,
+                    'password_lctx'         =>$password_lctx1,
+                    'create_by'     => $uid,
+                    'company_id'  =>$insert_id,
+                    'pin_number_lctx'         =>$pin_number_lctx1
+                    );
+                    $this->db->insert('url_lctx', $data);
+                }
+            }
+                $user_name_sstx=$this->input->post('user_name_sstx',TRUE);
+                $password_sstx=$this->input->post('password_sstx',TRUE);
+                $pin_number_sstx=$this->input->post('pin_number_sstx',TRUE);
+                if($url_sstx){
+                for ($i = 0, $n = count($url_sstx); $i < $n; $i++) {
+                    $url_sstx1 = $url_sstx[$i];
+                    $user_name_sstx1 = $user_name_sstx[$i];
+                    $password_sstx1 = $password_sstx[$i];
+                    $pin_number_sstx1 = $pin_number_sstx[$i];
+                    $data = array(
+                        'company_id'   => $id,
+                    'url_sstx'         =>$url_sstx1,
+                    'user_name_sstx'    =>$user_name_sstx1,
+                    'password_sstx'         =>$password_sstx1,
+                    'create_by'     => $uid,
+                    'company_id'  =>$insert_id,
+                    'pin_number_sstx'         =>$pin_number_sstx1
+                    );
+                    $result = $this->db->insert('url_sstx', $data);
+                }
+            }
+            $response['status'] = 'success';
+            $response['msg'] = 'Company Updated has been added successfully';
+            echo json_encode($response);
         }
-    }
-    if($insert)
-    {
-       redirect('Company_setup/manage_company');
-    }
-}
+
+
 public function company_insert(){
     $this->form_validation->set_rules('company_name', 'Company Name', 'required');
     $this->form_validation->set_rules('email', 'Company Email', 'required|valid_email');
@@ -1007,8 +1002,6 @@ $this->session->set_userdata(array('message' => display('successfully_added')));
         );
         echo json_encode($response);
     }
-
-    
     //Admin pagination
     public function getAdminDatas() {
         $limit = $this->input->post('length');

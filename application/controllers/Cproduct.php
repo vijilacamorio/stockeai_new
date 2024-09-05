@@ -14,6 +14,8 @@ class Cproduct extends CI_Controller {
         $this->load->model("Units");
         $this->load->library("auth");
         $this->load->library("lproduct");
+        $encodedId = $_GET['id'];
+        $this->admin_id   = decodeBase64UrlParameter($encodedId);
     }
     //Index page load
     public function index() {
@@ -25,11 +27,12 @@ class Cproduct extends CI_Controller {
         $CI->load->model("Web_settings");
        $encodedId     = isset($_GET["id"]) ? $_GET["id"] : null;
        $decodedId     = decodeBase64UrlParameter($encodedId);
-        $currency_details = $CI->Web_settings->retrieve_setting_editdata( $decodedId);
-        $supplier = $CI->Suppliers->supplier_list( $decodedId);
+
+        $currency_details = $CI->Web_settings->retrieve_setting_editdata($decodedId);
+        $supplier = $CI->Suppliers->supplier_list($decodedId);
         $category_list = $CI->Categories->category_list_product($decodedId);
         $unit_list = $CI->Units->unit_list();
-        $setting_detail = $CI->Web_settings->retrieve_setting_editdata();
+        $setting_detail = $CI->Web_settings->retrieve_setting_editdata($decodedId);
         $country_list = $CI->Web_settings->getCountryDetails();
         $data = [
             "currency" => $currency_details[0]["currency"],
@@ -61,8 +64,8 @@ class Cproduct extends CI_Controller {
             $search,
             $decodedId
         );
-        $sales_count   = $this->Products->sales_product_all();
-        $expense_count = $this->Products->expense_product_all();
+        $sales_count   = $this->Products->sales_product_all($decodedId);
+        $expense_count = $this->Products->expense_product_all($decodedId);
         $data          = [];
         $i             = $start + 1;
         $edit          = "";
@@ -310,58 +313,7 @@ public function product_delete_form() {
             if ($quantity < 1) {
                 $quantity = 1;
             }
-                  //file upload
-
-            // if (isset($_FILES["files"]) && !empty($_FILES["files"])) {
-            //     $product_id = $this->input->post("product_id", true);
-            //     $this->db->where("attachment_id", $product_id);
-            //     $existing_attachments = $this->db
-            //         ->get("attachments")
-            //         ->result_array();
-            //     foreach ($existing_attachments as $attachment) {
-            //         $file_path = $attachment["image_dir"];
-            //         if (file_exists($file_path)) {
-            //             unlink($file_path);
-            //         }
-            //         $this->db->where("id", $attachment["id"]);
-            //         $this->db->delete("attachments");
-            //     }
-            //     $no_files       = count($_FILES["files"]["name"]);
-            //     $uploaded_files = [];
-            //     for ($i = 0; $i < $no_files; $i++) {
-            //         $original_file_name = $_FILES["files"]["name"][$i];
-            //         $tmp_file_path      = $_FILES["files"]["tmp_name"][$i];
-            //         $file_extension     = pathinfo(
-            //             $original_file_name,
-            //             PATHINFO_EXTENSION
-            //         );
-            //         $date             = date("Ymd_His");
-            //         $unique_file_name =
-            //             $date . "-" . $i . "." . $file_extension;
-            //         $file_path = "uploads/product/" . $unique_file_name;
-            //         if (in_array($original_file_name, $uploaded_files)) {
-            //             continue;
-            //         }
-            //         $uploaded_files[] = $original_file_name;
-            //         if (move_uploaded_file($tmp_file_path, $file_path)) {
-            //             $image_data = [
-            //                 "attachment_id" => $product_id,
-            //                 "files"         => $unique_file_name,
-            //                 "image_dir"     => $file_path,
-            //                 "created_by"    => decodeBase64UrlParameter(
-            //                     $this->input->post("id", true)
-            //                 ),
-            //                 "sub_menu"      => "Product",
-            //                 "created_admin" => $this->session->userdata(
-            //                     "unique_id"
-            //                 ),
-            //             ];
-            //             $this->db->insert("attachments", $image_data);
-            //         } else {
-            //         }
-            //     }
-            // }
-               $product_id = $this->input->post("product_id", true);
+             $product_id = $this->input->post("product_id", true);
             $check_product = $this->db
                 ->select("*")
                 ->from("product_information")
@@ -595,7 +547,7 @@ public function product_delete_form() {
         $CI         = &get_instance();
         $CI->auth->check_admin_auth();
         $CI->load->library("lproduct");
-        $content = $CI->lproduct->product_edit_data( $product_id,decodeBase64UrlParameter($created_by));
+        $content = $CI->lproduct->product_edit_data( $product_id,$this->admin_id);
         $this->template->full_admin_html_view($content);
     }
     //Manage Product
@@ -603,7 +555,7 @@ public function product_delete_form() {
         $this->auth->check_admin_auth();
         $this->load->library("lproduct");
         $this->load->model("Products");
-        $content = $this->lproduct->product_list();
+        $content = $this->lproduct->product_list($this->admin_id);
         $this->template->full_admin_html_view($content);
     }
     public function get_all_tax() {
