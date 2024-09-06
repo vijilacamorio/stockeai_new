@@ -1715,20 +1715,37 @@ class Chrm extends CI_Controller {
                                         }
                                     }
  
-                                    $data2 = array(
-                                        'amount' => $hourly,
+
+                                    $data1 = array(
+                                        's_tax'          => $s,
+                                        'm_tax'          => $m,
+                                        'u_tax'          => $u,
+                                        'f_tax'          => $f,
+                                        'code'           => $code,
+                                        'tax_type'       => 'state_tax',
+                                        'sales_c_amount' => $scValueAmount,
+                                        'sc'             => $scValue,
+                                        'no_of_inv'      => $sc_count,
+                                        'tax'            => $tx_n,
+                                        'amount'         => $hourly,
+                                        'time_sheet_id'  => $timesheetdata[0]['timesheet_id'],
+                                        'employee_id'    => $timesheetdata[0]['templ_name'],
+                                        'created_by'     => $this->session->userdata('user_id'),
                                     );
+                                    // $data2 = array(
+                                    //     'amount' => $hourly,
+                                    // );
                                     // $this->db->where('time_sheet_id', $timesheetdata[0]['timesheet_id']);
                                     // $this->db->where('hourly IS NULL');
                                     // $query = $this->db->get('tax_history');
-                                      
                                     // if ($query->num_rows() == 0) {
-                                        $this->db->where('time_sheet_id', $timesheetdata[0]['timesheet_id']);
-                                        $this->db->order_by('id', 'ASC');
-                                        $this->db->limit(1);
-                                        $this->db->update('tax_history', $data2);
+                                    //     $this->db->where('time_sheet_id', $timesheetdata[0]['timesheet_id']);
+                                    //     $this->db->order_by('id', 'ASC');
+                                    //     $this->db->limit(1);
+                                    //     $this->db->update('tax_history', $data2);
                                     // }
-                                    echo 
+                                    $this->db->insert('tax_history', $data1);
+                                    // echo $this->db->last_query(); die();
                                 }
                             }
                         } else if ($data['employee_data'][0]['payroll_type'] == 'Salaried-weekly') {
@@ -1742,7 +1759,9 @@ class Chrm extends CI_Controller {
                             AND CAST(SUBSTRING_INDEX(`$emp_tax`, '-', 1) AS UNSIGNED) <= ?
                             AND CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(`$emp_tax`, '-', -1), '-', 1) AS UNSIGNED) >= ?
                             AND `create_by` = '" . $user_id . "'";
-                            $result = $this->db->query($query, array($maxValue, $minValue));
+                            $result = $this->db->query($query, array($maxValue, $minValue));             
+                           
+  
                             if ($result) {
                                 $weekly_range = $result->result_array();
                                 if (!empty($weekly_range)) {
@@ -1752,10 +1771,15 @@ class Chrm extends CI_Controller {
                                     $secondValue    = $split_values[1];
                                     $getvalue       = $minValue - $firstValue;
                                     $w_tax          = '';
-                                    $data['weekly'] = $this->Hrm_model->weekly_tax_info($data['employee_data'][0]['employee_tax'], $final, $weekly_range);
+                                    // $data['weekly'] = $this->Hrm_model->weekly_tax_info($data['employee_data'][0]['employee_tax'], $final, $weekly_range);
+                                    $data['weekly']    = $this->Hrm_model->weekly_tax_info_livingtax($lt_name ,$data['employee_data'][0]['employee_tax'],$final ,  $weekly_range );
+
                                     $st_name        = $data['employee_data'][0]['state_tx'];
                                     $state_names    = $this->Hrm_model->state_names($st_name);
-                                    if (!empty($data['weekly'][0]['employee'])) {
+                              
+                                    print_r($state_names ); die();
+                                    
+                                if (!empty($data['weekly'][0]['employee'])) {
                                         foreach ($state_names as $name) {
                                             if (trim($name['state']) == 'Pennsylvania') {
                                                 $weekly_employee_details = $data['weekly'][0]['details'];
@@ -1798,11 +1822,10 @@ class Chrm extends CI_Controller {
                                                 $wkly                    = ($weekly_employee / 100) * $getvalue;
                                                 $wkly                    = round($wkly, 2);
                                                 $weekly_tax              = $addamt[1] + $wkly;
+
+                                                print_r($weekly_tax); die();
                                             }
-
-
-
-
+ 
                                         }
                                     }
                                     $data1 = array(
