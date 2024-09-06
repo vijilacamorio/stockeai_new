@@ -437,7 +437,7 @@ $bulk_bank=$this->input->post('bulk_bank',TRUE);
            );
           $this->db->where('supplier_id', $supplier_id);
           $this->db->update('supplier_information', $data5);
-
+if($payment_id){
       for ($i = 0, $n = count($payment_id); $i < $n; $i++) {
        if($amount_pay[$i]){
               $data1 = array(
@@ -465,6 +465,7 @@ $bulk_bank=$this->input->post('bulk_bank',TRUE);
        
             
        }
+    }
    }
     
 
@@ -632,7 +633,7 @@ $this->db->where('a.supplier_id', $customer_id);
         $this->db->where('created_by' ,$id);
         $this->db->where('sub_menu' ,'expense');
         $query = $this->db->get();
-      
+   
         if ($query->num_rows() > 0) {
             return $query->result_array();
         }
@@ -3923,7 +3924,7 @@ public function retrieve_purchase_order_editdata($purchase_id, $admin_company_id
     $this->db->where('a.purchase_order_id', $purchase_id);
     $this->db->order_by('a.purchase_details', 'asc');
     $query = $this->db->get();
-    // echo $this->db->last_query(); die();
+
     if ($query->num_rows() > 0) {
         return $query->result_array();
     }

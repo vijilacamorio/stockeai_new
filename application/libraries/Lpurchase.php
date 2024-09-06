@@ -1255,7 +1255,7 @@ public function po_details($admin_company_id, $purchase_id)
     $expense_tax =  $CI->Purchases->expense_tax($admin_company_id);
 
     $purchase_detail = $CI->Purchases->retrieve_purchase_order_editdata($purchase_id, $admin_company_id);
-   
+
     $data = array(
         'curn_info_default' =>$curn_info_default[0]['currency_name'],
         'currency' => $currency_details[0]['currency'],

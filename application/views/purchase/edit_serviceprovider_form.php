@@ -43,7 +43,7 @@
          <?php  $payment_id_new=rand(); ?>
    
    <section class="content">
-      <?php  $d= $tax_detail; 
+      <?php  $d= $info_service[0]['tax_detail']; 
          $t='';
          if($d !=='' && !empty($d)){
             preg_match('#\((.*?)\)#', $d, $match);
@@ -55,6 +55,7 @@
             $t=$t=trim($t);
             
           }
+       
          ?> 
       <?php
          $message = $this->session->userdata('message');
@@ -104,10 +105,12 @@
                         <div class="Column" style="float: right;">
        <form id="histroy" method="post" >
                               <input type="hidden" name="<?php echo $this->security->get_csrf_token_name();?>" value="<?php echo $this->security->get_csrf_hash();?>">
-                              <input type="hidden"  value="<?php if($info_service[0]['payment_id']){ echo $info_service[0]['payment_id']; }?>" name="payment_id" class="payment_id" id="payment_id"/>
-                              <input type="hidden" id='current_in_id' name="current_in_id"/>
+                              <input type="hidden"  value="<?php if($info_service[0]['payment_id']){ echo $info_service[0]['payment_id']; }?>" name="makepaymentId" class="payment_id" id="makepaymentId"/>
+                              <input type="hidden" value="<?php echo $info_service[0]['bill_number']; ?>" id='current_in_id' name="current_in_id"/>
                               <input type="hidden" value="<?php  echo  $info_service[0]['supplier_id'] ; ?>" name="supplier_id_payment"/>
+                            <?php if($info_service[0]['payment_id']){ ?>
                               <input type="submit" id="payment_history" name="payment_history" class="btnclr btn" style="float:right;color:white;float:right;margin-bottom:30px;"   value="<?php echo display('Payment History') ?>"/>
+                             <?php  }  ?>
                            </form>
                         </div>
                         <div class="Column" style="float: right;">
@@ -117,6 +120,7 @@
                   </div>
                </div>
                <div class="panel-body">
+                     <div id="errormessage_service_provider" > </div>
                   <form id="serviceprovider" method="post">
                      <div class="row">
                         <div class="col-sm-6">
@@ -145,7 +149,7 @@
                              
                            <label for="bill_date" class="col-sm-4 col-form-label">Bill Date <i class="text-danger">*</i> </label>
                               <div class="col-sm-8">
-                                <input type="date" tabindex="2" class="form-control"  required="" style="border:2px solid #d7d4d6;"  value="<?php echo $info_service[0]['bill_date']; ?>" name="bill_date" id="bill_date" />
+                                <input type="date" tabindex="2" class="form-control"   style="border:2px solid #d7d4d6;"  value="<?php echo $info_service[0]['bill_date']; ?>" name="bill_date" id="bill_date" />
                               </div>
 
                            </div>
@@ -159,7 +163,7 @@
                         <div class="col-sm-6">
                            <div class="form-group row">
                                <label for="bill_number" class="col-sm-4 col-form-label">Bill Number<i class="text-danger">*</i> </label>
-                              <div class="col-sm-8"> <input type="text" tabindex="2" required="" class="form-control"  style="border:2px solid #d7d4d6;"  name="bill_num" value="<?php  echo $info_service[0]['bill_number']; ?>" id="bill_number"  /> </div>
+                              <div class="col-sm-8"> <input type="text" tabindex="2"  class="form-control"  style="border:2px solid #d7d4d6;"  name="bill_num" value="<?php  echo $info_service[0]['bill_number']; ?>" id="bill_number"  /> </div>
                            </div>
                         </div>
                      </div>
@@ -233,8 +237,8 @@
                               <div class="col-sm-8">
                                    <select class="form-control" name="acc_cat"  style="border:2px solid #d7d4d6;" id="ddl3">
                                        <option value="" disabled>Select Sub Category</option>
-                                       <option value="<?php echo $info_service[0]['acc_sub_name'] ?>" <?php if($info_service[0]['acc_sub_name']) { echo 'selected'; } ?>>
-                                          <?php echo $info_service[0]['acc_sub_name']; ?>
+                                       <option value="<?php echo $info_service[0]['acc_cat'] ?>" <?php if($info_service[0]['acc_cat']) { echo 'selected'; } ?>>
+                                          <?php echo $info_service[0]['acc_cat']; ?>
                                         </option>
                                     </select>
                               </div>
@@ -248,7 +252,7 @@
                               <i class="text-danger"></i>
                               </label>
                               <div class="col-sm-8">
-                                 <input type="text" tabindex="2" class="form-control" name="acc_sub_name"  style="border:2px solid #d7d4d6;"  value="<?php  echo $info_service[0]['acc_cat']; ?>"  id="acc_sub_name" />
+                                 <input type="text" tabindex="2" class="form-control" name="acc_sub_name"  style="border:2px solid #d7d4d6;"  value="<?php  echo $info_service[0]['acc_sub_name']; ?>"  id="acc_sub_name" />
                               </div>
                            </div>
                         </div>
@@ -259,11 +263,11 @@
                         <table class="table table-bordered table-hover serviceprovider" id="service_1" style="border:2px solid #d7d4d6;" >
                            <thead>
                               <tr>
-                                 <th class="text-center" width="15%">Product Name<i class="text-danger">*</i></th>
+                                 <th class="text-center" width="20%">Product Name<i class="text-danger">*</i></th>
                                  <th class="text-center" width="20%">Description<i class="text-danger">*</i></th>
-                                 <th class="text-center">Quality<i class="text-danger">*</i></th>
-                                 <th class="text-center" width="15%">Amount<i class="text-danger">*</i></th>
-                                 <th class="text-center"><?php echo display('action') ?></th>
+                                 <th class="text-center" width="20%">Quality<i class="text-danger">*</i></th>
+                                 <th class="text-center" width="20%">Amount<i class="text-danger">*</i></th>
+                                 <th class="text-center" width="20%"><?php echo display('action') ?></th>
                               </tr>
                            </thead>
                            <tbody id="servic_pro">
@@ -292,7 +296,7 @@
                                        <tr style="height:50px;">
                                           <td style="text-align:right;" colspan="3" ><b><?php echo display('total') ?>:</b></td>
                                           <td style="text-align:left;">
-                                          <input type="text" id="Total_provider" style='width:200px;' class="form-control mobile_price" placeholder="0.00"   min="0" name="total" value="<?php echo $info_service[0]['total']; ?>" /> 
+                                          <input type="text" id="Total_provider" style='width:300px;' class="form-control mobile_price" placeholder="0.00"   min="0" name="total" value="<?php echo $info_service[0]['total']; ?>" /> 
                                           </td>
                                        </tr>
                                       <table class="taxtab table table-bordered table-hover" style="border:2px solid #d7d4d6;" >
@@ -306,7 +310,7 @@
                            <td style="border:none;text-align:right;font-weight:bold;"><?php echo display('Tax') ?> :
                            </td>
                            <td style="width:12%">
-                           <input list="magic_tax" name="tx"  id="product_tax_provider" class="form-control"   onchange="this.blur();" />
+                           <input list="magic_tax" name="tx"  id="product_tax_provider" class="form-control"  value="<?php echo $t; ?>" onchange="this.blur();" />
                               <datalist id="magic_tax">
                                  <?php
 foreach ($expensetax as $tx) {?>
@@ -314,14 +318,14 @@ foreach ($expensetax as $tx) {?>
                                  <?php }?>
                               </datalist>
                            </td>
-                           <td  style="width:20%;"><a href="#" class="client-add-btn btn btnclr" aria-hidden="true" style="color:white;  margin-right: 295px;"  data-toggle="modal" data-target="#tax_info" ><i class="fa fa-plus"></i></a></td>
+                           <td  style="width:20%;"></td>
                         </tr>
                      </table>
                    <table border="0" style="width: 100%; border-collapse: collapse; text-align: left;" class="overall table table-bordered table-hover" style="border:2px solid #d7d4d6;">
     <tbody>
         <tr>
             <!-- Left Side -->
-            <td style="width: 60%; padding-right: 20px; border:none; vertical-align: middle;">
+            <td style="width: 50%; padding-right: 20px; border:none; vertical-align: middle;">
               </td>
             <!-- Right Side -->
             <td style="width: 40%; padding-left: 20px; border:none; vertical-align: middle;">
@@ -376,10 +380,11 @@ foreach ($expensetax as $tx) {?>
     <tfoot>
         <tr style="border-right:none; border-left:none; border-bottom:none; border-top:none;">
             <td colspan="2" style="text-align: right; padding: 20px;">
-         
+          <?php if($info_service[0]['payment_id']==''){ ?>
               <a class="client-add-btn btn btnclr" aria-hidden="true" id="paypls_provider" data-toggle="modal" data-target="#payment_modal">
                         Make Payment
              </a>
+             <?php  }   ?>
             </td>
         </tr>
     </tfoot>
@@ -474,7 +479,60 @@ foreach ($expensetax as $tx) {?>
    
    
    });
- 
+  $("#serviceprovider").validate({
+   rules: {
+    service_provider_name: "required",
+    bill_date: "required", 
+    payment_terms : "required", 
+    bill_num : "required",
+   },
+ messages: {
+     service_provider_name: "Service Provider Name is required",
+    bill_date: "Bill Date is required",
+    bill_num: "Bill Number is required",
+    payment_terms: "Payment Terms is required",
+},
+    errorPlacement: function(error, element) {
+            if (element.hasClass("select2-hidden-accessible")) {
+                error.insertAfter(element.next('span.select2')); // Place error message after the Select2 element
+            } else {
+                error.insertAfter(element);
+            }
+        },
+submitHandler: function(form) {
+      $('#download_provider').show();
+   $('#final_submit_provider').show();
+   $('#print_provider').show();
+  var formData = new FormData(form);
+  formData.append(csrfName, csrfHash);
+  $.ajax({
+    type: "POST",
+    dataType: "json",
+    url:"<?php echo base_url(); ?>Cpurchase/insert_service_provider",
+    data: formData,
+    contentType: false,
+    processData: false,
+    success: function(response) {
+      debugger;
+      console.log(response);
+    if (response.status == 'success') {
+
+   $('#errormessage_service_provider').html('<div class="alert alert-success">' + response.msg + '</div>');
+     $('#Final_invoice_number').val(response.invoice_no);
+          $('#Final_invoice_id').val(response.invoice_id);
+         
+                  }else{
+
+          $('#errormessage_service_provider').html(failalert+response.msg+'</div>'); 
+          console.log(response.msg, "Error");
+       }                  
+    },
+        error: function(xhr, status, error) {
+        alert('An error occurred: ' + error);
+    }
+  })
+}
+});
    $(document).on('keyup','.serviceprovider tbody tr:last',function (e) {
  
    var tid=$(this).closest('table').attr('id');
@@ -507,24 +565,14 @@ foreach ($expensetax as $tx) {?>
    
    
    
-   $('#final_submit_provider').on('click', function (e) {
+
    
-   //window.btn_clicked = true;      //set btn_clicked to true
-   var input_hdn="<?php echo  ('Service Provider ID')." :";?>"+$('#servic_id_hidden').val()+"<?php echo  " ".display('has been saved Successfully');?>";
-   
-   console.log(input_hdn);
-   
-   $("#bodyModal1").html(input_hdn);
-   $('#myModal1').modal('show');
+      $('#final_submit_provider').on('click', function (e) {
+    var input_hdn='Your Invoice No : "'+ $('#Final_invoice_number').val()+" has been Updated Successfully";
+ $('#errormessage_service_provider').html('<div class="alert alert-success alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>' + input_hdn + '</div>');
    window.setTimeout(function(){
-   $('.modal').modal('hide');
-   
-   $('.modal-backdrop').remove();
-   },2500);
-   window.setTimeout(function(){
-   window.location = "<?php  echo base_url(); ?>Cpurchase/manage_purchase";
-   }, 2500);
-   
+      window.location = "<?php  echo base_url(); ?>Cpurchase/manage_purchase?id=<?php echo $_GET['id']; ?>";
+     }, 2000);
    });
  
 

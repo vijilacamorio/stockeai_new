@@ -1209,13 +1209,16 @@ $result = $CI->Purchases->servicepro($date) ;
         echo  json_encode($taxfield1);
        
     }
-    public function get_po_details(){
-       
+   public function get_po_details()
+    {
         $po_num = $this->input->post('po');
-        $admin_company_id=$this->input->post('admin_company_id');
-     $content = $this->lpurchase->po_details($admin_company_id,$po_num);
-        $this->template->full_admin_html_view($content);
-       // echo json_encode($data);
+     
+     
+        $adminid = $this->input->post('admin_company_id');
+        $admin_company_id = decodeBase64UrlParameter($adminid);
+        $purchaseDetail = $this->db->select('*')->from('purchase_order')->where('chalan_no',$po_num)->get()->result_array();
+        $purchase_id = $purchaseDetail[0]['purchase_order_id'];
+        $content = $this->lpurchase->po_details($admin_company_id, $purchase_id);
 
 
     }
@@ -1824,7 +1827,7 @@ public function uploadCsv_Serviceprovider_second()
     public function purchase_update_form() {
         $setting_detail =$this->Web_settings->retrieve_setting_editdata();
         $purchase_detail = $this->Purchases->retrieve_purchase_editdata(decodeBase64UrlParameter($_GET['id']),$_GET['invoice_id']);
-        $expense_attachment = $this->Purchases->getEditExpensesData(decodeBase64UrlParameter($_GET['id']),$purchase_detail[0]['chalan_no']);
+        $expense_attachment = $this->Purchases->getEditExpensesData(decodeBase64UrlParameter($_GET['id']),$purchase_detail[0]['purchase_id']);
         $supplier_list =$this->Suppliers->supplier_list(decodeBase64UrlParameter($_GET['id']));
         $tax = $this->Purchases->expense_tax(decodeBase64UrlParameter($_GET['id']));
         $all_product_list = $this->Products->get_all_products(decodeBase64UrlParameter($_GET['id']));
@@ -1832,6 +1835,7 @@ public function uploadCsv_Serviceprovider_second()
         $curn_info_default = $this->db->select('*')->from('currency_tbl')->where('icon',$currency_details[0]['currency'])->get()->result_array();
         $sale_costpersqft_per = $this->Invoices->sales_cost_permission();
          $country_code = $this->db->select('*')->from('country')->get()->result_array();
+     //    print_r($expense_attachment);die();
         $data = array(
             'tax_data'     =>  $tax,
             'attachments'   => $expense_attachment,

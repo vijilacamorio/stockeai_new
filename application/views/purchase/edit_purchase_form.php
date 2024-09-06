@@ -79,7 +79,9 @@
                               <input type="hidden"  value="<?php if($purchase_info[0]['payment_id']){ echo $purchase_info[0]['payment_id']; }else{ echo $payment_id_new;}?>" name="makepaymentId" class="payment_id" id="makepaymentId"/>
                                 <input type="hidden" id='current_in_id' name="current_in_id"/>
                     <input type="hidden" value="<?php  echo  $purchase_info[0]['supplier_id']; ?>" name="supplier_id_payment"/>
+                            <?php   if($purchase_info[0]['payment_id']){ ?>
                               <input type="submit" id="payment_history" name="payment_history" class="btnclr btn" style="float:right;float:right;margin-bottom:30px;"   value="<?php echo display('Payment History') ?>"/>
+                            <?php  }  ?>
                            </form>
 
                  
@@ -91,7 +93,9 @@
             </div>
          </div>
          <div class="panel-body">
+
              <div id="errormessage_expense"></div>
+
            <form id="insert_expense"  method="post">
                            <div class="row">
                            <div class="col-sm-6">  
@@ -103,7 +107,7 @@
                                     <label for="supplier_sss" class="col-sm-4 col-form-label"><?php echo display('Vendor');?>
                                     <i class="text-danger">*</i>
                                     </label>
-                                    <div class="col-sm-7">
+                                    <div class="col-sm-8">
                                         <select name="supplier_id" id="supplier_id" class="form-control "  style="width:100%;border: 2px solid #d7d4d6;" required=""  tabindex="1">
                               <option value="<?php echo $purchase_info[0]['supplier_id'] ?> "><?php echo $purchase_info[0]['supplier_name']; ?></option>
                               {all_supplier}
@@ -111,16 +115,14 @@
                               {/all_supplier}
                            </select>
                                     </div>
-                                    <?php //if($this->permission1->method('add_supplier','create')->access()){ ?>
-                                    <div class="col-sm-1 mobile_vendor">
-                                       <a  class="btnclr client-add-btn btn  " aria-hidden="true"    data-toggle="modal"data-target="#add_vendor"><i class="fa fa-user"></i></a>
-                                    </div>
-                                    <?php// }?> 
+                                   
                                  </div>
                                 <div class="form-group row">
                         <label for="" class="col-sm-4 col-form-label" ><?php  echo  display('Vendor Type');?></label>
                         <div class="col-sm-8">
+
                            <input type="vendor_type" tabindex="3" readonly class="form-control" name="vendor_type"  style="WIDTH: 100%;border: 2px solid #d7d4d6;"   id="vendor_type_details" />
+
                         </div>
                      </div> </div>
                   
@@ -138,6 +140,7 @@
                                     </div>
                                  </div>
                               </div>
+                                <input type="hidden"  value="<?php if($purchase_info[0]['payment_id']){ echo $purchase_info[0]['payment_id']; }else{ echo $payment_id_new;}?>" name="makepaymentId" class="payment_id" id="makepaymentId"/>
                               <div class="col-sm-6" id="">
                                  <div class="form-group row">
                                     <label for="date" class="col-sm-4 col-form-label"><?php echo display('invoice_no');  ?><i class="text-danger">*</i></label>
@@ -177,7 +180,7 @@
                           <div class="form-group row">
                                     <label for="billing_address" class="col-sm-4     col-form-label"><?php echo display('Payment Terms');?>
                                     <i class="text-danger">*</i></label>
-                                    <div class="col-sm-7">
+                                    <div class="col-sm-8">
                                        <select  required  name="payment_terms" id="payment_terms" style="width:100%;border: 2px solid #d7d4d6;" class=" form-control" placeholder='Payment Terms' id="payment_terms">
                               <option value="<?php echo $purchase_info[0]['payment_terms']; ?>"><?php echo $purchase_info[0]['payment_terms']; ?></option>
                               	<?php
@@ -189,9 +192,7 @@
                               
                                   </select>
                                     </div>
-                                    <div class="col-sm-1 mobile_vendor">
-                                       <a href="#" class="btnclr client-add-btn btn " aria-hidden="true"    data-toggle="modal" data-target="#payment_type_new" ><i class="fa fa-plus"></i></a>
-                                    </div>
+                                  
                                  </div>  
                                 <div class="form-group row">
                                     <label for="account_category" class="col-sm-4 col-form-label">Account Category</label>
@@ -247,24 +248,29 @@
 
 
                            
-    
-                                 <div class="form-group row">
+    <div class="form-group row">
                                     <label for="supplier_sss" class="col-sm-4 col-form-label">Attachments
                                     </label>
                                    
-                                     <div class="col-sm-8">
-                            <input type="file" name="files[]" id="attachment" class="form-control" multiple/>
-                            <br>
-
-                            <?php foreach ($attachments as $key => $attachment) { ?> 
+                                    <div class="col-sm-6">
+                                       <p>
+                                          <label for="attachment">
+                                          <a class="btn btnclr text-light" role="button" aria-disabled="false"><i class="fa fa-upload"></i>&nbsp; Choose Files</a>
+                                          </label>
+                                          <input type="file" name="files[]" class="upload" id="attachment" style="visibility: hidden; position: absolute;" multiple/>
+                                       </p>
+                                         <?php foreach ($attachments as $key => $attachment) { ?> 
                                        <a href="<?php  echo base_url(); ?>uploads/expense/<?php echo $attachment['files']; ?>" class="file-block" target=_blank><span class="file-delete"><span><i class="fa fa-trash-o"></i></span></span><?php echo $attachment['files']; ?></a>
                                        <?php } ?>
-                        </div>
+                                       <p id="files-area">
+                                          <span id="filesList">
+                                          <span id="files-names"></span>
+                                          </span>
+                                       </p>
+                                    </div>
                                  </div>
 
-                  
-                        
-                              </div>
+                    </div>
                               <div class="col-sm-6">
                            
 
@@ -272,7 +278,7 @@
                                  <div class="form-group row">
                                     <label for="date" class="col-sm-4 col-form-label"><?php echo display('Payment Due Date');?> <i class="text-danger">*</i></label>
                                     <div class="col-sm-8">
-                                       <input class=" form-control" type="date" size="50" name="payment_due_date"   style="border:2px solid #d7d4d6;"  id="payment_due_date" required value="" tabindex="4" />
+                                       <input class=" form-control" type="date" size="50" name="payment_due_date"   style="border:2px solid #d7d4d6;"  id="payment_due_date"  value="<?php echo $purchase_info[0]['payment_due_date']; ?>" tabindex="4" />
                                     </div>
                                  </div>
 
@@ -290,7 +296,7 @@
                                     <label for="payment_type" class="col-sm-4 col-form-label"><?php
                                        echo display('payment_type');
                                        ?> <i class="text-danger">*</i></label>
-                                    <div class="col-sm-7">
+                                    <div class="col-sm-8">
                                        <select name="paytype_drop" id="paytype_drop" class="form-control"   tabindex="3" style="width:100;border: 2px solid #d7d4d6;">
                               <option value="<?php echo $purchase_info[0]['payment_type']; ?>"> <?php echo  $purchase_info[0]['payment_type']; ?></option>
                               <option value="CHEQUE"><?php echo display('cheque'); ?></option>
@@ -302,9 +308,7 @@
                               <?php }?>
                            </select>
                                     </div>
-                                    <div  class=" col-sm-1">
-                                       <a href="#" class="btnclr client-add-btn btn  mobile_vendor"   aria-hidden="true" data-toggle="modal" data-target="#payment_type" ><i class="fa fa-plus"></i></a>
-                                    </div>
+                                   
                                  </div>
 
 
@@ -352,7 +356,9 @@
 
                                  <div class="form-group row">
     <label for="invoice_no" class="col-sm-4 col-form-label">
+
         <?php echo display('ISF FIELD');?>  <i class="text-danger">*</i>
+
     </label>
     <div class="col-sm-8">
         <select name="isf_field" class="form-control"  id="isf_dropdown1" tabindex="3" style="width400%;border: 2px solid #d7d4d6;">
@@ -379,16 +385,16 @@
                               </div>
                            </div>
                <br>
-               <?php  $d= $total_tax; 
-                  $t='';
-                  if($d !=='' && !empty($d)){
-                     preg_match('#\((.*?)\)#', $d, $match);
+               <?php  $tax_split= $purchase_info[0]['total_tax']; 
+                  $tax_description='';
+                  if($tax_split !=='' && !empty($tax_split)){
+                     preg_match('#\((.*?)\)#', $tax_split, $match);
                   
-                     $t=$match[1];$t=trim($t);
+                     $tax_description=$match[1];$tax_description=trim($tax_description);
                      
                    }else{
                   
-                     $t=$t=trim($t);
+                     $tax_description=$tax_description=trim($tax_description);
                      
                    }
                   ?>                                         
@@ -604,7 +610,7 @@
                            <td style="border:none;text-align:right;font-weight:bold;"><?php echo display('Tax') ?> :
                            </td>
                            <td style="width:12%">
-                           <input list="magic_tax" name="tx"  id="product_tax" class="form-control"   onchange="this.blur();" />
+                           <input list="magic_tax" name="tx"  id="product_tax" class="form-control" value="<?php echo $tax_description;  ?>"  onchange="this.blur();" />
                               <datalist id="magic_tax">
                                  <?php
 foreach ($tax_data as $tx) {?>
@@ -612,10 +618,12 @@ foreach ($tax_data as $tx) {?>
                                  <?php }?>
                               </datalist>
                            </td>
-                           <td  style="width:20%;"><a href="#" class="client-add-btn btn btnclr" aria-hidden="true" style="color:white;  margin-right: 295px;"  data-toggle="modal" data-target="#tax_info" ><i class="fa fa-plus"></i></a></td>
+                           <td  style="width:20%;"></td>
                         </tr>
                      </table>
+
                   <table border="0" style="width: 80%; border-collapse: collapse; float:right;text-align: left;border:none;" class="overall table table-bordered table-hover" style="border:2px solid #d7d4d6;">
+
     <tbody>
         <tr>
             <!-- Left Side -->
@@ -677,16 +685,17 @@ foreach ($tax_data as $tx) {?>
             </td>
         </tr>
     </tbody>
-    <!-- <tfoot>
+<tfoot>
         <tr style="border-right:none; border-left:none; border-bottom:none; border-top:none;">
             <td colspan="2" style="text-align: right; padding: 20px;">
-         
+           <?php   if($purchase_info[0]['payment_id']=='') { ?>
               <a class="client-add-btn btn btnclr" aria-hidden="true" id="paypls" data-toggle="modal" data-target="#payment_modal">
                         Make Payment
              </a>
+           <?php  }  ?>
             </td>
         </tr>
-    </tfoot> -->
+    </tfoot>
 </table>
                            
       <div class="row">
@@ -772,8 +781,10 @@ foreach ($tax_data as $tx) {?>
       </div>
    </div>
 </div>
+
 <input type="hidden" id="Final_invoice_number" /> 
 <input type="hidden" id="Final_invoice_id" /> 
+
 
 <div id="packmodal" class="modal fade" role="dialog">
    <div class="modal-dialog">
@@ -822,6 +833,7 @@ foreach ($tax_data as $tx) {?>
     var csrfHash = '<?php echo $this->security->get_csrf_hash();?>';
    $(document).ready(function(){
       $(".normalinvoice").each(function(i,v){
+
           $(this).find('select').each(function() {
     var $select = $(this);
    if ($select.data('select2')) {
@@ -829,10 +841,12 @@ foreach ($tax_data as $tx) {?>
     }
     $select.select2();
 });
+
        if($(this).find("tbody").html().trim().length === 0){
            $(this).hide()
        }
     })
+
                               
 //  $('.normalinvoice tbody tr').find('select').each(function() {
 //     var $select = $(this);
@@ -842,6 +856,7 @@ foreach ($tax_data as $tx) {?>
 //     $select.select2();
 // });
                         $('.normalinvoice tbody tr').each(function() {
+
 
         var tableId = $(this).closest('table').attr('id');
     updateTableTotals(tableId);
@@ -868,7 +883,7 @@ foreach ($tax_data as $tx) {?>
                      }
                   console.log(result[0]['currency_type']);
                   $('#vendor_add').html(result[0]['address']);
-                   $('#vendor_type_details').html(result[0]['vendor_type']);
+                   $('#vendor_type_details').val(result[0]['vendor_type']);
                  $("#custocurrency_rate").html(result[0]['currency_type']);
                  $("#autocomplete_supplier_id").val(result[0]['supplier_id']);
                  $("label[for='custocurrency']").html(result[0]['currency_type']);
@@ -901,14 +916,15 @@ foreach ($tax_data as $tx) {?>
        $("#isf_no1").hide();
    }).trigger("change");
    
+
       $('.final_submit').on('click', function (e) {
     var input_hdn='Your Invoice No : "'+ $('#Final_invoice_number').val()+" has been Updated Successfully";
-
- $('.errormessage_expense').html(succalert+input_hdn+'</div>');
+ $('#errormessage_expense').html('<div class="alert alert-success alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>' + input_hdn + '</div>');
    window.setTimeout(function(){
       window.location = "<?php  echo base_url(); ?>Cpurchase/manage_purchase?id=<?php echo $_GET['id']; ?>";
      }, 2000);
    });
+
        function payment_update(){
     $('.hidden_button').hide();
        var dataString = {
@@ -921,7 +937,7 @@ foreach ($tax_data as $tx) {?>
            url:"<?php echo base_url(); ?>Cpurchase/payment_history_purchase",
            data:$("#histroy").serialize(),
            success:function (data) {
-          debugger;
+       
             var gt=$('#customer_gtotal').val();
             var amtpd=parseFloat(data.amt_paid);
             if (isNaN(amtpd) || amtpd === '') {
@@ -941,6 +957,11 @@ foreach ($tax_data as $tx) {?>
        event.preventDefault();
          }
  $(document).ready(function(){
+   if ( $('#isf_dropdown1').val() == '2'){
+       $(".isf_no1").show();
+   }else{
+       $(".isf_no1").hide();
+ }
     $('#current_in_id').val($('#invoice_no').val());
         payment_update();
     });
@@ -992,6 +1013,7 @@ foreach ($tax_data as $tx) {?>
    
    });
       
+
     function calculateSum(context, selector) {
 
     var sum = 0;
@@ -1218,6 +1240,7 @@ $(document).on('click', '.delete', function(){
     }
 });
 
+
               
 $('#supplier_id').on('change', function (e) {
   var data = {
@@ -1235,9 +1258,11 @@ $('#supplier_id').on('change', function (e) {
         csrfName = result.csrfName;
         csrfHash = result.csrfHash;
       }
+
  $('#vendor_add').html(result[0]['address']);
-                   $('#vendor_type_details').html(result[0]['vendor_type']);
-                   debugger;
+                   $('#vendor_type_details').val(result[0]['vendor_type']);
+               
+
       console.log(result[0]['currency_type']);
       $(".cus").html(result[0]['currency_type']);
       $("label[for='custocurrency']").html(result[0]['currency_type']);
@@ -1252,6 +1277,7 @@ $('#supplier_id').on('change', function (e) {
       
         $(".custocurrency_rate").val(Rate);
       });
+
 
 
     }
@@ -1334,7 +1360,7 @@ submitHandler: function(form) {
     contentType: false,
     processData: false,
     success: function(response) {
-      debugger;
+    
       console.log(response);
     if (response.status == 'success') {
 
@@ -1385,17 +1411,31 @@ success: function (response) {
        
    location.reload();
 
-   },2000);
-}else{
-  $('#payment_error').html('<div class="alert alert-danger alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>' + 'Failed to Update.Try Again..' + '</div>');
-    
+      
+  });
+    }}
+});
+});
+ $('#product_tax').on('change', function (e) {
+  
+  var total=$('#Over_all_Total').val();
+ var tax= $('#product_tax').val();
+if(tax.indexOf(hypen) != -1){
+ var field = tax.split('-');
+
+ var percent = field[1];
+
+}else if(tax=='Select the Tax'){
+
+  percent="0";
 }
-           },
-           
- 
-          
-       });
-   });
+
+else{
+percent=tax;
+}
+           });
+   
+
 
 
 
@@ -1424,6 +1464,7 @@ var csrf_token = {
         };
         tableData.push(rowData);
     });
+
 
     var postData = {
                           tableData: tableData
@@ -1461,7 +1502,7 @@ $('.modal-backdrop').remove();
   
     event.preventDefault();
 });
-   $('#payment_history').click(function (event) {
+    $('#payment_history').click(function (event) {
         $('#current_in_id').val($('#invoice_no').val());
     var dataString = {
         dataString: $("#histroy").serialize()
@@ -1576,6 +1617,7 @@ amountPaidCells.forEach(function (cell) {
     });
 });
 
+
 function toggleTable() {
   const toggleTable = document.getElementById('toggle_table');
   const toggleButton = document.querySelector('.toggle-button');
@@ -1595,8 +1637,10 @@ function toggleTable() {
 
 
 
+
 $(document).ready(function () {
     $(document).on('keyup', '#total-amount', function () {
+
 
         var totalAmount = parseFloat($(this).val().trim());
 
@@ -1617,6 +1661,7 @@ $(document).ready(function () {
             var balance = parseFloat(balanceCell.val());
   balance = isNaN(balance) ? 0 : balance;
 
+
             if (balance > 0 && remainingAmount > 0) {
                 var amountToPay = Math.min(balance, remainingAmount);
                 amountPayInput.val(amountToPay.toFixed(2));
@@ -1634,6 +1679,7 @@ $(document).ready(function () {
 
         if (amountToPay > 0) {
             $(this).find('.checkbox-distribute').prop('checked', true);
+
         }
 
     
@@ -1758,7 +1804,6 @@ function updateTotalbalanceToPay() {
     var amount1 = parseFloat($(this).val()) || 0; 
     totalbalanceToPay += amount1;
   });
-  
 
   $('.t_bal_pay').text(totalbalanceToPay.toFixed(2));
 }
@@ -2117,24 +2162,7 @@ $(this).find('.editable-amount-paid input').val(paymentAmount);
 
 
 <script type="text/javascript">
-   const dt = new DataTransfer(); 
-   
-   $('span.file-delete').click(function(){
-           let name = $(this).next('span.name').text();
-       
-           $(this).parent().remove();
-           for(let i = 0; i < dt.items.length; i++){
-            
-               if(name === dt.items[i].getAsFile().name){
-                
-                   dt.items.remove(i);
-                   continue;
-               }
-           }
-        
-           document.getElementById('attachment').files = dt.files;
-       });
-   
+
    
    
    
@@ -2281,7 +2309,7 @@ $(this).find('.editable-amount-paid input').val(paymentAmount);
    ddl.options.add(opt);
    }
       let dynamic_id=2;
-   
+
    function addbundle(){
    $(this).closest('table').find('.addbundle').css("display","none");
    $(this).closest('table').find('.removebundle').css("display","block");
@@ -2307,5 +2335,26 @@ $(this).find('.editable-amount-paid input').val(paymentAmount);
 </script>
 
 
+
    
   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

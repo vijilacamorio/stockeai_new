@@ -717,7 +717,7 @@ foreach ($tax_data as $tx) {?>
                                        <i class="text-danger"></i>
                                        </label>
                                        <div class="col-sm-8">
-                                          <input type="text" tabindex="3" class="form-control sp_address" name="sp_address" style="border:2px solid #d7d4d6;"  id="sp_address"  />
+                                          <input type="text" tabindex="3" readonly class="form-control sp_address" name="sp_address" style="border:2px solid #d7d4d6;"  id="sp_address"  />
                                           <div id="loadingText" class="loading-text"></div>
                                        </div>
                                     </div>
@@ -1055,7 +1055,7 @@ foreach ($tax_data as $tx) {?>
       
 
    }
-   else{
+else{
       $('#main').show();
       $('#service_provider_data').hide();
       $('.with_po').show();
@@ -1081,6 +1081,8 @@ foreach ($tax_data as $tx) {?>
       getSupplierInfo($('#supplier_id').val())
       }).fail(function(jqXHR, textStatus, errorThrown) { 
       });
+
+
 
    }
   
