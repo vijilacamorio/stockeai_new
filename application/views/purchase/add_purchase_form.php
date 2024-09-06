@@ -385,10 +385,10 @@ $this->load->view('include/bootstrap_model', $modaldata);
                            </div>
                             <div class="table-responsive">
                               <div id="content">
-                                 <table class="table normalinvoice table-bordered table-hover" id="linvoice_1"   style="border:2px solid #d7d4d6;" >
+                                 <table class="table normalinvoice table-bordered table-hover" id="normalinvoice_1"   style="border:2px solid #d7d4d6;" >
                                     <thead>
                                        <tr class="btnclr">
-                                          <th rowspan="2" class="text-center" style="width:180px;" ><?php echo display('product_name'); ?><i class="text-danger">*</i>  &nbsp;&nbsp; <a href="#" class="btn btnclr"   aria-hidden="true" data-toggle="modal" data-target="#product_info"><i class="ti-plus m-r-2" style="border:2px;"></i></a></th>
+                                          <th rowspan="2" class="text-center" style="width:180px;" ><?php echo display('product_name'); ?><i class="text-danger">*</i> </th>
                                           <th rowspan="2" class="text-center" style="width:60px;"><?php echo display('Bundle No');?><i class="text-danger">*</i></th>
                                           <th rowspan="2"  class="text-center"><?php echo  display('description'); ?></th>
                                           <th rowspan="2" class="text-center" style="width:60px;"><?php echo display('Thick ness');?><i class="text-danger">*</i></th>
@@ -415,7 +415,7 @@ $this->load->view('include/bootstrap_model', $modaldata);
                                           <th class="text-center btnclr" ><?php echo display('Height');?></th>
                                        </tr>
                                     </thead>
-                                    <tbody id="addItem_1">
+                                    <tbody id="addPurchaseItem_1">
                                        <tr>
                                           <td>
                                              <input type="hidden" class="table_id" name="tableid[]" id="tableid_1"/>
@@ -717,7 +717,7 @@ foreach ($tax_data as $tx) {?>
                                        <i class="text-danger"></i>
                                        </label>
                                        <div class="col-sm-8">
-                                          <input type="text" tabindex="3" class="form-control sp_address" name="sp_address" style="border:2px solid #d7d4d6;"  id="sp_address"  />
+                                          <input type="text" tabindex="3" readonly class="form-control sp_address" name="sp_address" style="border:2px solid #d7d4d6;"  id="sp_address"  />
                                           <div id="loadingText" class="loading-text"></div>
                                        </div>
                                     </div>
@@ -1016,30 +1016,54 @@ foreach ($tax_data as $tx) {?>
     $('#expense_drop').hide();
    });
 
+
 $(document).on('change', '#module_selection', function (e) {
     if ($('#module_selection').val() === "New Expense") {
         $('#service_provider_data').hide();
         $('.with_po').hide();
         $('.without_po').show();
         $('#main').show();
-        
-        var tid = $('.table').closest('table').attr('id');
-        const indexLast = tid.lastIndexOf('_');
-        var id = tid.slice(indexLast + 1);
-
-        for (var j = 0; j < 6; j++) {
-            var $last = $('#addItem_1 tr:last');
-            var num = id + ($last.index() + 1);
-            
-            $('#addItem_1 tr:last').clone().find('input, select, button').attr('id', function (i, current) {
-                return current.replace(/\d+$/, num);
-            }).end().appendTo('#addItem_1');
-            
-            $.each($('#linvoice_1 > tbody > tr'), function (index, el) {
-                $(this).find(".slab_no").val(index + 1); // Update row number
-            });
+     
+      var tid=$('.table').closest('table').attr('id');
+   const indexLast = tid.lastIndexOf('_');
+   var id = tid.slice(indexLast + 1);
+   for (j = 0; j < 6; j++) {
+      var $last = $('#addPurchaseItem_1 tr:last');
+   var num = id+($last.index()+1);
+ $('#addPurchaseItem_1 tr:last').clone().find('input,select,button').each(function() {
+    var currentId = $(this).attr('id');
+    console.log("Current ID:", currentId); // Debugging statement
+    if (currentId) {
+        $(this).attr('id', function(i, current) {
+            return current.replace(/\d+$/, num);
+        });
+    } else {
+        console.warn("Element has no ID:", $(this)); // Warn if no ID is present
+    }
+}).end().appendTo('#addPurchaseItem_1');
+    $.each($('#normalinvoice_1 > tbody > tr'), function (index, el) {
+      
+           $(this).find(".slab_no").val(index + 1); // Simply couse the first "prototype" is not counted in the list
+       })
+       
+   }
+$('#normalinvoice_1 > tbody > tr').each(function() {
+    var $row = $(this);
+    
+    // Find select2 elements in the current row
+    var $selects = $row.find('.select2');
+    
+    // Destroy select2 instance if it exists
+    $selects.each(function() {
+        var $select = $(this);
+        if ($select.data('select2')) {
+            $select.select2('destroy');
         }
+    });
 
+    // Reinitialize select2
+    $selects.select2();
+});
         var data = {
             expense_drop: $('#expense_drop').val()
         };
@@ -1050,7 +1074,7 @@ $(document).on('change', '#module_selection', function (e) {
         $('#expense_drop').hide();
         $('#main').show();
 
-        var data = {
+  var data = {
             po: $('#module_selection').val()
         };
     } else {
@@ -1087,6 +1111,7 @@ $(document).on('change', '#module_selection', function (e) {
         });
     }
 });
+
 
 
 function getSupplierInfo(supplier_id){
@@ -1236,7 +1261,7 @@ submitHandler: function(form) {
     contentType: false,
     processData: false,
     success: function(response) {
-      debugger;
+   
       console.log(response);
     if (response.status == 'success') {
 
@@ -1257,7 +1282,7 @@ submitHandler: function(form) {
 }
 });
 $(document).on('change', '.product_name', function(){
-   debugger;
+   
 var product_id=$(this).closest('td').find('.common_product');
 var table_id=$(this).closest('td').find('.table_id');
     var id= $(this).attr('id');
@@ -1314,7 +1339,7 @@ $(document).on('keyup','.normalinvoice tbody tr:last',function (e) {
    }).end().appendTo('#servic_pro');
   });
   function provider_calculation(){
-  debugger;
+  
   var sum = 0;
    $(".total_price_provider").each(function() {
    if(!isNaN(this.value) && this.value.length!=0) {
@@ -1399,7 +1424,7 @@ submitHandler: function(form) {
     contentType: false,
     processData: false,
     success: function(response) {
-      debugger;
+    
       console.log(response);
     if (response.status == 'success') {
 
