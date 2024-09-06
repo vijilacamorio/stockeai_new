@@ -1,12 +1,12 @@
 <script src='https://kit.fontawesome.com/a076d05399.js' crossorigin='anonymous'></script>
 <script src="<?php echo base_url() ?>assets/js/dashboard.js"></script>
-<script src="https://code.highcharts.com/highcharts.js"></script>
-<script src="https://code.highcharts.com/modules/exporting.js"></script>
-<script src="https://code.highcharts.com/modules/export-data.js"></script>
-<script src="https://code.highcharts.com/modules/accessibility.js"></script>
+<script src="<?php echo base_url() ?>assets/js/highcharts/highcharts.js"></script>
+<script src="<?php echo base_url() ?>assets/js/highcharts/exporting.js"></script>
+<script src="<?php echo base_url() ?>assets/js/highcharts/export-data.js"></script>
+<script src="<?php echo base_url() ?>assets/js/highcharts/accessibility.js"></script>
 <link href="<?php echo base_url() ?>assets/css/style.css" rel="stylesheet">
 <link href="<?php echo base_url() ?>assets/css/daterangepicker.css" rel="stylesheet">
-<link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+<link href="<?php echo base_url() ?>assets/css/bootstrap-2.min.css" rel="stylesheet" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
 <link rel="stylesheet" href="<?php echo base_url() ?>my-assets/css/style.css">
 <link href="<?php echo base_url() ?>my-assets/css/sb-admin-2.min.css" rel="stylesheet">

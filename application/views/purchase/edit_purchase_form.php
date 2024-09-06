@@ -848,13 +848,7 @@ foreach ($tax_data as $tx) {?>
     })
 
                               
-//  $('.normalinvoice tbody tr').find('select').each(function() {
-//     var $select = $(this);
-//    if ($select.data('select2')) {
-//         $select.select2('destroy');
-//     }
-//     $select.select2();
-// });
+
                         $('.normalinvoice tbody tr').each(function() {
 
 

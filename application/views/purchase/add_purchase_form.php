@@ -385,10 +385,10 @@ $this->load->view('include/bootstrap_model', $modaldata);
                            </div>
                             <div class="table-responsive">
                               <div id="content">
-                                 <table class="table normalinvoice table-bordered table-hover" id="linvoice_1"   style="border:2px solid #d7d4d6;" >
+                                 <table class="table normalinvoice table-bordered table-hover" id="normalinvoice_1"   style="border:2px solid #d7d4d6;" >
                                     <thead>
                                        <tr class="btnclr">
-                                          <th rowspan="2" class="text-center" style="width:180px;" ><?php echo display('product_name'); ?><i class="text-danger">*</i>  &nbsp;&nbsp; <a href="#" class="btn btnclr"   aria-hidden="true" data-toggle="modal" data-target="#product_info"><i class="ti-plus m-r-2" style="border:2px;"></i></a></th>
+                                          <th rowspan="2" class="text-center" style="width:180px;" ><?php echo display('product_name'); ?><i class="text-danger">*</i> </th>
                                           <th rowspan="2" class="text-center" style="width:60px;"><?php echo display('Bundle No');?><i class="text-danger">*</i></th>
                                           <th rowspan="2"  class="text-center"><?php echo  display('description'); ?></th>
                                           <th rowspan="2" class="text-center" style="width:60px;"><?php echo display('Thick ness');?><i class="text-danger">*</i></th>
@@ -415,7 +415,7 @@ $this->load->view('include/bootstrap_model', $modaldata);
                                           <th class="text-center btnclr" ><?php echo display('Height');?></th>
                                        </tr>
                                     </thead>
-                                    <tbody id="addItem_1">
+                                    <tbody id="addPurchaseItem_1">
                                        <tr>
                                           <td>
                                              <input type="hidden" class="table_id" name="tableid[]" id="tableid_1"/>
@@ -482,7 +482,7 @@ $this->load->view('include/bootstrap_model', $modaldata);
                                           <td>
                                              <input type="text" id="weight_1" name="weight[]"  class="weight form-control" />
                                           </td>
-                                          <td style="width: 135px;">
+                                          <td style="width: 135px;"> 
                                              <select id="origin_1" name="origin[]" class="origin form-control">
                                                 <?php foreach ($country_code as $key => $value) { ?>
                                                 <option value="<?php echo $value['iso']; ?>"><?php echo $value['iso']; ?></option>
@@ -1023,25 +1023,52 @@ $(document).on('change', '#module_selection', function (e) {
         $('.with_po').hide();
         $('.without_po').show();
         $('#main').show();
-        
-        var tid = $('.table').closest('table').attr('id');
-        const indexLast = tid.lastIndexOf('_');
-        var id = tid.slice(indexLast + 1);
+     
+      var tid=$('.table').closest('table').attr('id');
+   const indexLast = tid.lastIndexOf('_');
+   var id = tid.slice(indexLast + 1);
 
-        for (var j = 0; j < 6; j++) {
-            var $last = $('#addItem_1 tr:last');
-            var num = id + ($last.index() + 1);
-            
-            $('#addItem_1 tr:last').clone().find('input, select, button').attr('id', function (i, current) {
-                return current.replace(/\d+$/, num);
-            }).end().appendTo('#addItem_1');
-            
-            $.each($('#linvoice_1 > tbody > tr'), function (index, el) {
-                $(this).find(".slab_no").val(index + 1); // Update row number
-            });
+   $('#addPurchaseItem_1 select').each(function() {
+            if ($(this).data('select2')) {
+                $(this).select2('destroy');
+            }
+        });
+
+   for (j = 0; j < 6; j++) {
+   
+var $last = $('#addPurchaseItem_1 tr:last');
+var num = id + ($last.index() + 1);
+$last.clone().find('input,select,button').each(function() {
+    var currentId = $(this).attr('id');
+    if (currentId) {
+        $(this).attr('id', function(i, current) {
+            return current.replace(/\d+$/, num);
+        });
+    }
+}).end().appendTo('#addPurchaseItem_1');
+    $.each($('#normalinvoice_1 > tbody > tr'), function (index, el) {
+      
+           $(this).find(".slab_no").val(index + 1); // Simply couse the first "prototype" is not counted in the list
+       })
+       
+   }
+$('#normalinvoice_1 > tbody > tr').each(function() {
+    var $row = $(this);
+    
+    // Find select2 elements in the current row
+    var $selects = $row.find('.select2');
+    
+    // Destroy select2 instance if it exists
+    $selects.each(function() {
+        var $select = $(this);
+        if ($select.data('select2')) {
+            $select.select2('destroy');
         }
+    });
 
-
+    // Reinitialize select2
+    $selects.select2();
+});
         var data = {
             expense_drop: $('#expense_drop').val()
         };
@@ -1052,45 +1079,13 @@ $(document).on('change', '#module_selection', function (e) {
         $('#expense_drop').hide();
         $('#main').show();
 
-<<<<<<< HEAD
-   }
-else{
-      $('#main').show();
-      $('#service_provider_data').hide();
-      $('.with_po').show();
-      $('.without_po').hide();
-      var data = {
-      po:$('#module_selection').val(),
-      admin_company_id : $('#admin_company_id').val()
-      };
-      data[csrfName] = csrfHash;
-      $.ajax({ 
-      url:'<?php echo base_url();?>Cpurchase/get_po_details',
-      method:'POST',
-      data: data, 
-      dataType : "html" 
-      }).done(function(data) { 
-      var obj = $(data);
-      $("#insert_purchase").html(obj.find("#insert_purchase").html());
-      $(".normalinvoice").each(function(i,v){
-      if($(this).find("tbody").html().trim().length === 0){
-      $(this).hide()
-      }
-      })
-      getSupplierInfo($('#supplier_id').val())
-      }).fail(function(jqXHR, textStatus, errorThrown) { 
-      });
-
-
-
-   }
-  
-   });
-=======
-        var data = {
+  var data = {
             po: $('#module_selection').val()
         };
     } else {
+      $('#ocrserviceprovider').hide();
+         $('#form_image').hide();
+      
         $('#main').show();
         $('#service_provider_data').hide();
         $('.with_po').show();
@@ -1125,7 +1120,7 @@ else{
     }
 });
 
->>>>>>> 4f0452639bd6e7dffacb2c3a421abd3a78cbd559
+
 
 function getSupplierInfo(supplier_id){
 
@@ -1274,7 +1269,7 @@ submitHandler: function(form) {
     contentType: false,
     processData: false,
     success: function(response) {
-      debugger;
+   
       console.log(response);
     if (response.status == 'success') {
 
@@ -1295,7 +1290,7 @@ submitHandler: function(form) {
 }
 });
 $(document).on('change', '.product_name', function(){
-   debugger;
+   
 var product_id=$(this).closest('td').find('.common_product');
 var table_id=$(this).closest('td').find('.table_id');
     var id= $(this).attr('id');
@@ -1352,7 +1347,7 @@ $(document).on('keyup','.normalinvoice tbody tr:last',function (e) {
    }).end().appendTo('#servic_pro');
   });
   function provider_calculation(){
-  debugger;
+  
   var sum = 0;
    $(".total_price_provider").each(function() {
    if(!isNaN(this.value) && this.value.length!=0) {
@@ -1437,7 +1432,7 @@ submitHandler: function(form) {
     contentType: false,
     processData: false,
     success: function(response) {
-      debugger;
+    
       console.log(response);
     if (response.status == 'success') {
 
@@ -1737,6 +1732,145 @@ $(document).ready(function() {
         });
     });
 });
+function configureDropDownLists(ddl1,ddl2) {
+   var assets = ['CASH Operating Account', 'CASH Debitors', 'CASH Petty Cash'];
+   var receivables = ['A/REC Trade', 'A/REC Trade Notes Receivable', 'A/REC Installment Receivables','A/REC Retainage Withheld','A/REC Allowance for Uncollectible Accounts'];
+   var inventories = ['INV – Reserved', 'INV – Work-in-Progress', 'INV – Finished Goods','INV – Reserved','INV – Unbilled Cost & Fees','INV – Reserve for Obsolescence'];
+   var prepaid_expense = ['PREPAID – Insurance', 'PREPAID – Real Estate Taxes', 'PREPAID – Repairs & Maintenance','PREPAID – Rent','PREPAID – Deposits'];
+   var property_plant = ['PPE – Buildings', 'PPE – Machinery & Equipment', 'PPE – Vehicles','PPE – Computer Equipment','PPE – Furniture & Fixtures','PPE – Leasehold Improvements'];
+   var acc_dep = ['ACCUM DEPR Buildings', 'ACCUM DEPR Machinery & Equipment', 'ACCUM DEPR Vehicles','ACCUM DEPR Computer Equipment','ACCUM DEPR Furniture & Fixtures','ACCUM DEPR Leasehold Improvements'];
+   var noncurrenctreceivables = ['NCA – Notes Receivable', 'NCA – Installment Receivables', 'NCA – Retainage Withheld'];
+   var intercompany_receivables = ['Organization Costs', 'Patents & Licenses', 'Intangible Assets – Capitalized Software Costs'];
+   var liabilities = ['A/P Trade', 'A/P Accrued Accounts Payable', 'A/P Retainage Withheld','Current Maturities of Long-Term Debt','Bank Notes Payable','Construction Loans Payable'];
+   var accrued_compensation = ['Accrued – Payroll', 'Accrued – Commissions', 'Accrued – FICA','Accrued – Unemployment Taxes','Accrued – Workmen’s Comp'];
+   var other_accrued_expenses = ['Accrued – Rent', 'Accrued – Interest', 'Accrued – Property Taxes', 'Accrued – Warranty Expense'];
+   var accrued_taxes= ['Accrued – Federal Income Taxes', 'Accrued – State Income Taxes', 'Accrued – Franchise Taxes','Deferred – FIT Current','Deferred – State Income Taxes'];
+   var deferred_taxes= ['D/T – FIT – NON CURRENT', 'D/T – SIT – NON CURRENT'];
+   var long_term_debt=['LTD – Notes Payable','LTD – Mortgages Payable','LTD – Installment Notes Payable'];
+   var intercompany_payables=['Common Stock','Preferred Stock','Paid in Capital','Partners Capital','Member Contributions','Retained Earnings'];
+   var revenue=['REVENUE – PRODUCT 1','REVENUE – PRODUCT 2','REVENUE – PRODUCT 3','REVENUE – PRODUCT 4','Interest Income','Other Income','Finance Charge Income','Sales Returns and Allowances','Sales Discounts'];
+   var cost_goods= ['COGS – PRODUCT 1', 'COGS – PRODUCT 2','COGS – PRODUCT 3','COGS – PRODUCT 4','Freight','Inventory Adjustments','Purchase Returns and Allowances','Reserved'];
+   var operating_expenses=['Advertising Expense','Amortization Expense','Auto Expense','Bad Debt Expense','Bad Debt Expense','Bank Charges','Cash Over and Short','Commission Expense','Depreciation Expense','Employee Benefit Program','Freight Expense','Gifts Expense','Insurance – General','Interest Expense','Professional Fees','License Expense','Maintenance Expense','Meals and Entertainment','Office Expense','Payroll Taxes','Printing','Postage','Rent','Repairs Expense','Salaries Expense','Supplies Expense','Taxes – FIT Expense','Utilities Expense','Gain/Loss on Sale of Assets'];
+   switch (ddl1.value) {
+   case 'ASSETS':
+   ddl2.options.length = 0;
+   for (i = 0; i < assets.length; i++) {
+   createOption(ddl2, assets[i], assets[i]);
+   }
+   break;
+   case 'RECEIVABLES':
+   ddl2.options.length = 0;
+   for (i = 0; i < receivables.length; i++) {
+   createOption(ddl2, receivables[i], receivables[i]);
+   }
+   break;
+   case 'INVENTORIES':
+   ddl2.options.length = 0;
+   for (i = 0; i < inventories.length; i++) {
+   createOption(ddl2, inventories[i], inventories[i]);
+   }
+   break;
+   case 'PREPAID EXPENSES & OTHER CURRENT ASSETS':
+   ddl2.options.length = 0;
+   for (i = 0; i < prepaid_expense.length; i++) {
+   createOption(ddl2, prepaid_expense[i], prepaid_expense[i]);
+   }
+   break;
+   case 'PROPERTY PLANT & EQUIPMENT':
+   ddl2.options.length = 0;
+   for (i = 0; i < property_plant.length; i++) {
+   createOption(ddl2, property_plant[i], property_plant[i]);
+   }
+   break;
+   case 'ACCUMULATED DEPRECIATION & AMORTIZATION':
+   ddl2.options.length = 0;
+   for (i = 0; i < acc_dep.length; i++) {
+   createOption(ddl2, acc_dep[i], acc_dep[i]);
+   }
+   break;
+   case 'NON – CURRENT RECEIVABLES':
+   ddl2.options.length = 0;
+   for (i = 0; i < noncurrenctreceivables.length; i++) {
+   createOption(ddl2, noncurrenctreceivables[i], noncurrenctreceivables[i]);
+   }
+   break;
+   case 'INTERCOMPANY RECEIVABLES & OTHER NON-CURRENT ASSETS':
+   ddl2.options.length = 0;
+   for (i = 0; i < intercompany_receivables.length; i++) {
+   createOption(ddl2, intercompany_receivables[i], intercompany_receivables[i]);
+   }
+   break;
+   case 'LIABILITIES & PAYABLES':
+   ddl2.options.length = 0;
+   for (i = 0; i < liabilities.length; i++) {
+   createOption(ddl2, liabilities[i], liabilities[i]);
+   }
+   break;
+   case 'ACCRUED COMPENSATION & RELATED ITEMS':
+   ddl2.options.length = 0;
+   for (i = 0; i < accrued_compensation.length; i++) {
+   createOption(ddl2, accrued_compensation[i], accrued_compensation[i]);
+   }
+   break;
+   case 'OTHER ACCRUED EXPENSES':
+   ddl2.options.length = 0;
+   for (i = 0; i < other_accrued_expenses.length; i++) {
+   createOption(ddl2, other_accrued_expenses[i], other_accrued_expenses[i]);
+   }
+   break;
+   case 'ACCRUED TAXES':
+   ddl2.options.length = 0;
+   for (i = 0; i < accrued_taxes.length; i++) {
+   createOption(ddl2, accrued_taxes[i], accrued_taxes[i]);
+   }
+   break;
+   case 'DEFERRED TAXES':
+   ddl2.options.length = 0;
+   for (i = 0; i < deferred_taxes.length; i++) {
+   createOption(ddl2, deferred_taxes[i], deferred_taxes[i]);
+   }
+   break;
+   case 'LONG-TERM DEBT':
+   ddl2.options.length = 0;
+   for (i = 0; i < long_term_debt.length; i++) {
+   createOption(ddl2, long_term_debt[i], long_term_debt[i]);
+   }
+   break;
+   case 'INTERCOMPANY PAYABLES & OTHER NON CURRENT LIABILITIES & OWNERS EQUITIES':
+   ddl2.options.length = 0;
+   for (i = 0; i < intercompany_payables.length; i++) {
+   createOption(ddl2, intercompany_payables[i], intercompany_payables[i]);
+   }
+   break;
+   case 'REVENUE':
+   ddl2.options.length = 0;
+   for (i = 0; i < revenue.length; i++) {
+   createOption(ddl2, revenue[i], revenue[i]);
+   }
+   break;
+   case 'COST OF GOODS SOLD':
+   ddl2.options.length = 0;
+   for (i = 0; i < cost_goods.length; i++) {
+   createOption(ddl2, cost_goods[i], cost_goods[i]);
+   }
+   break;
+   case 'OPERATING EXPENSES':
+   ddl2.options.length = 0;
+   for (i = 0; i < operating_expenses.length; i++) {
+   createOption(ddl2, operating_expenses[i], operating_expenses[i]);
+   }
+   break;
+   default:
+   ddl2.options.length = 0;
+   break;
+   }
+   }
+   function createOption(ddl, text, value) {
+   var opt = document.createElement('option');
+   opt.value = value;
+   opt.text = text;
+   ddl.options.add(opt);
+   }
 </script>
 
 <style>
@@ -1820,4 +1954,5 @@ $(document).ready(function() {
      animation: l1 1s steps(4) infinite;
    }
   @keyframes l1 {to{clip-path: inset(0 -34% 0 0)}}
+  
 </style>
