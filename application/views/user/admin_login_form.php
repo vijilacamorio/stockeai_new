@@ -1,5 +1,3 @@
-<script src='https://www.google.com/recaptcha/api.js'></script>
-<?php    error_reporting(1);?>
 
 <!DOCTYPE html>
 <html lang="zxx">
@@ -77,9 +75,9 @@
                       <?php
                       $this->session->unset_userdata('error_message');
                   }
-                  $CI = & get_instance();
-                  $CI->load->model('Web_settings');
-                  $setting_detail = $CI->Web_settings->retrieve_setting_editdata();
+                  //$CI = & get_instance();
+                  //$CI->load->model('Web_settings');
+                  //$setting_detail = $CI->Web_settings->retrieve_setting_editdata();
                   ?>
 
                   <?php echo form_open('Admin_dashboard/userauth', array('id' => 'login',)) ?>
@@ -101,14 +99,14 @@
                         </p>
                       </div>
                     </div> <!-- ./remember-row -->
-                    <?php if ($setting_detail[0]['captcha'] == 0 && $setting_detail[0]['site_key'] != null && $setting_detail[0]['secret_key'] != null) { ?>
+                    <?php /*if ($setting_detail[0]['captcha'] == 0 && $setting_detail[0]['site_key'] != null && $setting_detail[0]['secret_key'] != null) { ?>
                         <div class="g-recaptcha" data-sitekey="<?php
                         if (isset($setting_detail[0]['site_key'])) {
                             echo $setting_detail[0]['site_key'];
-                        }
+                        } 
                         ?>">
                         </div>
-                    <?php } ?>
+                    <?php } */ ?>
                     <div class="form-group">
                       <button class="btn btn-lg btn-primary btn-block" type="submit"><i class="fa fa-sign-in"></i> Login</button>
                     </div>

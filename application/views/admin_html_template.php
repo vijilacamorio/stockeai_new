@@ -1,8 +1,8 @@
  <?php
         $CI = & get_instance();
         $CI->load->model('Web_settings');
-        $Web_settings = $CI->Web_settings->retrieve_setting_editdata();
-          date_default_timezone_set($Web_settings[0]['timezone']);
+        //$Web_settings = $CI->Web_settings->retrieve_setting_editdata();
+        //  date_default_timezone_set($Web_settings[0]['timezone']);
         ?>
 <!DOCTYPE html>
 <html dir="ltr" lang="en">
@@ -130,9 +130,9 @@
 
         <!-- ChartJs JavaScript -->
         <script src="<?php echo base_url('assets/js/Chart.min.js?v=2.5') ?>" type="text/javascript"></script>
-
+<?php /*
         <!-- DataTables JavaScript -->
-        <script src="<?php echo base_url("assets/datatables/dataTables.min.js") ?>"></script>
+        <script src="<?php echo base_url("assets/datatables/dataTables.min.js") ?>"></script> */ ?>
         <!-- Table Head Fixer -->
         <script src="<?php echo base_url() ?>assets/js/tableHeadFixer.js" type="text/javascript"></script> 
         <!-- Admin Script -->
