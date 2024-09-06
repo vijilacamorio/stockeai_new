@@ -24,7 +24,7 @@ class Invoice_content extends CI_Model {
             $this->db->from('invoice_content');
             $this->db->where('uid',$decodedId);
             $query = $this->db->get();
-            if ($query->num_rows() > 0) {
+             if ($query->num_rows() > 0) {
                 return $query->result_array();
             }
         }

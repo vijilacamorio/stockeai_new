@@ -383,29 +383,26 @@ $this->db->where('a.supplier_id', $customer_id);
         return false;
 
     }
-public function bulk_payment_unique(){
-    $payment_id=$this->input->post('pay_id',TRUE);
-    $amount_pay =$this->input->post('amount_pay_1',TRUE);
+public function bulk_payment_unique($payment){
+      $amount_pay =$this->input->post('amount_pay_1',TRUE);
       $balance =$this->input->post('my_bal_1',TRUE);
       $t_amt_paid=$this->input->post('tl_amt_pd',TRUE);
       $tl_amt=$t_amt_paid+$amount_pay;
         $unq_inv=$this->input->post('unq_inv',TRUE);
          $updated_balance = $balance-$amount_pay;
-  //  echo $payment_id."/".$amount_pay;die();
       $data1 = array(
-                      'payment_id' => $payment_id,
+                      'payment_id' => $payment,
                       'balance' => (!empty($updated_balance) ? $updated_balance : '0'),
                       'paid_amount' => $tl_amt,
                );
-           //    print_r($data1);
-               $this->db->where('chalan_no', $unq_inv);
+           $this->db->where('chalan_no', $unq_inv);
                $this->db->update('product_purchase', $data1);
-                 echo $this->db->last_query();
+
                              $bulk_payment_date =$this->input->post('bulk_payment_date',TRUE);
 $bulk_pay_ref=$this->input->post('bulk_pay_ref',TRUE);
 $bulk_bank=$this->input->post('bulk_bank',TRUE);
                 $data2 = array(
-              'payment_id' =>$payment_id,
+              'payment_id' =>$payment,
               'payment_date'        =>$bulk_payment_date,
               'reference_no'         => $bulk_pay_ref,
               'total_amt'             => $this->input->post('t_unique',TRUE),
@@ -416,11 +413,12 @@ $bulk_bank=$this->input->post('bulk_bank',TRUE);
                'create_by' =>$this->session->userdata('user_id')
                );
                $this->db->insert('payment', $data2);
-                 echo $this->db->last_query();
+
   }
     
     
     public function bulk_payment(){
+      
     $payment_id                = $this->input->post('payment_id',TRUE);
            $invoice_no =$this->input->post('invoice_no',TRUE);
      $amount_pay =$this->input->post('amount_pay',TRUE);
@@ -439,21 +437,17 @@ $bulk_bank=$this->input->post('bulk_bank',TRUE);
            );
           $this->db->where('supplier_id', $supplier_id);
           $this->db->update('supplier_information', $data5);
-            echo $this->db->last_query();
+
       for ($i = 0, $n = count($payment_id); $i < $n; $i++) {
        if($amount_pay[$i]){
               $data1 = array(
                    'payment_id' =>$payment_id[$i],
-                   //'inv_no'        =>$invoice_no[$i],
-                  // 'amt_pay'         => $amount_pay[$i],
-                   'balance'             => (!empty($updated_bal[$i])?$updated_bal[$i]:''),
+                  'balance'             => (!empty($updated_bal[$i])?$updated_bal[$i]:''),
                     'paid_amount'             =>  $total_amt[$i]-$updated_bal[$i],
-                   // 'gtotal'     =>$total_amt[$i]
-                    );
-                //    print_r($data1);
-                    $this->db->where('chalan_no', $invoice_no[$i]);
+                   );
+                 $this->db->where('chalan_no', $invoice_no[$i]);
                     $this->db->update('product_purchase', $data1);
-                echo $this->db->last_query();
+
       $data2 = array(
                    'payment_id' =>$payment_id[$i],
                    'payment_date'        =>$bulk_payment_date,
@@ -466,12 +460,11 @@ $bulk_bank=$this->input->post('bulk_bank',TRUE);
                     'create_by' =>$this->session->userdata('user_id')
                     );
                     $this->db->insert('payment', $data2);
-                 echo $this->db->last_query();
-   //
+
                    }
-          echo 'done';
-              // $this->db->insert('product_purchase_details', $data1);
-       }//die();
+       
+            
+       }
    }
     
 
@@ -3902,6 +3895,7 @@ public function expense_tax($company_id)
     
     if ($query->num_rows() > 0) {
         return $query->result_array(); 
+
     }
     return false;
 }
@@ -3924,6 +3918,8 @@ public function retrieve_purchase_order_editdata($purchase_id, $admin_company_id
     }
     return true;
 }
+
+
 
 
 }

@@ -55,21 +55,21 @@ class Lsupplier {
 
       //Supplier List
 
-    public function supplier_list() {
+    public function supplier_list($admin_id) {
         $CI =& get_instance();
 
         $CI->load->model('Suppliers');
 
         $CI->load->model('Web_settings');
         //$vendor = $CI->Suppliers->suppliers_list();
-        $setting_detail = $CI->Web_settings->retrieve_setting_editdata();
+        $setting_detail = $CI->Web_settings->retrieve_setting_editdata($admin_id);
 
          $data['setting_detail']=$setting_detail;
 
         //$data['company_info']      = $CI->Suppliers->retrieve_company();
 
 
-        $data['getsupplier']      = $CI->Suppliers->get_all_supplier();
+        $data['getsupplier']      = $CI->Suppliers->get_all_supplier($admin_id);
 
 
         $supplierlist = $CI->parser->parse('supplier/supplier',$data,true);

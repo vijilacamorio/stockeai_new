@@ -266,7 +266,7 @@ $(function() {
     var end = moment();
 
     function cb(start, end) {
-        $('#reportrange span').html(start.format('YYYY-MM-DD') + ' - ' + end.format('YYYY-MM-DD'));
+        $('#reportrange span').html(start.format('MM-DD-YYYY') + ' - ' + end.format('MM-DD-YYYY'));
     }
 
     $('#reportrange').daterangepicker({
@@ -282,7 +282,7 @@ $(function() {
         },
 
         locale: {
-            format: 'YYYY-MM-DD'
+            format: 'MM-DD-YYYY'
         }
     }, cb);
 

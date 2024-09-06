@@ -557,6 +557,9 @@ class Web_settings extends CI_Model
     {
         $purchase_id = date('YmdHis');
         $fomdata = $this->input->post();
+
+        // print_r($fomdata['form_type']); die();
+
         $mysqltime = date('Y-m-d H:i:s');
         if ($fomdata['form_type'] == 'Sales_Quote') {
             $this->db->select("*");
@@ -571,12 +574,12 @@ class Web_settings extends CI_Model
                     'remarks'    => $fomdata['remarks'],
                     'create_by'  =>  $decodedId,
                 );
-                $this->db->where('user_id', $fomdata['uid']);
+                $this->db->where('user_id', $decodedId);
                 $this->db->where('invoice_template', $fomdata['form_type']);
                 $this->db->update('sales_invoice_settings', $data);
             } else {
                 $data = array(
-                    'user_id'    => $fomdata['uid'],
+                    'user_id'    => $decodedId,
                     'invoice_template' => $fomdata['form_type'],
                     'account'    =>  $fomdata['acc'],
                     'remarks'    => $fomdata['remarks'],
@@ -588,7 +591,7 @@ class Web_settings extends CI_Model
         } else {
             $this->db->select('*');
             $this->db->from('sales_invoice_settings');
-            $this->db->where('user_id', $fomdata['uid']);
+            $this->db->where('user_id', $decodedId);
             $this->db->where('invoice_template', $fomdata['form_type']);
             $query = $this->db->get();
             if ($query->num_rows() > 0) {
@@ -597,12 +600,12 @@ class Web_settings extends CI_Model
                     'remarks'    => $fomdata['remarks'],
                     'create_by'  =>  $decodedId,
                 );
-                $this->db->where('user_id', $fomdata['uid']);
+                $this->db->where('user_id', $decodedId);
                 $this->db->where('invoice_template', $fomdata['form_type']);
                 $this->db->update('sales_invoice_settings', $data);
             } else {
                 $data = array(
-                    'user_id'   => $fomdata['uid'],
+                    'user_id'   => $decodedId,
                     'invoice_template' => $fomdata['form_type'],
                     'remarks'   => $fomdata['remarks'],
                     'Time'      => $mysqltime,
@@ -613,6 +616,11 @@ class Web_settings extends CI_Model
         }
         return true;
     }
+
+
+
+
+
     public function update_invoice_setting($data)
     {
         $this->db->insert('invoice_settings', $data);

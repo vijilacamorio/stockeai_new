@@ -1238,23 +1238,6 @@ public function servprovider_edit_data($serviceprovider_id) {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 public function po_details($admin_company_id, $purchase_id)
 {  
 
@@ -1284,6 +1267,7 @@ public function po_details($admin_company_id, $purchase_id)
     $chapterList = $CI->parser->parse('purchase/final_purchase', $data, true);
     return $chapterList;
 }
+
 
 public function purchase_order_edit_data($purchase_id) {
         $CI = & get_instance();

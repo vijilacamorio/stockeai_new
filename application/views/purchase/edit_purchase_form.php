@@ -91,6 +91,9 @@
             </div>
          </div>
          <div class="panel-body">
+
+             <div id="errormessage_expense"></div>
+
            <form id="insert_expense"  method="post">
                            <div class="row">
                            <div class="col-sm-6">  
@@ -119,7 +122,9 @@
                                 <div class="form-group row">
                         <label for="" class="col-sm-4 col-form-label" ><?php  echo  display('Vendor Type');?></label>
                         <div class="col-sm-8">
-                           <input type="vendor_type" tabindex="3" class="form-control" name="vendor_type"  style="WIDTH: 100%;border: 2px solid #d7d4d6;"   id="vendor_type_details" />
+
+                           <input type="vendor_type" tabindex="3" readonly class="form-control" name="vendor_type"  style="WIDTH: 100%;border: 2px solid #d7d4d6;"   id="vendor_type_details" />
+
                         </div>
                      </div> </div>
                   
@@ -351,7 +356,9 @@
 
                                  <div class="form-group row">
     <label for="invoice_no" class="col-sm-4 col-form-label">
-        <?php echo display('ISF FIELD');?>
+
+        <?php echo display('ISF FIELD');?>  <i class="text-danger">*</i>
+
     </label>
     <div class="col-sm-8">
         <select name="isf_field" class="form-control"  id="isf_dropdown1" tabindex="3" style="width400%;border: 2px solid #d7d4d6;">
@@ -423,7 +430,7 @@
                               <th rowspan="2" class="text-center" ><?php echo display('Supplier Slab No');?><i class="text-danger">*</i> </th>
                               <th colspan="2"   style="width:150px;" class="text-center"><?php echo display('Gross Measurement');?><i class="text-danger">*</i> </th>
                               <th rowspan="2" class="text-center"><?php echo display('Gross Sq.Ft');?></th>
-                              <th rowspan="2" style="width:40px;" class="text-center"><?php echo display('Slab No');?><i class="text-danger">*</i></th>
+                              <th rowspan="2" style="width:80px;" class="text-center"><?php echo display('Slab No');?><i class="text-danger">*</i></th>
                               <th colspan="2"  style="width:150px;" class="text-center"><?php echo display('Net Measure');?><i class="text-danger">*</i></th>
                               <th rowspan="2" class="text-center"><?php echo display('Net Sq.Ft');?></th>
                               <th rowspan="2"  style="width:90px;" class="text-center"><?php echo display('Cost per Sq.Ft');?></th>
@@ -431,7 +438,7 @@
                               <th rowspan="2"  style="width:90px;" class="text-center"><?php echo display('sales'); ?><br/><?php echo display('Price per Sq.Ft');?></th>
                               <th rowspan="2"  style="width:90px;" class="text-center"><?php echo display('Sales Slab Price');?></th>
                               <th rowspan="2" class="text-center"><?php echo display('Weight');?></th>
-                              <th rowspan="2" class="text-center"><?php echo display('Origin');?></th>
+                              <th rowspan="2" style="width:120px;" class="text-center"><?php echo display('Origin');?></th>
                               <th rowspan="2" style="width: 130px" class="text-center"><?php  echo  display('total'); ?></th>
                               <th rowspan="2" class="text-center"><?php  echo  display('action'); ?></th>
                            </tr>
@@ -526,7 +533,8 @@
                                  <input type="text" id="weight_<?php  echo $m.$n; ?>" name="weight[]"  value="<?php  echo $inv['weight'];  ?>" class="weight form-control" />
                               </td>
                               <td >
-                                                <select id="origin_1" name="origin[]" class="origin form-control">      
+                                                <select id="origin_<?php  echo $m.$n; ?>" name="origin[]" class="origin form-control">   
+                                                    <option value="<?php echo $inv['origin']; ?>"><?php echo $inv['origin']; ?></option>   
                                                 <?php foreach ($country_code as $key => $value) { ?>
                                                    <option value="<?php echo $value['iso']; ?>"><?php echo $value['iso']; ?></option>
                                                 <?php } ?> </select>
@@ -613,7 +621,9 @@ foreach ($tax_data as $tx) {?>
                            <td  style="width:20%;"><a href="#" class="client-add-btn btn btnclr" aria-hidden="true" style="color:white;  margin-right: 295px;"  data-toggle="modal" data-target="#tax_info" ><i class="fa fa-plus"></i></a></td>
                         </tr>
                      </table>
-                  <table border="0" style="width: 100%; border-collapse: collapse; text-align: left;" class="overall table table-bordered table-hover" style="border:2px solid #d7d4d6;">
+
+                  <table border="0" style="width: 80%; border-collapse: collapse; float:right;text-align: left;border:none;" class="overall table table-bordered table-hover" style="border:2px solid #d7d4d6;">
+
     <tbody>
         <tr>
             <!-- Left Side -->
@@ -675,16 +685,7 @@ foreach ($tax_data as $tx) {?>
             </td>
         </tr>
     </tbody>
-    <tfoot>
-        <tr style="border-right:none; border-left:none; border-bottom:none; border-top:none;">
-            <td colspan="2" style="text-align: right; padding: 20px;">
-         
-              <a class="client-add-btn btn btnclr" aria-hidden="true" id="paypls" data-toggle="modal" data-target="#payment_modal">
-                        Make Payment
-             </a>
-            </td>
-        </tr>
-    </tfoot>
+
 </table>
                            
       <div class="row">
@@ -760,6 +761,7 @@ foreach ($tax_data as $tx) {?>
          </div>
          <div class="modal-body1">
             <form method='post' id='bulk_payment_form'>
+                 <div id="payment_error"></div>
                  <input type="hidden" name="<?php echo $this->security->get_csrf_token_name();?>" value="<?php echo $this->security->get_csrf_hash();?>">
             <div id="salle_list"></div>
                                        </form>
@@ -769,6 +771,11 @@ foreach ($tax_data as $tx) {?>
       </div>
    </div>
 </div>
+
+<input type="hidden" id="Final_invoice_number" /> 
+<input type="hidden" id="Final_invoice_id" /> 
+
+
 <div id="packmodal" class="modal fade" role="dialog">
    <div class="modal-dialog">
       <!-- Modal content-->
@@ -816,11 +823,31 @@ foreach ($tax_data as $tx) {?>
     var csrfHash = '<?php echo $this->security->get_csrf_hash();?>';
    $(document).ready(function(){
       $(".normalinvoice").each(function(i,v){
+
+          $(this).find('select').each(function() {
+    var $select = $(this);
+   if ($select.data('select2')) {
+        $select.select2('destroy');
+    }
+    $select.select2();
+});
+
        if($(this).find("tbody").html().trim().length === 0){
            $(this).hide()
        }
     })
+
+                              
+//  $('.normalinvoice tbody tr').find('select').each(function() {
+//     var $select = $(this);
+//    if ($select.data('select2')) {
+//         $select.select2('destroy');
+//     }
+//     $select.select2();
+// });
                         $('.normalinvoice tbody tr').each(function() {
+
+
         var tableId = $(this).closest('table').attr('id');
     updateTableTotals(tableId);
   updateOverallTotals(true);
@@ -879,7 +906,16 @@ foreach ($tax_data as $tx) {?>
        $("#isf_no1").hide();
    }).trigger("change");
    
-  
+
+      $('.final_submit').on('click', function (e) {
+    var input_hdn='Your Invoice No : "'+ $('#Final_invoice_number').val()+" has been Updated Successfully";
+
+ $('.errormessage_expense').html(succalert+input_hdn+'</div>');
+   window.setTimeout(function(){
+      window.location = "<?php  echo base_url(); ?>Cpurchase/manage_purchase?id=<?php echo $_GET['id']; ?>";
+     }, 2000);
+   });
+
        function payment_update(){
     $('.hidden_button').hide();
        var dataString = {
@@ -963,36 +999,234 @@ foreach ($tax_data as $tx) {?>
    
    });
       
-      
-  
 
-  $(document).on('keyup', '.normalinvoice tbody tr:last', function (e) {
-    var tableId = $(this).closest('table').attr('id');
-    var dynamicId = tableId.split('_').pop();
-    var $lastRow = $('#addPurchaseItem_' + dynamicId + ' tr:last');
-    var $newRow = $lastRow.clone();
-    var rowCount = $('#addPurchaseItem_' + dynamicId + ' tr').length;
-    var newRowNumber = dynamicId+''+rowCount;
-    $newRow.find('datalist, input, select, button').each(function () {
-        var $element = $(this);
-        var currentId = $element.attr('id');
-        if (currentId) {
-            var newId = currentId.replace(/\d+$/, newRowNumber);
-            $element.attr('id', newId);
-            if ($element.is('input') || $element.is('select')) {
-                if ($element.hasClass('product_name')) {
-                    $element.val('').prop('disabled', false);
-                } else {
-                    $element.val('');
-                }
-            }
-        }
+    function calculateSum(context, selector) {
+
+    var sum = 0;
+    $(context).find(selector).each(function() {
+        sum += parseFloat($(this).val()) || 0;
     });
-    $newRow.appendTo('#addPurchaseItem_' + dynamicId);
-    $('#normalinvoice_' + dynamicId + ' tbody tr').each(function (index) {
-        $(this).find(".slab_no").val(index + 1);
-    });
+    return sum;
+}
+// To calculate the values for the fields in Table footer
+function updateTableTotals(tableId) { 
+ var tableIdentifier = tableId.split('_').pop();
+    var sumNet = calculateSum('#' + tableId, '.net_sq_ft');
+    $('#overall_net_' + tableIdentifier).val(sumNet.toFixed(2));
+ var sumTotalPrice = calculateSum('#' + tableId, '.total_price');
+    $('#Total_' + tableIdentifier).val(sumTotalPrice.toFixed(2));
+ var sumGross = calculateSum('#' + tableId, '.gross_sq_ft');
+    $('#overall_gross_' + tableIdentifier).val(sumGross.toFixed(2));
+ var totalNetSalesPrice = calculateSum('#' + tableId, '.sales_amt_sq_ft');
+    $('#salespricepersqft_' + tableIdentifier).val(totalNetSalesPrice.toFixed(2));
+    var totalNetSalesSlabPrice = calculateSum('#' + tableId, '.sales_slab_amt');
+    $('#salesslabprice_' + tableIdentifier).val(totalNetSalesSlabPrice.toFixed(2));
+        var totalNetCost = calculateSum('#' + tableId, '.cost_sq_ft');
+    $('#costpersqft_' + tableIdentifier).val(totalNetCost.toFixed(2));
+        var totalNetCostSlabPrice = calculateSum('#' + tableId, '.cost_sq_slab');
+    $('#costperslab_' + tableIdentifier).val(totalNetCostSlabPrice.toFixed(2));
+   var totalWeightvalue = calculateSum('#' + tableId, '.weight');
+    $('#overall_weight_' + tableIdentifier).val(totalWeightvalue.toFixed(2));
+}
+// To calculate the overall total
+function updateOverallTotals(includeGross = false) {
+
+    var totalNet = calculateSum('.table', '.net_sq_ft');
+    $('#total_net').val(totalNet.toFixed(2)).trigger('change');
+
+    var overallSum = calculateSum('.table', '.total_price');
+    $('#Over_all_Total').val(overallSum.toFixed(2)).trigger('change');
+ var totalWeight = calculateSum('.table', '.weight');
+    $('#total_weight').val(totalWeight.toFixed(2)).trigger('change');
+    if (includeGross) {
+        var totalGross = calculateSum('.table', '.gross_sq_ft');
+        $('#total_gross').val(totalGross.toFixed(2)).trigger('change');
+    }
+   
+  var gtotal = parseFloat($('#gtotal').val()) || 0; 
+ var overall_total = parseFloat($('#Over_all_Total').val()) || 0;
+
+          if($('#product_tax').val()) {
+                var total=$('#Over_all_Total').val();
+                var tax= $('#product_tax').val();
+                var percent='';
+                 var hypen='-';
+               if(tax.indexOf(hypen) != -1){
+                var field = tax.split('-');
+               
+                var percent = field[1];
+               
+               }else{
+               percent=tax;
+               }
+               
+                percent=percent.replace("%","");
+                 var answer = (percent / 100) * parseFloat(total);
+                   $('#tax_details').val(answer.toFixed(2) +" ( "+tax+" )");
+          }
+        var additional_cost='';
+         if($('#landing_amount').val()){
+           $('#additional_cost').val(parseFloat($('#landing_amount').val()));
+ additional_cost= parseFloat($('#additional_cost').val()) || 0; 
+         }
+        var tax_amount = (overall_total * tax) / 100;
+      
+         overall_total = parseFloat(overall_total) || 0;
+ tax_amount = parseFloat(tax_amount) || 0;
+ additional_cost = parseFloat(additional_cost) || 0;
+  var amt=parseFloat(answer)+parseFloat(total);
+                 var num = isNaN(parseFloat(amt)) ? 0 : parseFloat(amt);
+                  var additional_cost =parseFloat($('#additional_cost').val()) || 0;
+                   $('#gtotal').val((num+additional_cost).toFixed(2)); 
+if(num <= 0){
+   $('#gtotal').val((overall_total+additional_cost).toFixed(2)); 
+}
+ var paid_amount =parseFloat($('#amount_paid').val()) || 0;
+    
+       var balance_amount= gtotal- paid_amount;
+    $('#balance').val(balance_amount);
+
+ var custo_amt = parseFloat($('.custocurrency_rate').val()) || 1;
+        var customer_prefered_currency = gtotal * custo_amt;
+        $('#customer_gtotal').val(customer_prefered_currency.toFixed(2));
+        $('#balance_customer_currency').val((balance_amount*custo_amt).toFixed(2));
+      $('#paid_customer_currency').val((paid_amount*custo_amt).toFixed(2));
+
+ 
+   
+     var lc_cost=0;
+               $('.table').each(function() {
+   $(this).find('.l_cost').each(function() {
+       var precio = $(this).val();
+       if (!isNaN(precio) && precio.length !== 0) {
+         lc_cost += parseFloat(precio);
+       }
+     });
+
+   $(this).closest('table').find('.landingpersqft').val(lc_cost).trigger('change');
+               });
+   var  lc_sqft=0;
+                $('.table').each(function() {
+
+   $(this).find('.l_cost_slab').each(function() {
+       var precio = $(this).val();
+       if (!isNaN(precio) && precio.length !== 0) {
+         lc_sqft += parseFloat(precio);
+       }
+     });
+
+   $(this).closest('table').find('.landingperslab').val(lc_sqft).trigger('change');
+               });
+
+ 
+}  
+  function updateNetCalculations() {
+      var $row = $(this).closest('tr');
+   var netWidthId = $(this).attr('id');
+
+    const indexLastDot = netWidthId.lastIndexOf('_');
+    var rowId = netWidthId.slice(indexLastDot + 1);
+ var netWidthId = 'net_width_' + rowId;
+    var netHeightId = 'net_height_' + rowId;
+    var net_sq_ft = 'net_sq_ft_' + rowId;
+    var salesAmtSqFtId = 'sales_amt_sq_ft_' + rowId;
+ var netWidth = parseFloat($row.find('#' + netWidthId).val()) || 0;
+    var netHeight = parseFloat($row.find('#' + netHeightId).val()) || 0;
+    var netSqFt = (netWidth * netHeight) / 144;
+ $row.find('#' + net_sq_ft).val(netSqFt.toFixed(2));
+
+  var salesAmtSqFt = parseFloat($('#' + salesAmtSqFtId).val()) || 0;
+        var salesSlabAmt = salesAmtSqFt * netSqFt;
+        $('#sales_slab_amt_' + rowId).val(salesSlabAmt.toFixed(2));
+        $('#total_amt_' + rowId).val(salesSlabAmt.toFixed(2));
+         var tableId = $row.closest('table').attr('id');
+    updateTableTotals(tableId);
+  updateOverallTotals(true);
+}
+// Gross Calculation
+function updateGrossCalculations() {
+    var $row = $(this).closest('tr');
+   var grossWidthId = $(this).attr('id');
+    const indexLastDot = grossWidthId.lastIndexOf('_');
+    var rowId = grossWidthId.slice(indexLastDot + 1);
+ var grossWidthId = 'gross_width_' + rowId;
+    var grossHeightId = 'gross_height_' + rowId;
+    var grossSqFtId = 'gross_sq_ft_' + rowId;
+ var grossWidth = parseFloat($row.find('#' + grossWidthId).val()) || 0;
+    var grossHeight = parseFloat($row.find('#' + grossHeightId).val()) || 0;
+    var grossSqFt = (grossWidth * grossHeight) / 144;
+ $row.find('#' + grossSqFtId).val(grossSqFt.toFixed(2));
+ var tableId = $row.closest('table').attr('id');
+    updateTableTotals(tableId);
+  updateOverallTotals(true);
+}
+
+// $(document).on('keyup', '.normalinvoice tbody tr:last', function (e) {
+// var tid = $(this).closest('table').attr('id');
+// const indexLast = tid.lastIndexOf('_');
+// var id = tid.slice(indexLast + 1);
+// var $lastRow = $('#addPurchaseItem_' + id + ' tr:last');
+
+
+$(document).on('keyup', '.normalinvoice tbody tr:last', function (e) {
+var tid = $(this).closest('table').attr('id');
+const indexLast = tid.lastIndexOf('_');
+var id = tid.slice(indexLast + 1);
+var $lastRow = $('#addPurchaseItem_' + id + ' tr:last');
+var num = id + ($lastRow.index() + 1);
+$('#addPurchaseItem_' + id + ' select').each(function() {
+    if ($(this).data('select2')) {
+        $(this).select2('destroy');
+    }
 });
+var $newRow = $('<tr></tr>');
+$lastRow.find('td').each(function() {
+    var $td = $(this);
+    var $clonedTd = $td.clone();    
+    $clonedTd.find('select, input').each(function() {
+        var $element = $(this).clone(); 
+        var newId = $element.attr('id') ? $element.attr('id').replace(/\d+$/, num) : null;
+        if (newId) {
+            $element.attr('id', newId); 
+        }
+        $(this).replaceWith($element);
+    });
+    $newRow.append($clonedTd);
+});
+
+$newRow.appendTo('#addPurchaseItem_' + id);
+
+
+$newRow.find('select').each(function() {
+    var $select = $(this);
+    
+    
+    if ($select.data('select2')) {
+        $select.select2('destroy');
+    }
+    
+    $select.select2();
+});
+
+
+   
+   });
+
+
+
+$(document).on('click', '.delete', function(){
+   var $tableBody = $(this).closest('tbody');
+    var rowCount = $tableBody.find('tr').length;
+  if (rowCount > 1) {
+        $(this).closest('tr').remove();
+  updateTableTotals($tableBody.closest('table').attr('id'));
+        updateOverallTotals(true);
+    } else {
+        $('#errormessage_expense').html('<div class="alert alert-danger alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>' + 'You cannot delete the last row. At least one row must remain..' + '</div>');
+    }
+});
+
+
               
 $('#supplier_id').on('change', function (e) {
   var data = {
@@ -1011,6 +1245,10 @@ $('#supplier_id').on('change', function (e) {
         csrfHash = result.csrfHash;
       }
 
+ $('#vendor_add').html(result[0]['address']);
+                   $('#vendor_type_details').html(result[0]['vendor_type']);
+                   debugger;
+
       console.log(result[0]['currency_type']);
       $(".cus").html(result[0]['currency_type']);
       $("label[for='custocurrency']").html(result[0]['currency_type']);
@@ -1027,10 +1265,9 @@ $('#supplier_id').on('change', function (e) {
       });
 
 
+
     }
   });
-
-
 });
  $('#product_tax').on('change', function (e) {
   
@@ -1065,7 +1302,70 @@ percent=tax;
 
  });
  
-   
+   $.validator.addMethod('isfNoRequired', function(value, element, param) {
+    var isfField = $('select[name="isf_field"]').val();
+    return isfField != '2' || $.trim(value).length > 0;
+}, 'ISF No is required when ISF Field is YES.');
+
+$("#insert_expense").validate({
+   rules: {
+    supplier_id: "required",
+    invoice_no: "required", 
+    payment_due_date : "required", 
+    bill_date : "required",
+    payment_terms: "required",  
+    paytype_drop : "required",
+     isf_no: {
+            isfNoRequired: true
+        }
+ },
+ messages: {
+     supplier_id: "Supplier Name is required",
+    invoice_no: "Invoice Number is required",
+    payment_terms: "Payment Term is required",
+    paytype_drop: "Payment Type is required",
+      payment_due_date: "Payment Due Date is required",
+      bill_date: "Bill Date is required",
+       isf_no: "ISF No is required when ISF Field is YES.",
+ },
+    errorPlacement: function(error, element) {
+            if (element.hasClass("select2-hidden-accessible")) {
+                error.insertAfter(element.next('span.select2')); // Place error message after the Select2 element
+            } else {
+                error.insertAfter(element);
+            }
+        },
+submitHandler: function(form) {
+  var formData = new FormData(form);
+  formData.append(csrfName, csrfHash);
+  $.ajax({
+    type: "POST",
+    dataType: "json",
+    url:"<?php echo base_url(); ?>Cpurchase/insert_purchase",
+    data: formData,
+    contentType: false,
+    processData: false,
+    success: function(response) {
+      debugger;
+      console.log(response);
+    if (response.status == 'success') {
+
+   $('#errormessage_expense').html('<div class="alert alert-success">' + response.msg + '</div>');
+     $('#Final_invoice_number').val(response.invoice_no);
+          $('#Final_invoice_id').val(response.invoice_id);
+         
+                  }else{
+
+          $('#errormessage_expense').html(failalert+response.msg+'</div>'); 
+          console.log(response.msg, "Error");
+       }                  
+    },
+        error: function(xhr, status, error) {
+        alert('An error occurred: ' + error);
+    }
+  })
+}
+});
    function generateRandom10DigitNumber() {
     const min = Math.pow(10, 9); // 10^9
     const max = Math.pow(10, 10) - 1; // 10^10 - 1
@@ -1089,15 +1389,30 @@ $(document).on('click', '#pay_now', function (event) {
 
 success: function (response) {
     if (response.status == 'success') {
-    $('#payment_history_modal').modal('hide');
+        $('#payment_error').html('<div class="alert alert-success alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>' + 'Payment Details Updated Successfully' + '</div>');
+       
+   
            
       window.setTimeout(function(){
        
    location.reload();
 
+
+  });
+
+
+});
+ $('#product_tax').on('change', function (e) {
+  
+  var total=$('#Over_all_Total').val();
+ var tax= $('#product_tax').val();
+if(tax.indexOf(hypen) != -1){
+ var field = tax.split('-');
+
    },2000);
 }else{
-
+  $('#payment_error').html('<div class="alert alert-danger alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>' + 'Failed to Update.Try Again..' + '</div>');
+    
 }
            },
            
@@ -1105,6 +1420,7 @@ success: function (response) {
           
        });
    });
+
 
 
 
@@ -1133,6 +1449,7 @@ var csrf_token = {
         };
         tableData.push(rowData);
     });
+
 
     var postData = {
                           tableData: tableData
@@ -1238,6 +1555,13 @@ var overall_paid = parseFloat(data.overall[0].overall_paid);
             var count1 = 1;
 
 
+    var postData = {
+                          tableData: tableData
+                     };
+                     postData[csrfName] = csrfHash;
+ 
+
+
             for (var invoiceId in basedOnCustomer) {
     if (basedOnCustomer.hasOwnProperty(invoiceId)) {
   
@@ -1262,6 +1586,7 @@ var overall_paid = parseFloat(data.overall[0].overall_paid);
             var count2 = 1;
   all +=  total2 + table_header2 + html2 + table_footer2;
 
+
             $('#salle_list').html(all);
             $('#payment_history_modal').modal('show');
               $('#pay_now_table').hide();
@@ -1285,6 +1610,7 @@ amountPaidCells.forEach(function (cell) {
     });
 });
 
+
 function toggleTable() {
   const toggleTable = document.getElementById('toggle_table');
   const toggleButton = document.querySelector('.toggle-button');
@@ -1304,8 +1630,10 @@ function toggleTable() {
 
 
 
+
 $(document).ready(function () {
     $(document).on('keyup', '#total-amount', function () {
+
 
         var totalAmount = parseFloat($(this).val().trim());
 
@@ -1326,6 +1654,7 @@ $(document).ready(function () {
             var balance = parseFloat(balanceCell.val());
   balance = isNaN(balance) ? 0 : balance;
 
+
             if (balance > 0 && remainingAmount > 0) {
                 var amountToPay = Math.min(balance, remainingAmount);
                 amountPayInput.val(amountToPay.toFixed(2));
@@ -1343,6 +1672,7 @@ $(document).ready(function () {
 
         if (amountToPay > 0) {
             $(this).find('.checkbox-distribute').prop('checked', true);
+
         }
 
     
@@ -1467,7 +1797,6 @@ function updateTotalbalanceToPay() {
     var amount1 = parseFloat($(this).val()) || 0; 
     totalbalanceToPay += amount1;
   });
-  
 
   $('.t_bal_pay').text(totalbalanceToPay.toFixed(2));
 }
@@ -1989,8 +2318,32 @@ $(this).find('.editable-amount-paid input').val(paymentAmount);
    opt.text = text;
    ddl.options.add(opt);
    }
+      let dynamic_id=2;
+
+   function addbundle(){
+   $(this).closest('table').find('.addbundle').css("display","none");
+   $(this).closest('table').find('.removebundle').css("display","block");
    
+   var newdiv = document.createElement('div');
+   var tabin="crate_wrap_"+dynamic_id;
+   
+   newdiv = document.createElement("div");
+   
+   
+   newdiv.innerHTML ='<table class="table normalinvoice table-bordered table-hover"     style="border:2px solid #d7d4d6;"               id="normalinvoice_'+ dynamic_id +'"> <thead> <tr> <th rowspan="2" class="text-center" style="width: 170px;" ><?php echo display('product_name'); ?><i class="text-danger">*</i></th> <th rowspan="2"  class="text-center"><?php echo display('Bundle No');?><i class="text-danger">*</i></th> <th rowspan="2"  class="text-center"><?php echo  display('description'); ?></th> <th rowspan="2" style="width:60px;" class="text-center"><?php echo display('Thick ness');?><i class="text-danger">*</i></th> <th rowspan="2" class="text-center"><?php echo display('Supplier Block No');?><i class="text-danger">*</i></th>  <th rowspan="2" class="text-center" ><?php echo display('Supplier Slab No');?><i class="text-danger">*</i> </th> <th colspan="2" style="width:150px;" class="text-center"><?php echo display('Gross Measurement');?><i class="text-danger">*</i> </th> <th rowspan="2" class="text-center"><?php echo display('Gross Sq.Ft');?></th>  <th rowspan="2" style="width:40px;" class="text-center"><?php echo display('Slab No');?><i class="text-danger">*</i></th> <th colspan="2" style="width:150px;" class="text-center"><?php echo display('Net Measure');?><i class="text-danger">*</i></th> <th rowspan="2" class="text-center"><?php echo display('Net Sq.Ft');?></th> <th rowspan="2" class="text-center"><?php echo display('Cost per Sq.Ft');?></th> <th rowspan="2"  class="text-center"><?php echo display('Cost per Slab');?></th> <th rowspan="2"  class="text-center"><?php echo display('sales'); ?><br/><?php echo display('Price per Sq.Ft');?></th> <th rowspan="2"  class="text-center"><?php echo display('Sales Slab Price');?></th> <th rowspan="2" class="text-center"><?php echo display('Weight');?></th> <th rowspan="2" class="text-center"><?php echo display('Origin');?></th>  <th rowspan="2" style="width: 100px" class="text-center"><?php  echo  display('total'); ?></th> <th rowspan="2" class="text-center"><?php  echo  display('action'); ?></th> </tr>  <tr> <th class="text-center"><?php echo display('Width');?></th> <th class="text-center"><?php echo display('Height');?></th> <th class="text-center"><?php echo display('Width');?></th> <th class="text-center"><?php echo display('Height');?></th> </tr>  </thead> <tbody id="addPurchaseItem_'+ dynamic_id +'"> <tr> <input type="hidden" name="tableid[]" id="tableid_'+ dynamic_id +'"/><td> <input   list="magicHouses"  style="width:160px;" name="prodt[]" id="prodt_'+ dynamic_id +'"   class="form-control product_name"  placeholder="Search Product" > <datalist id="magicHouses"> <option value="Select the Product" selected>Select the Product</option> <?php  foreach($product_list as $tx){?>  <option value="<?php echo $tx["product_name"]."-".$tx["product_model"];?>">  <?php echo $tx["product_name"]."-".$tx["product_model"];  ?></option> <?php } ?> </datalist> <input type="hidden" class="common_product autocomplete_hidden_value  product_id_'+ dynamic_id +'" name="product_id[]" id="SchoolHiddenId_'+ dynamic_id +'" /> </td> <td>  <input list="magic_bundle" name="bundle_no[]" id="bundle_no_'+ dynamic_id +'"   class="form-control bundle_no"'+
+   'onchange="this.blur();" /><datalist id="magic_bundle"><?php foreach($bundle as $tx){?> <option value="<?php echo $tx['bundle_no'];?>">  <?php echo $tx['bundle_no'];  ?></option> <?php } ?>'+
+   
+   '</datalist></td> <td> <input type="text" id="description_'+ dynamic_id +'" name="description[]" class="form-control" /> </td>  <td > <input type="text" name="thickness[]" id="thickness_'+ dynamic_id +'" required="" class="form-control"/> </td>  <td><input list="magic_supplier_block" name="supplier_block_no[]"  id="supplier_b_no_'+ dynamic_id +'"   class="form-control supplier_block_no"  placeholder="Search Product"  onchange="this.blur();" /><datalist id="magic_supplier_block"><?php foreach($supplier_block_no as $tx){?><option value="<?php echo $tx['supplier_block_no'];?>">  <?php echo $tx['supplier_block_no'];  ?></option><?php } ?></datalist> </td>  <td > <input type="text"  id="supplier_s_no_'+ dynamic_id +'" name="supplier_slab_no[]" required="" class="form-control"/> </td> <td> <input type="text" id="gross_width_'+ dynamic_id +'" name="gross_width[]" required="" class="gross_width  form-control" /> </td> <td> <input type="text" id="gross_height_'+ dynamic_id +'" name="gross_height[]"  required="" class="gross_height form-control" /> </td>  <td > <input type="text"   style="width:60px;" readonly id="gross_sq_ft_'+ dynamic_id +'" name="gross_sq_ft[]" class="gross_sq_ft form-control"/> </td>   <td style="text-align:center;" >  <input type="text"   style="width:20px;" value="1" class="slab_no" id="slab_no_'+ dynamic_id +'" name="slab_no[]"   readonly  required=""/>  </td> <td> <input type="text" id="net_width_'+ dynamic_id +'" name="net_width[]" required="" class="net_width form-control" /> </td> <td> <input type="text" id="net_height_'+ dynamic_id +'" name="net_height[]"    required="" class="net_height form-control" /> </td> <td > <input type="text"   style="width:60px;" readonly id="net_sq_ft_'+ dynamic_id +'" name="net_sq_ft[]" class="net_sq_ft form-control"/> </td> <td>   <span class="input-symbol-euro"><input type="text" id="cost_sq_ft_'+ dynamic_id +'"  name="cost_sq_ft[]"   style="width:70px;" placeholder="0.00"  class="cost_sq_ft form-control" ></span>   <td >  <span class="input-symbol-euro"> <input type="text"  id="cost_sq_slab_'+ dynamic_id +'" name="cost_sq_slab[]"    style="width:70px;" placeholder="0.00"  class="cost_sq_slab form-control"/></span>     </td> <td>  <span class="input-symbol-euro">  <input type="text" id="sales_amt_sq_ft_'+ dynamic_id +'"  name="sales_amt_sq_ft[]"  style="width:70px;"  placeholder="0.00" class="sales_amt_sq_ft form-control" /></span>     </td>  <td >  <span class="input-symbol-euro">   <input type="text"  id="sales_slab_amt_'+ dynamic_id +'" name="sales_slab_amt[]"  style="width:70px;" placeholder="0.00"  class="sales_slab_amt form-control"/></td> </span>     </td> <td> <input type="text" id="weight_'+ dynamic_id +'" name="weight[]"  class="weight form-control" /> </td>  <td >  <select  id="origin_'+ dynamic_id +'"    name="origin[]" class="origin form-control">  <?php foreach ($country_code as $key => $value) { ?>  <option value="<?php echo $value['iso']; ?>"><?php echo $value['iso']; ?></option> <?php } ?> </select> </td>  <td > <span class="input-symbol-euro"><input  type="text" class="total_price form-control" style="width:80px;" readonly value="0.00"  id="total_amt_'+ dynamic_id +'"     name="total_amt[]"/></span> </td>  <td style="text-align:center;"> <button  class="delete btn btn-danger" id="delete_'+ dynamic_id +'" type="button" value="Delete" ><i class="fa fa-trash"></i></button> </td>  </tr> </tbody> <tfoot> <tr> <td style="text-align:right;" colspan="8"><b>Gross Sq.Ft :</b></td> <td > <input type="text" id="overall_gross_'+ dynamic_id +'" name="overall_gross[]"   class="overall_gross form-control" style="width: 60px"  readonly="readonly"  /> </td> <td style="text-align:right;" colspan="3"><b>Net Sq.Ft :</b></td> <td > <input type="text" id="overall_net_'+ dynamic_id +'" name="overall_net[]"  class="overall_net form-control"  style="width: 60px"  readonly /> </td>  <td><input type="text" id="costpersqft_'+ dynamic_id +'"  name="costpersqft[]"   style="width:60px;"   readonly   class="costpersqft form-control" /></span></td>'+
+   '<td ><input type="text"  id="costperslab_'+ dynamic_id +'" name="costperslab[]"  readonly  style="width:60px;"   class="costperslab form-control"/></td><td>  <input type="text" id="salespricepersqft_'+ dynamic_id +'"  name="salespricepersqft[]"  readonly style="width:60px;"   class="salespricepersqft form-control" /></td><td >   <input type="text"  id="salesslabprice_'+ dynamic_id +'" name="salesslabprice[]"  style="width:60px;"  readonly  class="salesslabprice form-control"/></td> </span><td ><input type="text" id="overall_weight_'+ dynamic_id +'" name="overall_weight[]"  class="overall_weight form-control"  style="width: 60px"  readonly /></td><td style="text-align:right;font-size: 13px;" colspan="1"><b><?php echo "Total" ?> :</b></td><td ><span class="input-symbol-euro">    <input type="text" id="Total_'+ dynamic_id +'" name="total[]"   class="b_total form-control"  style="width: 80px" value="0.00"  readonly="readonly"  /></span></td>  <td  style="text-align:center;"><i id="buddle_'+ dynamic_id +'" onclick="removebundle(); " class="btn-danger removebundle fa fa-minus" aria-hidden="true"></i></td>   </tr> </foot></table> <i id="buddle_'+ dynamic_id +'"     onclick="addbundle(); " class="btnclr addbundle fa fa-plus" aria-hidden="true"></i>';  
+   
+   
+   document.getElementById('content').appendChild(newdiv);
+   
+   dynamic_id++;
+   
+   }
 </script>
+
 
 
    

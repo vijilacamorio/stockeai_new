@@ -1497,7 +1497,7 @@ class Ppurchases extends CI_Model {
         $this->db->from('company_information');
         $this->db->where('company_id', $admin_id);
         $query = $this->db->get();
-        if ($query->num_rows() > 0) {
+         if ($query->num_rows() > 0) {
             return $query->result_array();
         }
     }

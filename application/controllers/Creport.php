@@ -839,4 +839,125 @@ class Creport extends CI_Controller {
         ];
         echo json_encode($response);
     }
+
+
+     
+    public function productReportStock() {
+         
+        $this->load->library("lproduct");
+        $this->load->model("Products");
+        $this->load->model("Web_settings");
+        $setting_detail         = $this->Web_settings->retrieve_setting_editdata($this->admin_id);
+        $data["list"]           = $this->lproduct->product_list($this->admin_id);
+        $company_info           = $this->Products->retrieve_company($this->admin_id);
+        $data["getsupplier"]    = $this->Suppliers->get_all_supplier($this->admin_id);
+        $data["total_product"]  = $this->Products->count_product($this->admin_id);
+        $data["products"]       = $this->Products->product_info_report($this->admin_id);
+        $data["company_info"]   = $company_info;
+        $data["setting_detail"] = $setting_detail;
+        $data["sale_count"]     = $this->Products->sales_product_all($this->admin_id);
+        $data["expense_count"]  = $this->Products->expense_product_all($this->admin_id);
+        // $data["category"]       = $this->Products->get_products($this->admin_id);
+        $content                = $this->parser->parse("report/product_stock", $data, true);
+        $this->template->full_admin_html_view($content);
+    }
+
+
+    public function productReportStockData() {
+        $this->load->library("lproduct");
+        $this->load->model("Products");
+        $this->load->model("Web_settings");
+        $this->load->model("Suppliers");
+        $this->load->model('Reports');
+    
+        $setting_detail = $this->Web_settings->retrieve_setting_editdata($this->admin_id);
+        
+    
+        // Fetch sales and expense data for all products
+        $sale_count = $this->Products->sales_product_all($this->admin_id);
+        $expense_count = $this->Products->expense_product_all($this->admin_id);
+    
+        $currency = $setting_detail[0]['currency'];
+        $limit = $this->input->post('length');
+        $start = $this->input->post('start');
+        $search = $this->input->post('search')['value'];
+        $supplierId = $this->input->post('supplier_id');
+        $msearch['supplier_id'] = $supplierId;
+        $orderField = $this->input->post('columns')[$this->input->post('order')[0]['column']]['data'];
+        $orderDirection = $this->input->post('order')[0]['dir'];
+        $totalItems = $this->Reports->getProductReportCount($search, $this->admin_id, $msearch);
+        $items = $this->Reports->getProductReportData($limit, $start, $orderField, $orderDirection, $search, $this->admin_id, $msearch);
+    
+        $data = [];
+        $i = $start + 1;
+    
+        if (!empty($items)) {
+            foreach ($items as $product) {
+                $sales_total = 0;
+                $expenses_total = 0;
+    
+                // Calculate the total sales for this product
+                if (!empty($sale_count)) {
+                    foreach ($sale_count as $sale) {
+                        if ($product['product_id'] == $sale['product_id']) {
+                            $sales_total += $sale['available'];
+                        }
+                    }
+                }
+    
+                // Calculate the total expenses for this product
+                if (!empty($expense_count)) {
+                    foreach ($expense_count as $expense) {
+                        if ($product['product_id'] == $expense['product_id']) {
+                            $expenses_total += $expense['available'];
+                        }
+                    }
+                }
+    
+                // Calculate the total availability
+                $total = $product['p_quantity'] - $sales_total + $expenses_total;
+    
+                // Generate the table row with data
+                $row = [
+                    "supplier_id"   => $i,
+                    "product_id"    => $product['product_id'],
+                    "product_name"  => $product['product_name'],   
+                    "product_model" => $product['product_model'],
+                    "p_quantity"    => '
+                        <td data-col="4" class="4" style="text-align: center;">
+                            <div class="row" style="text-align:center; padding:5px; width:200px; border: 1px solid #d3d3d366; margin: -1px;">
+                                <div class="col-sm-6" style="font-weight:bold;">'.display('In Stock').'</div>
+                                <div class="col-sm-6" id="stock">'.$product['p_quantity'].'</div>
+                            </div>
+                            <div class="row" style="text-align:center; padding:5px; width:200px; border: 1px solid #d3d3d366; margin: -1px;">
+                                <div class="col-sm-6" style="font-weight:bold;">'. ('Availability').'</div>
+                                <div id="avail" class="col-sm-6">
+                                    '.($total).'
+                                </div>
+                            </div>
+                        </td>',
+                    "unit"          => $product['product_quantity']
+                ];
+    
+                // Add the generated row to the data array
+                $data[] = $row;
+                $i++;
+            }
+        }
+    
+        $response = [
+            "draw"            => $this->input->post('draw'),
+            "recordsTotal"    => $totalItems,
+            "recordsFiltered" => $totalItems,
+            "data"            => $data,
+        ];
+    
+        echo json_encode($response);
+    }
+    
+
+
+
+
+
 }

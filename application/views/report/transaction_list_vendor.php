@@ -152,7 +152,11 @@
          ?>
       <div class="row">
         <div class="col-sm-12">
+<<<<<<< expense_m
             <div class="panel panel-bd lobidrag" style='height:70px;  border: 3px solid #d7d4d6; ' >
+=======
+            <div class="panel panel-bd lobidrag" style='height:70px;  border: 3px solid #d7d4d6;' >
+>>>>>>> master
                 <div class='col-sm-8'>
                     <div class="panel-body">
                         <table class="table1 table-bordered" style='border:none;margin-top: -10px;' cellspacing="0" width="100%"  style='border:none;'>
@@ -197,6 +201,7 @@
                      </div>
                      <table class="table table-bordered" id="vendorTransTbl" cellspacing="0" width="100%">
                         <thead class="sortableTable">
+<<<<<<< expense_m
                             <th width="5%">S.No</th>
                             <th width="11%">Supplier Name</th>
                            <th width="11%">Invoice Number</th>
@@ -207,6 +212,18 @@
                            <th width="10%">Balance</th>
                            <th width="10%">Details</th>
                            <th width="10%">Status</th>
+=======
+                            <th class="btnclr"  width="5%">S.No</th>
+                            <th class="btnclr" width="11%">Supplier Name</th>
+                           <th class="btnclr" width="11%">Invoice Number</th>
+                           <th class="btnclr" width="11%">Payment ID</th>
+                           <th class="btnclr" width="11%">Payment Date</th>
+                           <th class="btnclr" width="11%">Total Amount</th>
+                           <th class="btnclr" width="10%">Amount Paid</th>
+                           <th class="btnclr" width="10%">Balance</th>
+                           <th class="btnclr" width="10%">Details</th>
+                           <th class="btnclr" width="10%">Status</th>
+>>>>>>> master
                         </thead>
                      </table>
                   </div>

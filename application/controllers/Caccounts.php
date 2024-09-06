@@ -912,7 +912,7 @@ public function getTaxesData()
             "account"             => $item["account"],
             "show_taxonreturn"    => $item["show_taxonreturn"],
             "status_type"         => $item["status_type"],
-            'created_date'        => date('Y-m-d',strtotime($item['created_date'])),
+            'created_date'        => date('m-d-Y',strtotime($item['created_date'])),
             "action"              => $edit . $delete,
         ];
         $data[] = $row;

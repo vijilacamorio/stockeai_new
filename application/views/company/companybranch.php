@@ -349,7 +349,7 @@ $("#create_company").validate({
         website     : "required",   
     },
     messages: {
-        company_name : "Company Name isrequired",  
+        company_name : "Company Name is required",  
         email       : "Email  is required",  
         mobile      : "Mobile is required",  
         c_city      : "City is required",  
