@@ -66,14 +66,17 @@ $tableData = $this->input->post('tableData');
             'create_by'  => $this->session->userdata('user_id')
            );
            $this->db->insert('payment', $data);
+           echo $this->db->last_query();
 }
 $data1=array(
   'paid_amount'  => $tableData[0]['t_amt_paid'],  
-  'balance'  => $tableData[0]['t_bal_amt']    
+  'balance'  => $tableData[0]['t_bal_amt']   ,
+    'payment_id' =>$tableData[0]['payment']   
 );
-$this->db->where('payment_id',$tableData[0]['payment']);
-$this->db->where('create_by',$this->session->userdata('user_id'));
+$this->db->where('chalan_no',$tableData[0]['bill_bo']);
+
  $this->db->update('product_purchase', $data1);
+   echo $this->db->last_query();
 }
 public function payment_edit_serv_pro(){
 $tableData = $this->input->post('tableData');
@@ -94,15 +97,16 @@ $tableData = $this->input->post('tableData');
             'create_by'  => $this->session->userdata('user_id')
            );
            $this->db->insert('payment', $data);
+    
 }
 $data1=array(
   'amount_paids'  => $tableData[0]['t_amt_paid'],  
-  'balances'  => $tableData[0]['t_bal_amt']    
+  'balances'  => $tableData[0]['t_bal_amt'] ,
+  'payment_id' =>$tableData[0]['payment']   
 );
-$this->db->where('payment_id',$tableData[0]['payment']);
-$this->db->where('create_by',$this->session->userdata('user_id'));
+$this->db->where('bill_number',$tableData[0]['inv_no']);
  $this->db->update('service', $data1);
- echo $this->db->last_query();
+
 }
     #==============sale delete==============#
     public function sale_invoice_delete($invoice_id)

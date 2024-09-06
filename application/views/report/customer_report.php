@@ -7,7 +7,7 @@
         </div>
         <div class="header-title">
             <div class="logo-holder logo-9">
-                <h1><strong>Customer Information</strong></h1>
+                <h1><strong>Sales by customer</strong></h1>
             </div>
             <ol class="breadcrumb" style=" border: 3px solid #d7d4d6;">
                 <li><a href="<?php echo base_url(); ?>"><i class="pe-7s-home"></i> <?php echo display('home') ?></a>
@@ -88,7 +88,7 @@
                         }
                     },
                     "columns": [{
-                            "data": "customer_id"
+                            "data": "id"
                         },
                         {
                             "data": "commercial_invoice_number"

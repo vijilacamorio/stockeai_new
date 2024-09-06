@@ -35,10 +35,10 @@ class Suppliers extends CI_Model {
         $query = $this->db->get();
         return $query->row_array(); 
     }
-    public function get_all_supplier() {
+    public function get_all_supplier($admin_id) {
         $this->db->select('*');
         $this->db->from('supplier_information');
-        $this->db->where('created_by' ,$this->session->userdata('user_id'));
+        $this->db->where('created_by' ,$admin_id);
         $query = $this->db->get();  
             return $query->result_array();
     }
@@ -82,7 +82,7 @@ class Suppliers extends CI_Model {
         }
         return false;
     }
-     public function transaction_supplier($supplier=null,$date=null){
+     public function transaction_supplier($admin_id, $supplier=null,$date=null){
         if($date) {
             $split=explode(' to ',$date);
             $start =  $split[0];
@@ -99,9 +99,10 @@ class Suppliers extends CI_Model {
             $this->db->where('py.payment_date <=',$end);
         }
         $this->db->join('payment py','p.payment_id=py.payment_id');
-        $this->db->where('s.created_by',$this->session->userdata('user_id'));
+        $this->db->where('s.created_by',$admin_id);
         $query = $this->db->get();
-     if ($query->num_rows() > 0) {
+        //echo $this->db->last_query();
+        if ($query->num_rows() > 0) {
             return $query->result_array();
         }
         return false;
@@ -172,20 +173,22 @@ class Suppliers extends CI_Model {
         return  $supplier_id;
 
     }
-     public function supplier_list($company_id) {
-        $this->db->select('supplier_name,supplier_id');
+
+     
+    public function supplier_list($admin_company_id) {
+        $this->db->select('supplier_name,supplier_id,created_by');
         $this->db->from('supplier_information');
-        if($company_id ==""){
-            $this->db->where('created_by',$this->session->userdata('user_id'));
-        }else{
-            $this->db->where('created_by',$company_id);
-        }
-        //echo $this->db->get_compiled_select();
+        $this->db->where('created_by',$admin_company_id);
         $query = $this->db->get();
+        // echo $this->db->last_query(); die();
         if ($query->num_rows() > 0) {
             return $query->result_array();
         }
     }
+
+
+
+
     public function getSupplierCount($searchValue,$companyId){
         $searchQuery = "";
         if($searchValue != ''){
@@ -729,6 +732,109 @@ public function retrieve_supplier_editdata($supplier_id) {
         }
         return false;
     }
+
+
+
+
+
+
+
+
+    public function suppliers_list($date=null ) {
+                    if($date) {
+            $split = array_map(
+            function($value) {
+                return implode(' ', $value);
+            },
+            array_chunk(explode('-', $date), 3)
+            );
+                $start = str_replace(' ', '-', $split[0]);
+                $end = str_replace(' ', '-', $split[1]);
+                $start = rtrim($start, "-");
+                $end= preg_replace('/' . '-' . '/', '', $end, 1);
+            }
+            $query = '';
+                $data = array();
+                $records_per_page = 10;
+                $start_from = 0;
+                $current_page_number = 0;
+                if(isset($_POST["rowCount"]))
+                {
+                $records_per_page = $_POST["rowCount"];
+                }
+                else
+                {
+                $records_per_page = 10;
+                }
+                if(isset($_POST["current"]))
+                {
+                $current_page_number = $_POST["current"];
+                }
+                else
+                {
+                $current_page_number = 1;
+                }
+                $start_from = ($current_page_number - 1) * $records_per_page;
+                $usertype = $this->session->userdata('user_type');
+                    $this->db->select("(select (sum(due_amount_usd)) from product_purchase where supplier_id= `b`.`supplier_id`) as due_amount_usd,(select (sum(balance)) from product_purchase where supplier_id= `b`.`supplier_id`) as inv_due_amount_usd,(select (sum(balances)) from service where service_provider_name= `a`.`supplier_name`) as service_balance, a.*,b.HeadCode,((select ifnull(sum(Debit),0) from acc_transaction where COAID= `b`.`HeadCode` AND IsAppove = 1)-(select ifnull(sum(Credit),0) from acc_transaction where COAID= `b`.`HeadCode` AND IsAppove = 1)) as balance");
+                    $this->db->from('supplier_information a');
+                    $this->db->join('acc_coa b','a.supplier_id = b.supplier_id','left');
+                    $this->db->group_by('a.supplier_id');
+                    $this->db->where('a.created_by',$this->session->userdata('user_id'));
+                if($date) {
+                if(!empty($start) && !empty($end)){
+                    $this->db->where('a.date >=',$start);
+                $this->db->where('a.date <=',$end);
+                }
+                }
+                if(!empty($_POST["searchPhrase"]))
+                {
+                $query .= 'WHERE (a.supplier_name LIKE "%'.$_POST["searchPhrase"].'%" ';
+                $query .= 'OR a.address LIKE "%'.$_POST["searchPhrase"].'%" ';
+                $query .= 'OR a.mobile LIKE "%'.$_POST["searchPhrase"].'%" ';
+                $query .= 'OR a.businessphone LIKE "%'.$_POST["searchPhrase"].'%" ) ';
+                $query .= 'OR a.primaryemail LIKE "%'.$_POST["searchPhrase"].'%" ) ';
+                $query .= 'OR a.city LIKE "%'.$_POST["searchPhrase"].'%" ) ';
+                $query .= 'OR a.country LIKE "%'.$_POST["searchPhrase"].'%" ) ';
+                }
+                $order_by = '';
+                if(isset($_POST["sort"]) && is_array($_POST["sort"]))
+                {
+                foreach($_POST["sort"] as $key => $value)
+                {
+                $order_by .= " $key $value, ";
+                }
+                }
+                else
+                {
+                $query .= 'ORDER BY a.id DESC ';
+                }
+                
+                if($records_per_page != -1)
+                {
+                $query .= " LIMIT " . $start_from . ", " . $records_per_page;
+                }
+                    $query = $this->db->get();
+                $result = $query->result_array();
+                foreach($result as $row)
+            {
+                $data[] = $row;
+            }
+                $this->db->select("a.*,b.HeadCode,((select ifnull(sum(Debit),0) from acc_transaction where COAID= `b`.`HeadCode` AND IsAppove = 1)-(select ifnull(sum(Credit),0) from acc_transaction where COAID= `b`.`HeadCode` AND IsAppove = 1)) as balance");
+                    $this->db->from('supplier_information a');
+                    $this->db->join('acc_coa b','a.supplier_id = b.supplier_id','left');
+                    $this->db->group_by('a.supplier_id');
+                    $this->db->where('a.created_by',$this->session->userdata('user_id'));
+                $this->db->get();
+                $result1 = $query->result_array();
+                $total_records = $query->num_rows();
+                    $output = array(
+                'rows'   => $data
+                );
+            return $output;
+            }
+
+
 
 
 }
