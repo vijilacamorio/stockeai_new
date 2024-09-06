@@ -88,7 +88,7 @@
                                    <div class="form-group row">
                                     <label for="billing_address" class="col-sm-4     col-form-label"><?php echo display('Payment Terms');?>
                                     <i class="text-danger">*</i></label>
-                                    <div class="col-sm-7">
+                                    <div class="col-sm-8">
                                        <select   name="payment_terms" id="payment_terms" style="width:100%;border:2px solid #d7d4d6;" class=" form-control" required placeholder='Payment Terms' id="payment_terms">
                                      <option value="<?php echo $purchase_info[0]['payment_terms']; ?>"><?php echo $purchase_info[0]['payment_terms']; ?></option>
 											<?php
@@ -98,9 +98,7 @@
 											?>
                                        </select>
                                     </div>
-                                    <div class="col-sm-1 mobile_vendor">
-                                       <a href="#" class="btnclr client-add-btn btn " aria-hidden="true"    data-toggle="modal" data-target="#payment_type_new" ><i class="fa fa-plus"></i></a>
-                                    </div>
+  
                                  </div>  
 <div class="form-group row">
                                     <label for="account_category" class="col-sm-4 col-form-label">Account Category</label>
@@ -291,10 +289,23 @@
 
                               </div>
                            </div>
+                           <?php  $tax_split= $purchase_info[0]['tax_details']; 
+                  $tax_description='';
+                  if($tax_split !=='' && !empty($tax_split)){
+                     preg_match('#\((.*?)\)#', $tax_split, $match);
+                  
+                     $tax_description=$match[1];$tax_description=trim($tax_description);
+                     
+                   }else{
+                  
+                     $tax_description=$tax_description=trim($tax_description);
+                     
+                   }
+                  ?>        
                             <div class="table-responsive">
                   <div id="content">
                      <?php
-                   //  print_r($purchase_info);
+              
                         $count='';
                         $list_count=array();
                         foreach($purchase_info as $inv){
@@ -361,49 +372,49 @@
                                  <input type='hidden' class='common_product autocomplete_hidden_value  product_id_1' value="<?php  echo $inv['product_id'];  ?>" name='product_id[]' id='SchoolHiddenId_<?php  echo $m.$n; ?>' />
                               </td>
                               <td>
-                                 <input type="text" id="bundle_no_<?php  echo $m.$n; ?>" name="bundle_no[]" required="" value="<?php  echo $inv['bundle_no'];  ?>" class="form-control" />
+                                 <input type="text" id="bundle_no_<?php  echo $m.$n; ?>" name="bundle_no[]" value="<?php  echo $inv['bundle_no'];  ?>" class="form-control" />
                               </td>
                               <td>
                                  <input type="text" id="description_<?php  echo $m.$n; ?>" name="description[]" value="<?php  echo $inv['description'];  ?>" class="form-control" />
                               </td>
                               <td >
-                                 <input type="text" name="thickness[]" id="thickness_<?php  echo $m.$n; ?>" required="" value="<?php  echo $inv['thickness'];  ?>" class="form-control"/>
+                                 <input type="text" name="thickness[]" id="thickness_<?php  echo $m.$n; ?>"  value="<?php  echo $inv['thickness'];  ?>" class="form-control"/>
                               </td>
                               <td>
-                                 <input type="text" id="supplier_b_no_<?php  echo $m.$n; ?>" name="supplier_block_no[]" required="" value="<?php  echo $inv['supplier_block_no'];  ?>" class="form-control" />
+                                 <input type="text" id="supplier_b_no_<?php  echo $m.$n; ?>" name="supplier_block_no[]"  value="<?php  echo $inv['supplier_block_no'];  ?>" class="form-control" />
                               </td>
                               <td >
-                                 <input type="text"  id="supplier_s_no_<?php  echo $m.$n; ?>" name="supplier_slab_no[]" required="" value="<?php  echo $inv['supplier_slab_no'];  ?>" class="form-control"/>
+                                 <input type="text"  id="supplier_s_no_<?php  echo $m.$n; ?>" name="supplier_slab_no[]" value="<?php  echo $inv['supplier_slab_no'];  ?>" class="form-control"/>
                               </td>
                               <td>
-                                 <input type="text" id="gross_width_<?php  echo $m.$n; ?>" name="gross_width[]" required="" value="<?php  echo $inv['gross_width'];  ?>" class="gross_width  form-control" />
+                                 <input type="text" id="gross_width_<?php  echo $m.$n; ?>" name="gross_width[]"  value="<?php  echo $inv['gross_width'];  ?>" class="gross_width  form-control" />
                               </td>
                               <td>
-                                 <input type="text" id="gross_height_<?php  echo $m.$n; ?>" name="gross_height[]"  required=""  value="<?php  echo $inv['gross_height'];  ?>" class="gross_height form-control" />
+                                 <input type="text" id="gross_height_<?php  echo $m.$n; ?>" name="gross_height[]"    value="<?php  echo $inv['gross_height'];  ?>" class="gross_height form-control" />
                               </td>
                               <td >
                                  <input type="text"   style="width:60px;" readonly id="gross_sq_ft_<?php  echo $m.$n; ?>" name="gross_sq_ft[]" value="<?php  echo $inv['gross_sqft'];  ?>" class="gross_sq_ft form-control"/>
                               </td>
                               <td >
-                                 <input type="text"  id="slab_no_<?php  echo $m.$n; ?>" name="slab_no[]" value="<?php  echo $n+1;  ?>" readonly  required="" value="<?php  echo $c;  ?>" class="form-control"/>
+                                 <input type="text"  id="slab_no_<?php  echo $m.$n; ?>" name="slab_no[]" value="<?php  echo $n+1;  ?>" readonly   value="<?php  echo $c;  ?>" class="form-control"/>
                               </td>
                               <td>
-                                 <input type="text" id="net_width_<?php  echo $m.$n; ?>" name="net_width[]" required="" value="<?php  echo $inv['net_width'];  ?>" class="net_width form-control" />
+                                 <input type="text" id="net_width_<?php  echo $m.$n; ?>" name="net_width[]"  value="<?php  echo $inv['n_width'];  ?>" class="net_width form-control" />
                               </td>
                               <td>
-                                 <input type="text" id="net_height_<?php  echo $m.$n; ?>" name="net_height[]"    required="" value="<?php  echo $inv['net_height'];  ?>" class="net_height form-control" />
+                                 <input type="text" id="net_height_<?php  echo $m.$n; ?>" name="net_height[]"    value="<?php  echo $inv['n_height'];  ?>" class="net_height form-control" />
                               </td>
                               <td >
-                                 <input type="text"   style="width:60px;" readonly id="net_sq_ft_<?php  echo $m.$n; ?>" name="net_sq_ft[]" value="<?php  echo $inv['net_sq_ft'];  ?>" class="net_sq_ft form-control"/>
+                                 <input type="text"   style="width:60px;" readonly id="net_sq_ft_<?php  echo $m.$n; ?>" name="net_sq_ft[]" value="<?php  echo $inv['net_sqft'];  ?>" class="net_sq_ft form-control"/>
                               </td>
                            <td>
 
-       <span class="input-symbol-euro"><input type="text" id="cost_sq_ft_<?php  echo $m.$n; ?>"    <?php foreach($this->session->userdata('perm_data') as $test) { $split=explode('-',$test);      if(trim($split[0])=='expenses'  && trim($split[1])=='0100'){  echo "";  } else{echo "readonly";}}?>   name="cost_sq_ft[]"   style="width:60px;"  value="<?php  echo $inv['cost_sq_ft'];  ?>"  class="cost_sq_ft form-control" ></span>
+       <span class="input-symbol-euro"><input type="text" id="cost_sq_ft_<?php  echo $m.$n; ?>"    <?php foreach($this->session->userdata('perm_data') as $test) { $split=explode('-',$test);      if(trim($split[0])=='expenses'  && trim($split[1])=='0100'){  echo "";  } else{echo "readonly";}}?>   name="cost_sq_ft[]"   style="width:60px;"  value="<?php  echo $inv['cost_per_sqft'];  ?>"  class="cost_sq_ft form-control" ></span>
 
                                         
                                             <td >
                      
-      <span class="input-symbol-euro"> <input type="text"  id="cost_sq_slab_<?php  echo $m.$n; ?>" name="cost_sq_slab[]"    style="width:60px;" value="<?php  echo $inv['cost_sq_slab'];  ?>"      placeholder="0.00"   class="cost_sq_slab form-control"/></span>
+      <span class="input-symbol-euro"> <input type="text"  id="cost_sq_slab_<?php  echo $m.$n; ?>" name="cost_sq_slab[]"    style="width:60px;" value="<?php  echo $inv['cost_per_sqft'];  ?>"      placeholder="0.00"   class="cost_sq_slab form-control"/></span>
  
 
 
@@ -411,7 +422,7 @@
                                             </td>
                                             <td>
                                         
-         <span class="input-symbol-euro">  <input type="text" id="sales_amt_sq_ft_<?php  echo $m.$n; ?>"  name="sales_amt_sq_ft[]"  style="width:60px;"  value="<?php  echo $inv['sales_amt_sq_ft'];  ?>" class="sales_amt_sq_ft form-control" /></span>
+         <span class="input-symbol-euro">  <input type="text" id="sales_amt_sq_ft_<?php  echo $m.$n; ?>"  name="sales_amt_sq_ft[]"  style="width:60px;"  value="<?php  echo $inv['sales_price_sqft'];  ?>" class="sales_amt_sq_ft form-control" /></span>
 
 
 
@@ -420,24 +431,22 @@
                                         
                                             <td >
                                     
-      <span class="input-symbol-euro">   <input type="text"  id="sales_slab_amt_<?php  echo $m.$n; ?>" name="sales_slab_amt[]"  style="width:60px;" value="<?php  echo $inv['sales_slab_amt'];  ?>"  class="sales_slab_amt form-control"/></td> </span>
+      <span class="input-symbol-euro">   <input type="text"  id="sales_slab_amt_<?php  echo $m.$n; ?>" name="sales_slab_amt[]"  style="width:60px;" value="<?php  echo $inv['sales_slab_price'];  ?>"  class="sales_slab_amt form-control"/></td> </span>
       </td>
                               <td>
                                  <input type="text" id="weight_<?php  echo $m.$n; ?>" name="weight[]"  value="<?php  echo $inv['weight'];  ?>" class="weight form-control" />
                               </td>
                               <td >
-                                                <select id="origin_<?php  echo $m.$n; ?>" name="origin[]" class="origin form-control">   
+                                  <select id="origin_<?php  echo $m.$n; ?>" name="origin[]" class="origin form-control">   
                                                     <option value="<?php echo $inv['origin']; ?>"><?php echo $inv['origin']; ?></option>   
                                                 <?php foreach ($country_code as $key => $value) { ?>
                                                    <option value="<?php echo $value['iso']; ?>"><?php echo $value['iso']; ?></option>
                                                 <?php } ?> </select>
+
                                             
-                                             
-                                             
-                                             
                                             </td>
                               <td >
-                                 <span class="input-symbol-euro"><input  type="text" class="total_price form-control" style="width:80px;" readonly  value="<?php  echo $inv['total'];  ?>"  id="total_<?php  echo $m.$n; ?>"     name="total_amt[]"/></span>
+                                 <span class="input-symbol-euro"><input  type="text" class="total_price form-control" style="width:80px;" readonly  value="<?php  echo $inv['total_amount'];  ?>"  id="total_<?php  echo $m.$n; ?>"     name="total_amt[]"/></span>
                               </td>
                               <td style="text-align:center;">
                                  <button  class='delete btn btn-danger' type='button' value='Delete' ><i class='fa fa-trash'></i></button>
@@ -503,7 +512,7 @@
                            <td style="border:none;text-align:right;font-weight:bold;"><?php echo display('Tax') ?> :
                            </td>
                            <td style="width:12%">
-                           <input list="magic_tax" name="tx"  id="product_tax" class="form-control"   onchange="this.blur();" />
+                           <input list="magic_tax" name="tx"  id="product_tax" class="form-control"  value="<?php echo $tax_description; ?>"  onchange="this.blur();" />
                               <datalist id="magic_tax">
                                  <?php
 foreach ($tax_data as $tx) {?>
@@ -511,7 +520,7 @@ foreach ($tax_data as $tx) {?>
                                  <?php }?>
                               </datalist>
                            </td>
-                           <td  style="width:20%;"><a href="#" class="client-add-btn btn btnclr" aria-hidden="true" style="color:white;  margin-right: 295px;"  data-toggle="modal" data-target="#tax_info" ><i class="fa fa-plus"></i></a></td>
+                           <td  style="width:20%;"></td>
                         </tr>
                      </table>
                   <table border="0" style="width: 100%; border-collapse: collapse; text-align: left;" class="overall table table-bordered table-hover" style="border:2px solid #d7d4d6;">
@@ -520,12 +529,12 @@ foreach ($tax_data as $tx) {?>
             <!-- Left Side -->
             <td style="width: 50%; padding-right: 20px; border:none; vertical-align: middle;">
                 <label style="width:150px;" for="Over_all_Total"><b><?php echo display('Overall TOTAL') ?> :</b></label>
-                <input type="text" id="Over_all_Total" name="Over_all_Total" class="form-control" style="width: 150px; margin-left: 10px; display: inline-block;" value="0.00" readonly="readonly" />
+                <input type="text" id="Over_all_Total" name="Over_all_Total" class="form-control" style="width: 150px; margin-left: 10px; display: inline-block;" value="<?php echo $purchase_info[0]['total']; ?>" readonly="readonly" />
             </td>
             <!-- Right Side -->
             <td style="width: 50%; padding-left: 20px; border:none; vertical-align: middle;">
                 <label style="width:150px;" for="tax_details"><b><?php echo display('TAX DETAILS') ?> :</b></label>
-                <input type="text" id="tax_details" name="tax_details" class="form-control" style="width: 150px; margin-left: 10px; display: inline-block;" value="0.00" readonly="readonly" />
+                <input type="text" id="tax_details" name="tax_details" class="form-control" style="width: 150px; margin-left: 10px; display: inline-block;" value="<?php echo $purchase_info[0]['tax_details']; ?>" readonly="readonly" />
           
             </td>
         </tr>
@@ -533,36 +542,36 @@ foreach ($tax_data as $tx) {?>
             <!-- Left Side -->
             <td style="width: 50%; padding-right: 20px; border:none; vertical-align: middle;">
                 <label style="width:150px;" for="total_gross"><b><?php echo display('Overall Gross Sq.Ft') ?> :</b></label>
-                <input type="text" id="total_gross" name="total_gross" value="0.00" class="form-control" style="width: 150px; margin-left: 10px; display: inline-block;" readonly="readonly" />
+                <input type="text" id="total_gross" name="total_gross" value="<?php echo $purchase_info[0]['total_gross']; ?>" class="form-control" style="width: 150px; margin-left: 10px; display: inline-block;" readonly="readonly" />
             </td>
             <!-- Right Side -->
             <td style="width: 50%; padding-left: 20px; border:none; vertical-align: middle;">
               <label style="width:150px;" for="gtotal"><b><?php echo display('GRAND TOTAL') ?> :</b></label>
-                <input type="text" id="gtotal" name="gtotal" class="form-control" style="width: 150px; margin-left: 10px; display: inline-block;" value="0.00" readonly="readonly" />
+                <input type="text" id="gtotal" name="gtotal" class="form-control" style="width: 150px; margin-left: 10px; display: inline-block;" value="<?php echo $purchase_info[0]['grand_total_amount']; ?>" readonly="readonly" />
             </td>
         </tr>
         <tr>
             <!-- Left Side -->
             <td style="width: 50%; padding-right: 20px; border:none; vertical-align: middle;">
                 <label style="width:150px;" for="total_net"><b><?php echo display('Overall Net Sq.Ft') ?> :</b></label>
-                <input type="text" id="total_net" name="total_net" class="form-control" value="0.00" style="width: 150px; margin-left: 10px; display: inline-block;" readonly="readonly" />
+                <input type="text" id="total_net" name="total_net" class="form-control" value="<?php echo $purchase_info[0]['total_net']; ?>" style="width: 150px; margin-left: 10px; display: inline-block;" readonly="readonly" />
             </td>
             <!-- Right Side -->
             <td style="width: 50%; padding-left: 20px; border:none; vertical-align: middle;">
                   <label style="width:150px;" for="customer_gtotal"><b><?php echo display('Preferred Currency') ?> :</b></label>
-                <input type="text" id="customer_gtotal" name="customer_gtotal" class="form-control" value="0.00" style="width: 150px; margin-left: 10px; display: inline-block;" readonly />
+                <input type="text" id="customer_gtotal" name="customer_gtotal" class="form-control" value="<?php echo $purchase_info[0]['gtotal_preferred_currency']; ?>" style="width: 150px; margin-left: 10px; display: inline-block;" readonly />
           </td>
         </tr>
         <tr>
             <!-- Left Side -->
             <td style="width: 50%; padding-right: 20px; border:none; vertical-align: middle;">
                 <label style="width:150px;" for="total_weight"><b><?php echo display('Overall Weight') ?> :</b></label>
-                <input type="text" id="total_weight" name="total_weight" class="form-control" value="0.00" style="width: 150px; margin-left: 10px; display: inline-block;" readonly="readonly" />
+                <input type="text" id="total_weight" name="total_weight" class="form-control" value="<?php echo $purchase_info[0]['total_weight']; ?>" style="width: 150px; margin-left: 10px; display: inline-block;" readonly="readonly" />
             </td>
             <!-- Right Side -->
             <td style="width: 50%; padding-left: 20px; border:none; vertical-align: middle;">
                 <label style="width:150px;" for="amount_paid"><b><?php echo display('Amount Paid') ?> :</b></label>
-                <input type="text" id="amount_paid" name="amount_paid" class="form-control" value="0.00" style="width: 150px; margin-left: 10px; display: inline-block;" readonly />
+                <input type="text" id="amount_paid" name="amount_paid" class="form-control" value="<?php echo $purchase_info[0]['paid_amount']; ?>" style="width: 150px; margin-left: 10px; display: inline-block;" readonly />
          </td>
         </tr>
         <tr>
@@ -572,7 +581,7 @@ foreach ($tax_data as $tx) {?>
             <!-- Right Side -->
             <td style="width: 50%; padding-left: 20px; border:none; vertical-align: middle;">
                 <label style="width:150px;" for="balance"><b><?php echo display('Balance Amount') ?> :</b></label>
-                <input type="text" id="balance" name="balance" class="form-control" value="0.00" style="width: 150px; margin-left: 10px; display: inline-block;" readonly />
+                <input type="text" id="balance" name="balance" class="form-control" value="<?php echo $purchase_info[0]['due_amount']; ?>" style="width: 150px; margin-left: 10px; display: inline-block;" readonly />
             </td>
         </tr>
     </tbody>
@@ -664,61 +673,76 @@ $('#amount_to_pay').val($('#vendor_gtotal').val()-$('#amount_paid').val());
   e.preventDefault();
 
 });
-    $(document).ready(function(){
- $(".normalinvoice").each(function(i,v){
-   if($(this).find("tbody").html().trim().length === 0){
-       $(this).hide()
-   }
-})
-        $('.normalinvoice').each(function(){
-var tid=$(this).attr('id');
- const indexLast = tid.lastIndexOf('_');
-var idt = tid.slice(indexLast + 1);
-
-
-
-  var sum=0;
-
- $('#normalinvoice_'+idt  +  '> tbody > tr').find('.total_price').each(function() {
-var v=$(this).val();
-  sum += parseFloat(v);
-
-});
-
- $(this).closest('table').find('#Total_'+idt).val(sum.toFixed(3));
-
-  var sum_net=0;
-
- $('#normalinvoice_'+idt  +  '> tbody > tr').find('.net_sq_ft').each(function() {
-var v=$(this).val();
-  sum_net += parseFloat(v);
-
-});
-
- $(this).closest('table').find('#overall_net_'+idt).val(sum_net.toFixed(3));
-  var sum_gross=0;
-
- $('#normalinvoice_'+idt  +  '> tbody > tr').find('.gross_sq_ft ').each(function() {
-var v=$(this).val();
-  sum_gross += parseFloat(v);
-
-});
-
- var gross = $(this).closest('table').find('#overall_gross_'+idt).val(sum_gross.toFixed(3));
-   var sum_weight=0;
-
- $('#normalinvoice_'+idt  +  '> tbody > tr').find('.weight').each(function() {
-var v=$(this).val();
-  sum_weight += parseFloat(v);
-
-});
-
- $(this).closest('table').find('#overall_weight_'+idt).val(sum_weight.toFixed(3));
-    
-
+   $(document).ready(function(){
+   $(".sidebar-mini").addClass('sidebar-collapse') ;
+   });
+ $(document).ready(function(){
+              var data = {
+                 value: $('#supplier_id').val()
+         
+              };
+             data[csrfName] = csrfHash;
+             $.ajax({
+                 type:'POST',
+                 data: data,
+               dataType:"json",
+                 url:'<?php echo base_url();?>Cinvoice/getvendor',
+                 success: function(result, statut) {
+                     console.log(result);
+                     if(result.csrfName){
+                       csrfName = result.csrfName;
+                        csrfHash = result.csrfHash;
+                     }
+                  console.log(result[0]['currency_type']);
+                  $('#vendor_add').html(result[0]['address']);
+                   $('#vendor_type_details').val(result[0]['vendor_type']);
+                 $("#custocurrency_rate").html(result[0]['currency_type']);
+                 $("#autocomplete_supplier_id").val(result[0]['supplier_id']);
+                 $("label[for='custocurrency']").html(result[0]['currency_type']);
+              
+                $.getJSON('https://open.er-api.com/v6/latest/<?php echo $curn_info_default; ?>', 
+         function(data) {
+          var custo_currency=result[0]['currency_type'];
+             var x=data['rates'][custo_currency];
+          var Rate =parseFloat(x).toFixed(3);
+          Rate = isNaN(Rate) ? 0 : Rate;
+           console.log(Rate);
+          
+           $(".custocurrency_rate").val(Rate);
+         });
+               
+                 }
+             });
+   
+   $('#download_provider').hide();
+   $('#final_submit_provider').hide();
+   $('#print_provider').hide();
     });
-});
+   // $('#supplier_id').on('change', function (e) {getSupplierInfo($(this).val())});
+   // $(document).ready(function(){ getSupplierInfo($('#supplier_id').val()) });
 
+   $('#isf_dropdown1').on('change', function() {
+     if ( this.value == '2')
+       $("#isf_no1").show();
+     else
+       $("#isf_no1").hide();
+   }).trigger("change");
+    $('.final_submit').on('click', function (e) {
+    var input_hdn='Your Invoice No : "'+ $('#Final_invoice_number').val()+" has been Updated Successfully";
+ $('#errormessage_expense').html('<div class="alert alert-success alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>' + input_hdn + '</div>');
+   window.setTimeout(function(){
+      window.location = "<?php  echo base_url(); ?>Cpurchase/manage_purchase?id=<?php echo $_GET['id']; ?>";
+     }, 2000);
+   });
+ $(document).ready(function(){
+   if ( $('#isf_dropdown1').val() == '2'){
+       $(".isf_no1").show();
+   }else{
+       $(".isf_no1").hide();
+ }
+    $('#current_in_id').val($('#invoice_no').val());
+        payment_update();
+    });
 // Insert Expense Data
 
 // $(".insert_purchase").validate({
@@ -781,4 +805,36 @@ var v=$(this).val();
 // $('.final_submit').on('click', function () {
 //    window.location.href = "<?php echo base_url(); ?>Cpurchase/manage_purchase?id=<?php echo $_GET['id']; ?>";
 // });
+    function addbundle(){
+   $(this).closest('table').find('.addbundle').css("display","none");
+   $(this).closest('table').find('.removebundle').css("display","block");
+   
+   var newdiv = document.createElement('div');
+   var tabin="crate_wrap_"+dynamic_id;
+   
+   newdiv = document.createElement("div");
+   
+   
+   newdiv.innerHTML ='<table class="table normalinvoice table-bordered table-hover"     style="border:2px solid #d7d4d6;"               id="normalinvoice_'+ dynamic_id +'"> <thead> <tr> <th rowspan="2" class="text-center" style="width: 170px;" ><?php echo display('product_name'); ?><i class="text-danger">*</i></th> <th rowspan="2"  class="text-center"><?php echo display('Bundle No');?><i class="text-danger">*</i></th> <th rowspan="2"  class="text-center"><?php echo  display('description'); ?></th> <th rowspan="2" style="width:60px;" class="text-center"><?php echo display('Thick ness');?><i class="text-danger">*</i></th> <th rowspan="2" class="text-center"><?php echo display('Supplier Block No');?><i class="text-danger">*</i></th>  <th rowspan="2" class="text-center" ><?php echo display('Supplier Slab No');?><i class="text-danger">*</i> </th> <th colspan="2" style="width:150px;" class="text-center"><?php echo display('Gross Measurement');?><i class="text-danger">*</i> </th> <th rowspan="2" class="text-center"><?php echo display('Gross Sq.Ft');?></th>  <th rowspan="2" style="width:40px;" class="text-center"><?php echo display('Slab No');?><i class="text-danger">*</i></th> <th colspan="2" style="width:150px;" class="text-center"><?php echo display('Net Measure');?><i class="text-danger">*</i></th> <th rowspan="2" class="text-center"><?php echo display('Net Sq.Ft');?></th> <th rowspan="2" class="text-center"><?php echo display('Cost per Sq.Ft');?></th> <th rowspan="2"  class="text-center"><?php echo display('Cost per Slab');?></th> <th rowspan="2"  class="text-center"><?php echo display('sales'); ?><br/><?php echo display('Price per Sq.Ft');?></th> <th rowspan="2"  class="text-center"><?php echo display('Sales Slab Price');?></th> <th rowspan="2" class="text-center"><?php echo display('Weight');?></th> <th rowspan="2" class="text-center"><?php echo display('Origin');?></th>  <th rowspan="2" style="width: 100px" class="text-center"><?php  echo  display('total'); ?></th> <th rowspan="2" class="text-center"><?php  echo  display('action'); ?></th> </tr>  <tr> <th class="text-center"><?php echo display('Width');?></th> <th class="text-center"><?php echo display('Height');?></th> <th class="text-center"><?php echo display('Width');?></th> <th class="text-center"><?php echo display('Height');?></th> </tr>  </thead> <tbody id="addPurchaseItem_'+ dynamic_id +'"> <tr> <input type="hidden" name="tableid[]" id="tableid_'+ dynamic_id +'"/><td> <input   list="magicHouses"  style="width:160px;" name="prodt[]" id="prodt_'+ dynamic_id +'"   class="form-control product_name"  placeholder="Search Product" > <datalist id="magicHouses"> <option value="Select the Product" selected>Select the Product</option> <?php  foreach($product_list as $tx){?>  <option value="<?php echo $tx["product_name"]."-".$tx["product_model"];?>">  <?php echo $tx["product_name"]."-".$tx["product_model"];  ?></option> <?php } ?> </datalist> <input type="hidden" class="common_product autocomplete_hidden_value  product_id_'+ dynamic_id +'" name="product_id[]" id="SchoolHiddenId_'+ dynamic_id +'" /> </td> <td>  <input list="magic_bundle" name="bundle_no[]" id="bundle_no_'+ dynamic_id +'"   class="form-control bundle_no"'+
+   'onchange="this.blur();" /><datalist id="magic_bundle"><?php foreach($bundle as $tx){?> <option value="<?php echo $tx['bundle_no'];?>">  <?php echo $tx['bundle_no'];  ?></option> <?php } ?>'+
+   
+   '</datalist></td> <td> <input type="text" id="description_'+ dynamic_id +'" name="description[]" class="form-control" /> </td>  <td > <input type="text" name="thickness[]" id="thickness_'+ dynamic_id +'" required="" class="form-control"/> </td>  <td><input list="magic_supplier_block" name="supplier_block_no[]"  id="supplier_b_no_'+ dynamic_id +'"   class="form-control supplier_block_no"  placeholder="Search Product"  onchange="this.blur();" /><datalist id="magic_supplier_block"><?php foreach($supplier_block_no as $tx){?><option value="<?php echo $tx['supplier_block_no'];?>">  <?php echo $tx['supplier_block_no'];  ?></option><?php } ?></datalist> </td>  <td > <input type="text"  id="supplier_s_no_'+ dynamic_id +'" name="supplier_slab_no[]" required="" class="form-control"/> </td> <td> <input type="text" id="gross_width_'+ dynamic_id +'" name="gross_width[]" required="" class="gross_width  form-control" /> </td> <td> <input type="text" id="gross_height_'+ dynamic_id +'" name="gross_height[]"  required="" class="gross_height form-control" /> </td>  <td > <input type="text"   style="width:60px;" readonly id="gross_sq_ft_'+ dynamic_id +'" name="gross_sq_ft[]" class="gross_sq_ft form-control"/> </td>   <td style="text-align:center;" >  <input type="text"   style="width:20px;" value="1" class="slab_no" id="slab_no_'+ dynamic_id +'" name="slab_no[]"   readonly  required=""/>  </td> <td> <input type="text" id="net_width_'+ dynamic_id +'" name="net_width[]" required="" class="net_width form-control" /> </td> <td> <input type="text" id="net_height_'+ dynamic_id +'" name="net_height[]"    required="" class="net_height form-control" /> </td> <td > <input type="text"   style="width:60px;" readonly id="net_sq_ft_'+ dynamic_id +'" name="net_sq_ft[]" class="net_sq_ft form-control"/> </td> <td>   <span class="input-symbol-euro"><input type="text" id="cost_sq_ft_'+ dynamic_id +'"  name="cost_sq_ft[]"   style="width:70px;" placeholder="0.00"  class="cost_sq_ft form-control" ></span>   <td >  <span class="input-symbol-euro"> <input type="text"  id="cost_sq_slab_'+ dynamic_id +'" name="cost_sq_slab[]"    style="width:70px;" placeholder="0.00"  class="cost_sq_slab form-control"/></span>     </td> <td>  <span class="input-symbol-euro">  <input type="text" id="sales_amt_sq_ft_'+ dynamic_id +'"  name="sales_amt_sq_ft[]"  style="width:70px;"  placeholder="0.00" class="sales_amt_sq_ft form-control" /></span>     </td>  <td >  <span class="input-symbol-euro">   <input type="text"  id="sales_slab_amt_'+ dynamic_id +'" name="sales_slab_amt[]"  style="width:70px;" placeholder="0.00"  class="sales_slab_amt form-control"/></td> </span>     </td> <td> <input type="text" id="weight_'+ dynamic_id +'" name="weight[]"  class="weight form-control" /> </td>  <td >  <select  id="origin_'+ dynamic_id +'"    name="origin[]" class="origin form-control">  <?php foreach ($country_code as $key => $value) { ?>  <option value="<?php echo $value['iso']; ?>"><?php echo $value['iso']; ?></option> <?php } ?> </select> </td>  <td > <span class="input-symbol-euro"><input  type="text" class="total_price form-control" style="width:80px;" readonly value="0.00"  id="total_amt_'+ dynamic_id +'"     name="total_amt[]"/></span> </td>  <td style="text-align:center;"> <button  class="delete btn btn-danger" id="delete_'+ dynamic_id +'" type="button" value="Delete" ><i class="fa fa-trash"></i></button> </td>  </tr> </tbody> <tfoot> <tr> <td style="text-align:right;" colspan="8"><b>Gross Sq.Ft :</b></td> <td > <input type="text" id="overall_gross_'+ dynamic_id +'" name="overall_gross[]"   class="overall_gross form-control" style="width: 60px"  readonly="readonly"  /> </td> <td style="text-align:right;" colspan="3"><b>Net Sq.Ft :</b></td> <td > <input type="text" id="overall_net_'+ dynamic_id +'" name="overall_net[]"  class="overall_net form-control"  style="width: 60px"  readonly /> </td>  <td><input type="text" id="costpersqft_'+ dynamic_id +'"  name="costpersqft[]"   style="width:60px;"   readonly   class="costpersqft form-control" /></span></td>'+
+   '<td ><input type="text"  id="costperslab_'+ dynamic_id +'" name="costperslab[]"  readonly  style="width:60px;"   class="costperslab form-control"/></td><td>  <input type="text" id="salespricepersqft_'+ dynamic_id +'"  name="salespricepersqft[]"  readonly style="width:60px;"   class="salespricepersqft form-control" /></td><td >   <input type="text"  id="salesslabprice_'+ dynamic_id +'" name="salesslabprice[]"  style="width:60px;"  readonly  class="salesslabprice form-control"/></td> </span><td ><input type="text" id="overall_weight_'+ dynamic_id +'" name="overall_weight[]"  class="overall_weight form-control"  style="width: 60px"  readonly /></td><td style="text-align:right;font-size: 13px;" colspan="1"><b><?php echo "Total" ?> :</b></td><td ><span class="input-symbol-euro">    <input type="text" id="Total_'+ dynamic_id +'" name="total[]"   class="b_total form-control"  style="width: 80px" value="0.00"  readonly="readonly"  /></span></td>  <td  style="text-align:center;"><i id="buddle_'+ dynamic_id +'" onclick="removebundle(); " class="btn-danger removebundle fa fa-minus" aria-hidden="true"></i></td>   </tr> </foot></table> <i id="buddle_'+ dynamic_id +'"     onclick="addbundle(); " class="btnclr addbundle fa fa-plus" aria-hidden="true"></i>';  
+   
+   
+   document.getElementById('content').appendChild(newdiv);
+   
+   dynamic_id++;
+   }
+   $(document).on('click', '.delete', function(){
+   var $tableBody = $(this).closest('tbody');
+    var rowCount = $tableBody.find('tr').length;
+  if (rowCount > 1) {
+        $(this).closest('tr').remove();
+  updateTableTotals($tableBody.closest('table').attr('id'));
+        updateOverallTotals(true);
+    } else {
+        $('#errormessage_expense').html('<div class="alert alert-danger alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>' + 'You cannot delete the last row. At least one row must remain..' + '</div>');
+    }
+});
 </script>
