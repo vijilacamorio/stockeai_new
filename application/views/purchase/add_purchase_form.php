@@ -482,7 +482,7 @@ $this->load->view('include/bootstrap_model', $modaldata);
                                           <td>
                                              <input type="text" id="weight_1" name="weight[]"  class="weight form-control" />
                                           </td>
-                                          <td style="width: 135px;">
+                                          <td style="width: 135px;"> 
                                              <select id="origin_1" name="origin[]" class="origin form-control">
                                                 <?php foreach ($country_code as $key => $value) { ?>
                                                 <option value="<?php echo $value['iso']; ?>"><?php echo $value['iso']; ?></option>
@@ -1027,6 +1027,13 @@ $(document).on('change', '#module_selection', function (e) {
       var tid=$('.table').closest('table').attr('id');
    const indexLast = tid.lastIndexOf('_');
    var id = tid.slice(indexLast + 1);
+
+   $('#addPurchaseItem_1 select').each(function() {
+            if ($(this).data('select2')) {
+                $(this).select2('destroy');
+            }
+        });
+
    for (j = 0; j < 6; j++) {
    
 var $last = $('#addPurchaseItem_1 tr:last');
