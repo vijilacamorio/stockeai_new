@@ -1078,7 +1078,7 @@ $('#normalinvoice_1 > tbody > tr').each(function() {
             po: $('#module_selection').val()
         };
     } else {
-      $('#form_imageservice').hide();
+      $('#ocrserviceprovider').hide();
          $('#form_image').hide();
       
         $('#main').show();
