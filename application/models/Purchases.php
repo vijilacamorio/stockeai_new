@@ -3924,11 +3924,10 @@ public function retrieve_purchase_order_editdata($purchase_id, $admin_company_id
     $this->db->where('a.purchase_order_id', $purchase_id);
     $this->db->order_by('a.purchase_details', 'asc');
     $query = $this->db->get();
-
     if ($query->num_rows() > 0) {
         return $query->result_array();
     }
-    return true;
+    return array();
 }
 
 
