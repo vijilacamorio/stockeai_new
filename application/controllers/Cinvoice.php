@@ -26,7 +26,7 @@ class Cinvoice extends CI_Controller {
         $this->load->model('Purchases');
         $this->load->library('form_validation');
         $encodedId = $_GET['id'];
-        $this->admin_id   = decodeBase64UrlParameter($encodedId);
+        $this->admin_id = decodeBase64UrlParameter($encodedId);
     }
     public function bill_payment(){
         $CI = & get_instance();
