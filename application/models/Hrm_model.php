@@ -3013,10 +3013,7 @@ SUM(a.monthly) as monthly_amount'
         $this->db->from('weekly_tax_info');
         $this->db->where($employee_status,$weekly_range);
         $query = $this->db->get(); 
-
-        echo $this->db->last_query(); die();
-
-
+        // echo $this->db->last_query(); die();
             if (!$query) {
                 $error = $this->db->error(); 
                 log_message('error', 'Database Query Error: ' . $error['message']);

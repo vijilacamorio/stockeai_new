@@ -1771,14 +1771,12 @@ class Chrm extends CI_Controller {
                                     $secondValue    = $split_values[1];
                                     $getvalue       = $minValue - $firstValue;
                                     $w_tax          = '';
-                                    // $data['weekly'] = $this->Hrm_model->weekly_tax_info($data['employee_data'][0]['employee_tax'], $final, $weekly_range);
-                                    $data['weekly']    = $this->Hrm_model->weekly_tax_info_livingtax($lt_name ,$data['employee_data'][0]['employee_tax'],$final ,  $weekly_range );
+                                    $data['weekly'] = $this->Hrm_model->weekly_tax_info($data['employee_data'][0]['employee_tax'], $final, $weekly_range);
+                                    // $data['weekly']    = $this->Hrm_model->weekly_tax_info_livingtax($lt_name ,$data['employee_data'][0]['employee_tax'],$final ,  $weekly_range );
 
                                     $st_name        = $data['employee_data'][0]['state_tx'];
                                     $state_names    = $this->Hrm_model->state_names($st_name);
-                              
-                                    print_r($state_names ); die();
-                                    
+                                                                  
                                 if (!empty($data['weekly'][0]['employee'])) {
                                         foreach ($state_names as $name) {
                                             if (trim($name['state']) == 'Pennsylvania') {
