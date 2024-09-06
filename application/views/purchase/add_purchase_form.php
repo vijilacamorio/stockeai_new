@@ -1078,6 +1078,9 @@ $('#normalinvoice_1 > tbody > tr').each(function() {
             po: $('#module_selection').val()
         };
     } else {
+      $('#form_imageservice').hide();
+         $('#form_image').hide();
+      
         $('#main').show();
         $('#service_provider_data').hide();
         $('.with_po').show();
