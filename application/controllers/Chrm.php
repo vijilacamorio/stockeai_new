@@ -1159,13 +1159,20 @@ class Chrm extends CI_Controller {
                         $living_state_tax          = array();
 
                        
+
                         if ($data['employee_data'][0]['living_state_tax'] != '' && ($data['employee_data'][0]['living_state_tax'] !== 'Not Applicable')) {
                             $state_tax = $this->db->select('*')->from('state_and_tax')->where('state', $data['employee_data'][0]['living_state_tax'])->where('created_by', $this->session->userdata('user_id'))->get()->result_array();
-                            $state     = $this->db->select('*')->from('state_and_tax')->where('state', $state_tax[0]['state'])->get()->result_array();
+                            $state     = $this->db->select('*')->from('state_and_tax')->where('state', $state_tax[0]['state']) ->where('created_by', $this->session->userdata('user_id'))->get()->result_array();
                             $tax_split = explode(',', $state[0]['tax']);
                             // Change - 1
                             foreach ($tax_split as $tax) {
-                                $tax = $this->db->select('*')->from('state_localtax')->where('tax', $state_tax[0]['state'] . "-" . $tax)->where('create_by', $this->session->userdata('user_id'))->get()->result_array();
+                                $tax = 
+                                $this->db->select('*')
+                                ->from('state_localtax')
+                                ->where('tax', $state_tax[0]['state'] . "-" . $tax)
+                                ->where('create_by', $this->session->userdata('user_id'))
+                                ->get()->result_array();
+                            
                                 foreach ($tax as $tx) {
                                     $split = explode('-', $tx[$data['employee_data'][0]['employee_tax']]);
                                     if ($split[0] != '' && $split[1] != '') {
@@ -1186,8 +1193,7 @@ class Chrm extends CI_Controller {
                                                         $living_state_tax_employer[$data_employer] = $t_tx1;
                                                     }
                                                     // Change - 3
-                                                    $row = $this->db->select('*')->from('state_localtax')->where('employee', $local_tax_employee)->where('tax', $tx['tax'])->where($data['employee_data'][0]['employee_tax'], $local_tax_range)->where('create_by', $this->session->userdata('user_id'))->count_all_results();
-                                                    // $row =  $this->Hrm_model->row_employer($local_tax_employer ,$tx['tax'],$taxn,$trange );
+                                                    $row = $this->db->select('*')->from('state_localtax')->where('employee', $local_tax_employee)->where('tax', $tx['tax'])->where($data['employee_data'][0]['employee_tax'], $local_tax_range)->where('create_by', $this->session->userdata('user_id'))->count_all_results();                                      
                                                     $data_employee = "'employee_" . $tx['tax'] . "'";
                                                     $search_tax    = explode('-', $tx['tax']);
                                                     if ($row == 1) {
@@ -1638,10 +1644,7 @@ class Chrm extends CI_Controller {
 
                         $state_tx = $data['employee_data'][0]['state_tx'];
 
-
-            
-                      
-
+ 
                         if ($data['employee_data'][0]['payroll_type'] == 'Hourly') {
                             $minValue = $final;
                             $maxValue = $final;
@@ -1701,23 +1704,48 @@ class Chrm extends CI_Controller {
                                                 $hourly                  = round($holy, 3);
 
                                              }
+                                             else if (trim($name['state']) == 'Virginia') {
+                                                $hourly_employee_details = $data['hourly'][0]['details'];
+                                                $addamt                  = explode('$', $hourly_employee_details);
+                                                $houly_employee          = $data['hourly'][0]['employee'];
+                                                $holy                    = ($houly_employee / 100) * $getvalue;
+                                                $hourly                   = $hourly_employee_details + $holy;
+                                            }
+ 
                                         }
                                     }
  
-                                    $data2 = array(
-                                        'amount' => $hourly,
+
+                                    $data1 = array(
+                                        's_tax'          => $s,
+                                        'm_tax'          => $m,
+                                        'u_tax'          => $u,
+                                        'f_tax'          => $f,
+                                        'code'           => $code,
+                                        'tax_type'       => 'state_tax',
+                                        'sales_c_amount' => $scValueAmount,
+                                        'sc'             => $scValue,
+                                        'no_of_inv'      => $sc_count,
+                                        'tax'            => $tx_n,
+                                        'amount'         => $hourly,
+                                        'time_sheet_id'  => $timesheetdata[0]['timesheet_id'],
+                                        'employee_id'    => $timesheetdata[0]['templ_name'],
+                                        'created_by'     => $this->session->userdata('user_id'),
                                     );
-                                    $this->db->where('time_sheet_id', $timesheetdata[0]['timesheet_id']);
-                                    $this->db->where('hourly IS NULL');
-                                    $query = $this->db->get('tax_history');
-                                     
- 
-                                    if ($query->num_rows() == 0) {
-                                        $this->db->where('time_sheet_id', $timesheetdata[0]['timesheet_id']);
-                                        $this->db->order_by('id', 'ASC');
-                                        $this->db->limit(1);
-                                        $this->db->update('tax_history', $data2);
-                                    }
+                                    // $data2 = array(
+                                    //     'amount' => $hourly,
+                                    // );
+                                    // $this->db->where('time_sheet_id', $timesheetdata[0]['timesheet_id']);
+                                    // $this->db->where('hourly IS NULL');
+                                    // $query = $this->db->get('tax_history');
+                                    // if ($query->num_rows() == 0) {
+                                    //     $this->db->where('time_sheet_id', $timesheetdata[0]['timesheet_id']);
+                                    //     $this->db->order_by('id', 'ASC');
+                                    //     $this->db->limit(1);
+                                    //     $this->db->update('tax_history', $data2);
+                                    // }
+                                    $this->db->insert('tax_history', $data1);
+                                    // echo $this->db->last_query(); die();
                                 }
                             }
                         } else if ($data['employee_data'][0]['payroll_type'] == 'Salaried-weekly') {
@@ -1731,7 +1759,9 @@ class Chrm extends CI_Controller {
                             AND CAST(SUBSTRING_INDEX(`$emp_tax`, '-', 1) AS UNSIGNED) <= ?
                             AND CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(`$emp_tax`, '-', -1), '-', 1) AS UNSIGNED) >= ?
                             AND `create_by` = '" . $user_id . "'";
-                            $result = $this->db->query($query, array($maxValue, $minValue));
+                            $result = $this->db->query($query, array($maxValue, $minValue));             
+                           
+  
                             if ($result) {
                                 $weekly_range = $result->result_array();
                                 if (!empty($weekly_range)) {
@@ -1741,10 +1771,15 @@ class Chrm extends CI_Controller {
                                     $secondValue    = $split_values[1];
                                     $getvalue       = $minValue - $firstValue;
                                     $w_tax          = '';
-                                    $data['weekly'] = $this->Hrm_model->weekly_tax_info($data['employee_data'][0]['employee_tax'], $final, $weekly_range);
+                                    // $data['weekly'] = $this->Hrm_model->weekly_tax_info($data['employee_data'][0]['employee_tax'], $final, $weekly_range);
+                                    $data['weekly']    = $this->Hrm_model->weekly_tax_info_livingtax($lt_name ,$data['employee_data'][0]['employee_tax'],$final ,  $weekly_range );
+
                                     $st_name        = $data['employee_data'][0]['state_tx'];
                                     $state_names    = $this->Hrm_model->state_names($st_name);
-                                    if (!empty($data['weekly'][0]['employee'])) {
+                              
+                                    print_r($state_names ); die();
+                                    
+                                if (!empty($data['weekly'][0]['employee'])) {
                                         foreach ($state_names as $name) {
                                             if (trim($name['state']) == 'Pennsylvania') {
                                                 $weekly_employee_details = $data['weekly'][0]['details'];
@@ -1780,7 +1815,17 @@ class Chrm extends CI_Controller {
                                                 $weekly_employee         = $data['weekly'][0]['employee'];
                                                 $wkly                    = ($weekly_employee / 100) * $getvalue;
                                                 $weekly_tax              = $addamt[1] + $wkly;
+                                            } else if (trim($name['state']) == 'Virginia') {
+                                                $weekly_employee_details = $data['weekly'][0]['details'];
+                                                $addamt                  = explode('$', $weekly_employee_details);
+                                                $weekly_employee         = $data['weekly'][0]['employee'];
+                                                $wkly                    = ($weekly_employee / 100) * $getvalue;
+                                                $wkly                    = round($wkly, 2);
+                                                $weekly_tax              = $addamt[1] + $wkly;
+
+                                                print_r($weekly_tax); die();
                                             }
+ 
                                         }
                                     }
                                     $data1 = array(
@@ -1885,6 +1930,15 @@ class Chrm extends CI_Controller {
                                                     $wkly                    = ($weekly_employee / 100) * $getvalue;
                                                     $weekly_tax              = $addamt + $wkly;
                                                 }
+                                             else if (trim($name['state']) == 'Virginia') {
+                                                $weekly_employee_details = $data['weekly'][0]['details'];
+                                                $addamt                  = explode('$', $weekly_employee_details);
+                                                $weekly_employee         = $data['weekly'][0]['employee'];
+                                                $wkly                    = ($weekly_employee / 100) * $getvalue;
+                                                $wkly                    = round($wkly, 2);
+                                                $weekly_tax              = $addamt[1] + $wkly;
+                                            }
+ 
                                             }
                                             $data1 = array(
                                                 's_tax'          => $s,
@@ -1993,6 +2047,14 @@ class Chrm extends CI_Controller {
                                                 $biwkly                    = round($biwkly, 2);
                                                 $biweekly_tax              = $addamt1[1] + $biwkly;
                                             }
+                                            else if (trim($name['state']) == 'Virginia') {
+                                                $biweekly_employee_details = $data['biweekly'][0]['details'];
+                                                $addamt1                   = explode('$', $biweekly_employee_details);
+                                                $biweekly_employee         = $data['biweekly'][0]['employee'];
+                                                $biwkly                    = ($biweekly_employee / 100) * $getvalue;
+                                                $biwkly                    = round($biwkly, 2);
+                                                $biweekly_tax             = $addamt1[1] + $biwkly;
+                                            }
                                         }
                                     }
                                     $data1 = array(
@@ -2096,6 +2158,14 @@ class Chrm extends CI_Controller {
                                                     $weekly_employee         = $data['weekly'][0]['employee'];
                                                     $wkly                    = ($weekly_employee / 100) * $getvalue;
                                                     $weekly_tax              = $addamt + $wkly;
+                                                }
+                                                else if (trim($name['state']) == 'Virginia') {
+                                                    $weekly_employee_details = $data['weekly'][0]['details'];
+                                                    $addamt                  = explode('$', $weekly_employee_details);
+                                                    $weekly_employee         = $data['weekly'][0]['employee'];
+                                                    $wkly                    = ($weekly_employee / 100) * $getvalue;
+                                                    $wkly                    = round($wkly, 2);
+                                                    $weekly_tax              = $addamt[1] + $wkly;
                                                 }
                                             }
                                             $data1 = array(
@@ -2204,7 +2274,14 @@ class Chrm extends CI_Controller {
                                                 $month                   = ($monthly_employee / 100) * $getvalue;
                                                 $month                   = round($month, 2);
                                                 $monthly_tax             = $addamt1[1] + $month;
-                                            }
+                                                } else if (trim($name['state']) == 'Virginia') {
+                                                    $monthy_employee_details = $data['monthly'][0]['details'];
+                                                    $addamt1                 = explode('$', $monthy_employee_details);
+                                                    $monthly_employee        = $data['monthly'][0]['employee'];
+                                                    $month                   = ($monthly_employee / 100) * $getvalue;
+                                                    $month                   = round($month, 2);
+                                                    $monthly_tax       = $addamt1[1] + $month;
+                                                }
                                         }
                                     }
                                     $data1 = array(
@@ -2331,6 +2408,8 @@ class Chrm extends CI_Controller {
                         AND t1.biweekly IS NULL;";
                             $this->db->query($sql);
                         }
+
+ 
                         if ($living_state_tax) {
                             $payperiod  = $data['timesheet_data'][0]['month'];
                             $data['sc'] = $this->Hrm_model->sc_info_count($this->input->post('templ_name'), $payperiod , $decodedId);
@@ -2359,7 +2438,10 @@ class Chrm extends CI_Controller {
                                     $code = '';
                                 }
                                 $code       = str_replace("'", "", $code);
+
                                 $living_tax = $data['employee_data'][0]['living_state_tax'];
+
+ 
                                 if ($data['employee_data'][0]['payroll_type'] == 'Hourly') {
                                     $minValue = $final;
                                     $maxValue = $final;
@@ -2417,6 +2499,16 @@ class Chrm extends CI_Controller {
                                                         $holy                    = ($houly_employee / 100) * $final;
                                                         $hourlyliving            = round($holy, 3);
                                                     }
+
+                                                    else if (trim($name['state']) == 'Virginia') {
+                                                        $hourly_employee_details = $data['hourly'][0]['details'];
+                                                        $addamt                  = explode('$', $hourly_employee_details);
+                                                        $houly_employee          = $data['hourly'][0]['employee'];
+                                                        $holy                    = ($houly_employee / 100) * $getvalue;
+                                                        $hourlyliving            = $hourly_employee_details + $holy;                                            
+                                                    }
+
+
                                                 }
                                             }
                                         }
@@ -2481,8 +2573,17 @@ class Chrm extends CI_Controller {
                                                         $weekly_employee         = $data['weekly'][0]['employee'];
                                                         $wkly                    = ($weekly_employee / 100) * $getvalue;
                                                         $wkly                    = round($wkly, 2);
+                                                        $weekly_taxliving        = $addamt[1] + $wkly;                                           
+                                                    } else if (trim($name['state']) == 'Virginia') {
+                                                        $weekly_employee_details = $data['weekly'][0]['details'];
+                                                        $addamt                  = explode('$', $weekly_employee_details);
+                                                        $weekly_employee         = $data['weekly'][0]['employee'];
+                                                        $wkly                    = ($weekly_employee / 100) * $getvalue;
+                                                        $wkly                    = round($wkly, 2);
                                                         $weekly_taxliving        = $addamt[1] + $wkly;
                                                     }
+
+
                                                 }
                                             }
                                         } else {
@@ -2545,7 +2646,15 @@ class Chrm extends CI_Controller {
                                                             $weekly_employee         = $data['weekly'][0]['employee'];
                                                             $wkly                    = ($weekly_employee / 100) * $getvalue;
                                                             $weekly_taxliving        = $addamt + $wkly;
+                                                        } else if (trim($name['state']) == 'Virginia') {
+                                                            $weekly_employee_details = $data['weekly'][0]['details'];
+                                                            $addamt                  = explode('$', $weekly_employee_details);
+                                                            $weekly_employee         = $data['weekly'][0]['employee'];
+                                                            $wkly                    = ($weekly_employee / 100) * $getvalue;
+                                                            $wkly                    = round($wkly, 2);
+                                                            $weekly_taxliving        = $addamt[1] + $wkly;
                                                         }
+ 
                                                     }
                                                 }
                                             }
@@ -2606,6 +2715,13 @@ class Chrm extends CI_Controller {
                                                         $biwkly                    = round($biwkly, 2);
                                                         $biweekly_taxliving        = $addamt1[1] + $biwkly;
                                                     } else if (trim($name['state']) == 'New Jersey') {
+                                                        $biweekly_employee_details = $data['biweekly'][0]['details'];
+                                                        $addamt1                   = explode('$', $biweekly_employee_details);
+                                                        $biweekly_employee         = $data['biweekly'][0]['employee'];
+                                                        $biwkly                    = ($biweekly_employee / 100) * $getvalue;
+                                                        $biwkly                    = round($biwkly, 2);
+                                                        $biweekly_taxliving        = $addamt1[1] + $biwkly;
+                                                    } else if (trim($name['state']) == 'Virginia') {
                                                         $biweekly_employee_details = $data['biweekly'][0]['details'];
                                                         $addamt1                   = explode('$', $biweekly_employee_details);
                                                         $biweekly_employee         = $data['biweekly'][0]['employee'];
@@ -2676,7 +2792,16 @@ class Chrm extends CI_Controller {
                                                             $biwkly                    = ($biweekly_employee / 100) * $getvalue;
                                                             $biwkly                    = round($biwkly, 2);
                                                             $biweekly_taxliving        = $addamt1[1] + $biwkly;
+                                                        } else if (trim($name['state']) == 'Virginia') {
+                                                            $biweekly_employee_details = $data['biweekly'][0]['details'];
+                                                            $addamt1                   = explode('$', $biweekly_employee_details);
+                                                            $biweekly_employee         = $data['biweekly'][0]['employee'];
+                                                            $biwkly                    = ($biweekly_employee / 100) * $getvalue;
+                                                            $biwkly                    = round($biwkly, 2);
+                                                            $biweekly_taxliving        = $addamt1[1] + $biwkly;
                                                         }
+
+
                                                     }
                                                 }
                                             }
@@ -2737,6 +2862,13 @@ class Chrm extends CI_Controller {
                                                         $month                   = round($month, 2);
                                                         $monthly_taxliving       = $addamt1[1] + $month;
                                                     } else if (trim($name['state']) == 'New Jersey') {
+                                                        $monthy_employee_details = $data['monthly'][0]['details'];
+                                                        $addamt1                 = explode('$', $monthy_employee_details);
+                                                        $monthly_employee        = $data['monthly'][0]['employee'];
+                                                        $month                   = ($monthly_employee / 100) * $getvalue;
+                                                        $month                   = round($month, 2);
+                                                        $monthly_taxliving       = $addamt1[1] + $month;
+                                                    } else if (trim($name['state']) == 'Virginia') {
                                                         $monthy_employee_details = $data['monthly'][0]['details'];
                                                         $addamt1                 = explode('$', $monthy_employee_details);
                                                         $monthly_employee        = $data['monthly'][0]['employee'];
@@ -2807,8 +2939,15 @@ class Chrm extends CI_Controller {
                                                             $month                   = ($monthly_employee / 100) * $getvalue;
                                                             $month                   = round($month, 2);
                                                             $monthly_taxliving       = $addamt1[1] + $month;
+                                                        } else if (trim($name['state']) == 'Virginia') {
+                                                            $monthy_employee_details = $data['monthly'][0]['details'];
+                                                            $addamt1                 = explode('$', $monthy_employee_details);
+                                                            $monthly_employee        = $data['monthly'][0]['employee'];
+                                                            $month                   = ($monthly_employee / 100) * $getvalue;
+                                                            $month                   = round($month, 2);
+                                                            $monthly_taxliving       = $addamt1[1] + $month;
                                                         }
-                                                    }
+                                                        }
                                                 }
                                             }
                                         }
@@ -3559,6 +3698,8 @@ class Chrm extends CI_Controller {
     public function time_list() {
         $encodedId                         = isset($_GET['id']) ? $_GET['id'] : null;
         $decodedId                         = decodeBase64UrlParameter($encodedId);
+  
+ 
         $timesheet_id                      = isset($_GET['timesheetid']) ? $_GET['timesheetid'] : null;
         $templ_name                        = isset($_GET['name']) ? $_GET['name'] : null;
         $setting_detail                    = $this->Web_settings->retrieve_setting_editdata();
@@ -3788,7 +3929,7 @@ class Chrm extends CI_Controller {
             $state_tax = $this->db->select('*')
                 ->from('state_and_tax')
                 ->where('state', $data['selected_living_state_tax'])
-                ->where('create_by', $decodedId)
+                ->where('created_by', $decodedId)
                 ->get()->result_array();
             $state = $this->db->select('*')->from('state_and_tax')
                 ->where('state', $state_tax[0]['state'])
@@ -5919,7 +6060,7 @@ AND t1.biweekly IS NULL;
         $data['state_selected']                = $this->Hrm_model->get_state_selected($decodedId);
         $content                               = $this->parser->parse('hr/federal_taxes', $data, true);
         $this->template->full_admin_html_view($content);
-    }
+    }  
 //F1099NEC -HR
     public function formfl099nec($selectedValue = null, $decodedId) {
         $data['get_cominfo']            = $this->Hrm_model->get_company_info($decodedId);
