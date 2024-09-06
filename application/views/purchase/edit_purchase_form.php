@@ -2324,7 +2324,6 @@ $(this).find('.editable-amount-paid input').val(paymentAmount);
    document.getElementById('content').appendChild(newdiv);
    
    dynamic_id++;
-   
    }
 </script>
 
