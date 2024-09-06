@@ -1252,10 +1252,11 @@ public function po_details($admin_company_id, $purchase_id)
    $curn_info_default = $CI->db->select('*')->from('currency_tbl')->where('icon',$setting_detail[0]['currency'])->get()->result_array();
     $all_product_list = $CI->Products->get_all_products($admin_company_id);
     $expense_tax =  $CI->Purchases->expense_tax($admin_company_id);
-
+  $expense_attachment = $CI->Purchases->getEditExpensesData($admin_company_id,$purchase_id);
     $purchase_detail = $CI->Purchases->retrieve_purchase_order_editdata($purchase_id, $admin_company_id);
-    //print_r($purchase_detail); die;
+   // print_r($purchase_detail); die;
     $data = array(
+        'attachments'   => $expense_attachment,
         'curn_info_default' =>$curn_info_default[0]['currency_name'],
         'currency' => $setting_detail[0]['currency'],
         'tax' =>$expense_tax,
