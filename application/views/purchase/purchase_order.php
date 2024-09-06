@@ -4136,24 +4136,6 @@
                } else {
                    console.error("Invalid purchase date format:", dataString); 
                }
-
-               
-               // var dataString = data.pDate;
-               //  var parts = dataString.split("/");
-               //  var day = parts[1];
-               //  var month = parts[0];
-               //  var year = parts[2];
-
-               //  if (month.length === 1) {
-               //      month = "0" + month;
-               //  }
-               //  if (day.length === 1) {
-               //      day = "0" + day;
-               //  }
-
-               // var formattedpurchaseDate = year + "-" + month + "-" + date;
-
-               // $('.purchase_date').val(formattedpurchaseDate);
                $('.vendorAddress').val(vendorAddress);
                $('.est_ship_date').val(formattedDateETD);
                $('.created_by').val(data.createdBy);
