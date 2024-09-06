@@ -1,4 +1,4 @@
- <?php print_r($supplier_list); ?>
+
  <div class="panel-body">
 <div class="with_po">  
    <div id="errormessage_expense"></div><br>

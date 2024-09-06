@@ -437,7 +437,7 @@ $bulk_bank=$this->input->post('bulk_bank',TRUE);
            );
           $this->db->where('supplier_id', $supplier_id);
           $this->db->update('supplier_information', $data5);
-
+if($payment_id){
       for ($i = 0, $n = count($payment_id); $i < $n; $i++) {
        if($amount_pay[$i]){
               $data1 = array(
@@ -465,6 +465,7 @@ $bulk_bank=$this->input->post('bulk_bank',TRUE);
        
             
        }
+    }
    }
     
 
@@ -624,14 +625,15 @@ $this->db->where('a.supplier_id', $customer_id);
 
     
     
-    public function getEditExpensesData($purchase_id)
+    public function getEditExpensesData($id,$purchase_id)
     {
         $this->db->select('*'); 
         $this->db->from('attachments');
         $this->db->where('attachment_id' ,$purchase_id);
-        $this->db->where('created_by' ,$this->session->userdata('user_id'));
-        $this->db->where('sub_menu' ,'Expenses');
+        $this->db->where('created_by' ,$id);
+        $this->db->where('sub_menu' ,'expense');
         $query = $this->db->get();
+   
         if ($query->num_rows() > 0) {
             return $query->result_array();
         }
@@ -2278,7 +2280,17 @@ function adjustDatesBasedOnNotifications_truck($delivery_date,$container_pickup_
             ];
             $this->db->insert('product_details', $product_table);
         }
-
+  if ($purchase_id != "") {
+            if (!empty($_FILES['files'])) {
+                $fileCount = count($_FILES['files']['name']);
+                for ($i = 0; $i < $fileCount; $i++) {
+                    $upload_data = multiple_file_upload('files', $i, 'expense', EXPENSE_IMG_PATH);
+                    if ($upload_data['upload_data']['file_name'] != "") {
+                        insertAttachments($purchase_id, $upload_data['upload_data']['file_name'], EXPENSE_IMG_PATH, 'expense', $this->session->userdata('unique_id'), $createdby);
+                    }
+                }
+            }
+        }
         $response = [
             'status' => 'success',
             'msg' => 'Invoice processed successfully.',
@@ -3912,7 +3924,7 @@ public function retrieve_purchase_order_editdata($purchase_id, $admin_company_id
     $this->db->where('a.purchase_order_id', $purchase_id);
     $this->db->order_by('a.purchase_details', 'asc');
     $query = $this->db->get();
-    // echo $this->db->last_query(); die();
+
     if ($query->num_rows() > 0) {
         return $query->result_array();
     }
