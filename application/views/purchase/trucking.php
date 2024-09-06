@@ -2335,13 +2335,10 @@
 
 $(document).ready(function() {
        $('#form_image').change(function() {
-        // Submit the form when a file is selected
         $('#ocrtrucking').submit();
     });
     $('#ocrtrucking').submit(function(e) {
-        e.preventDefault(); // Prevent the default form submission
-
-        // Create FormData object
+        e.preventDefault(); 
         var formData = new FormData(this);
         $('.loading-text').show();
         $.ajax({
@@ -2378,7 +2375,6 @@ $(document).ready(function() {
                    console.error("Invalid ETD date format:", etaDate);
                }
 
-               
                for (let i = 0; i < product_qty.length; i++) {
                    let trElement = $(`
                        <tr>
@@ -2417,28 +2413,11 @@ $(document).ready(function() {
                    $('#addPurchaseItem_1').append(trElement);
                }
 
-
                $('.Deleteallrowsquantity').remove();
-
-
-              
-               // $('.product_quantity').each(function(index) {
-               //    $(this).val(product_qty[index]);
-               // });
-
-               // $('.product_description').each(function(index) {
-               //    $(this).val(product_name[index]);
-               // });
-
-               // $('.product_saleprice').each(function(index) {
-               //    $(this).val(product_saleprice[index]);
-               // });
-
                $('.shipment_bl_number').val(data.invoiceno);
 
             },
             error: function(xhr, status, error) {
-                // Handle error
                $('.loading-text').hide();
                console.error("Error parsing JSON:", error);
             }
