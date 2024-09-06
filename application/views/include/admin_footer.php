@@ -551,6 +551,7 @@ $(document).on('keyup', '.net_height, .net_width', updateNetCalculations);
 $(document).on('input', '.gross_height, .gross_width', updateGrossCalculations);
    // To show 7 rows in the table on page load
 $(document).ready(function(){
+
 var tid=$('.table').closest('table').attr('id');
    const indexLast = tid.lastIndexOf('_');
    var id = tid.slice(indexLast + 1);
