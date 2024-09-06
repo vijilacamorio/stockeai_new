@@ -717,7 +717,7 @@ foreach ($tax_data as $tx) {?>
                                        <i class="text-danger"></i>
                                        </label>
                                        <div class="col-sm-8">
-                                          <input type="text" tabindex="3" class="form-control sp_address" name="sp_address" style="border:2px solid #d7d4d6;"  id="sp_address"  />
+                                          <input type="text" tabindex="3" readonly class="form-control sp_address" name="sp_address" style="border:2px solid #d7d4d6;"  id="sp_address"  />
                                           <div id="loadingText" class="loading-text"></div>
                                        </div>
                                     </div>
@@ -1016,6 +1016,7 @@ foreach ($tax_data as $tx) {?>
     $('#expense_drop').hide();
    });
 
+
 $(document).on('change', '#module_selection', function (e) {
     if ($('#module_selection').val() === "New Expense") {
         $('#service_provider_data').hide();
@@ -1040,6 +1041,7 @@ $(document).on('change', '#module_selection', function (e) {
             });
         }
 
+
         var data = {
             expense_drop: $('#expense_drop').val()
         };
@@ -1050,6 +1052,41 @@ $(document).on('change', '#module_selection', function (e) {
         $('#expense_drop').hide();
         $('#main').show();
 
+<<<<<<< HEAD
+   }
+else{
+      $('#main').show();
+      $('#service_provider_data').hide();
+      $('.with_po').show();
+      $('.without_po').hide();
+      var data = {
+      po:$('#module_selection').val(),
+      admin_company_id : $('#admin_company_id').val()
+      };
+      data[csrfName] = csrfHash;
+      $.ajax({ 
+      url:'<?php echo base_url();?>Cpurchase/get_po_details',
+      method:'POST',
+      data: data, 
+      dataType : "html" 
+      }).done(function(data) { 
+      var obj = $(data);
+      $("#insert_purchase").html(obj.find("#insert_purchase").html());
+      $(".normalinvoice").each(function(i,v){
+      if($(this).find("tbody").html().trim().length === 0){
+      $(this).hide()
+      }
+      })
+      getSupplierInfo($('#supplier_id').val())
+      }).fail(function(jqXHR, textStatus, errorThrown) { 
+      });
+
+
+
+   }
+  
+   });
+=======
         var data = {
             po: $('#module_selection').val()
         };
@@ -1088,6 +1125,7 @@ $(document).on('change', '#module_selection', function (e) {
     }
 });
 
+>>>>>>> 4f0452639bd6e7dffacb2c3a421abd3a78cbd559
 
 function getSupplierInfo(supplier_id){
 
