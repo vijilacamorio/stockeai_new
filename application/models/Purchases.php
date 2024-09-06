@@ -397,7 +397,7 @@ public function bulk_payment_unique($payment){
                );
            $this->db->where('chalan_no', $unq_inv);
                $this->db->update('product_purchase', $data1);
-               
+
                              $bulk_payment_date =$this->input->post('bulk_payment_date',TRUE);
 $bulk_pay_ref=$this->input->post('bulk_pay_ref',TRUE);
 $bulk_bank=$this->input->post('bulk_bank',TRUE);
@@ -413,7 +413,7 @@ $bulk_bank=$this->input->post('bulk_bank',TRUE);
                'create_by' =>$this->session->userdata('user_id')
                );
                $this->db->insert('payment', $data2);
-                
+
   }
     
     
@@ -437,7 +437,7 @@ $bulk_bank=$this->input->post('bulk_bank',TRUE);
            );
           $this->db->where('supplier_id', $supplier_id);
           $this->db->update('supplier_information', $data5);
-          
+
       for ($i = 0, $n = count($payment_id); $i < $n; $i++) {
        if($amount_pay[$i]){
               $data1 = array(
@@ -447,7 +447,7 @@ $bulk_bank=$this->input->post('bulk_bank',TRUE);
                    );
                  $this->db->where('chalan_no', $invoice_no[$i]);
                     $this->db->update('product_purchase', $data1);
-            
+
       $data2 = array(
                    'payment_id' =>$payment_id[$i],
                    'payment_date'        =>$bulk_payment_date,
@@ -460,8 +460,7 @@ $bulk_bank=$this->input->post('bulk_bank',TRUE);
                     'create_by' =>$this->session->userdata('user_id')
                     );
                     $this->db->insert('payment', $data2);
-               
-   
+
                    }
        
             
@@ -3896,9 +3895,30 @@ public function expense_tax($company_id)
     
     if ($query->num_rows() > 0) {
         return $query->result_array(); 
+
     }
     return false;
 }
+
+
+public function retrieve_purchase_order_editdata($purchase_id, $admin_company_id) 
+{
+    $this->db->select('a.*,b.*,c.product_id,c.product_name,c.product_model,d.supplier_id,d.supplier_name');
+    $this->db->from('purchase_order a');
+    $this->db->join('purchase_order_details b', 'b.purchase_id =a.purchase_order_id');
+    $this->db->join('product_information c', 'c.product_id =b.product_id');
+    $this->db->join('supplier_information d', 'd.supplier_id = a.supplier_id');
+    $this->db->where('a.create_by', $admin_company_id);
+    $this->db->where('a.purchase_order_id', $purchase_id);
+    $this->db->order_by('a.purchase_details', 'asc');
+    $query = $this->db->get();
+    // echo $this->db->last_query(); die();
+    if ($query->num_rows() > 0) {
+        return $query->result_array();
+    }
+    return true;
+}
+
 
 
 

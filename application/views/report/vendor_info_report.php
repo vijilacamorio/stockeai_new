@@ -144,6 +144,7 @@
                      </div>
                      <table class="table table-bordered" id="vendorInfoTbl" cellspacing="0" width="100%">
                         <thead class="sortableTable">
+
                               <th class="btnclr" width="5%">S.No</th>
                               <th class="btnclr" width="5%"><?php echo display('Company ID')?></th>
                               <th class="btnclr" width="7%"><?php echo display('Name')?></th>
@@ -159,6 +160,7 @@
                               <th class="btnclr" width="7%"><?php echo display('State')?></th>
                               <th  class="btnclr" width="7%"><?php echo display('Zip code')?></th>
                               <th class="btnclr" width="7%"><?php echo display('Supplier Details')?></th>
+
                         </thead>
          
                      </table>

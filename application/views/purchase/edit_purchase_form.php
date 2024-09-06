@@ -91,7 +91,9 @@
             </div>
          </div>
          <div class="panel-body">
+
              <div id="errormessage_expense"></div>
+
            <form id="insert_expense"  method="post">
                            <div class="row">
                            <div class="col-sm-6">  
@@ -120,7 +122,9 @@
                                 <div class="form-group row">
                         <label for="" class="col-sm-4 col-form-label" ><?php  echo  display('Vendor Type');?></label>
                         <div class="col-sm-8">
+
                            <input type="vendor_type" tabindex="3" readonly class="form-control" name="vendor_type"  style="WIDTH: 100%;border: 2px solid #d7d4d6;"   id="vendor_type_details" />
+
                         </div>
                      </div> </div>
                   
@@ -352,7 +356,9 @@
 
                                  <div class="form-group row">
     <label for="invoice_no" class="col-sm-4 col-form-label">
+
         <?php echo display('ISF FIELD');?>  <i class="text-danger">*</i>
+
     </label>
     <div class="col-sm-8">
         <select name="isf_field" class="form-control"  id="isf_dropdown1" tabindex="3" style="width400%;border: 2px solid #d7d4d6;">
@@ -615,7 +621,9 @@ foreach ($tax_data as $tx) {?>
                            <td  style="width:20%;"><a href="#" class="client-add-btn btn btnclr" aria-hidden="true" style="color:white;  margin-right: 295px;"  data-toggle="modal" data-target="#tax_info" ><i class="fa fa-plus"></i></a></td>
                         </tr>
                      </table>
+
                   <table border="0" style="width: 80%; border-collapse: collapse; float:right;text-align: left;border:none;" class="overall table table-bordered table-hover" style="border:2px solid #d7d4d6;">
+
     <tbody>
         <tr>
             <!-- Left Side -->
@@ -677,16 +685,7 @@ foreach ($tax_data as $tx) {?>
             </td>
         </tr>
     </tbody>
-    <!-- <tfoot>
-        <tr style="border-right:none; border-left:none; border-bottom:none; border-top:none;">
-            <td colspan="2" style="text-align: right; padding: 20px;">
-         
-              <a class="client-add-btn btn btnclr" aria-hidden="true" id="paypls" data-toggle="modal" data-target="#payment_modal">
-                        Make Payment
-             </a>
-            </td>
-        </tr>
-    </tfoot> -->
+
 </table>
                            
       <div class="row">
@@ -772,8 +771,10 @@ foreach ($tax_data as $tx) {?>
       </div>
    </div>
 </div>
+
 <input type="hidden" id="Final_invoice_number" /> 
 <input type="hidden" id="Final_invoice_id" /> 
+
 
 <div id="packmodal" class="modal fade" role="dialog">
    <div class="modal-dialog">
@@ -822,6 +823,7 @@ foreach ($tax_data as $tx) {?>
     var csrfHash = '<?php echo $this->security->get_csrf_hash();?>';
    $(document).ready(function(){
       $(".normalinvoice").each(function(i,v){
+
           $(this).find('select').each(function() {
     var $select = $(this);
    if ($select.data('select2')) {
@@ -829,10 +831,12 @@ foreach ($tax_data as $tx) {?>
     }
     $select.select2();
 });
+
        if($(this).find("tbody").html().trim().length === 0){
            $(this).hide()
        }
     })
+
                               
 //  $('.normalinvoice tbody tr').find('select').each(function() {
 //     var $select = $(this);
@@ -842,6 +846,7 @@ foreach ($tax_data as $tx) {?>
 //     $select.select2();
 // });
                         $('.normalinvoice tbody tr').each(function() {
+
 
         var tableId = $(this).closest('table').attr('id');
     updateTableTotals(tableId);
@@ -901,6 +906,7 @@ foreach ($tax_data as $tx) {?>
        $("#isf_no1").hide();
    }).trigger("change");
    
+
       $('.final_submit').on('click', function (e) {
     var input_hdn='Your Invoice No : "'+ $('#Final_invoice_number').val()+" has been Updated Successfully";
 
@@ -909,6 +915,7 @@ foreach ($tax_data as $tx) {?>
       window.location = "<?php  echo base_url(); ?>Cpurchase/manage_purchase?id=<?php echo $_GET['id']; ?>";
      }, 2000);
    });
+
        function payment_update(){
     $('.hidden_button').hide();
        var dataString = {
@@ -992,6 +999,7 @@ foreach ($tax_data as $tx) {?>
    
    });
       
+
     function calculateSum(context, selector) {
 
     var sum = 0;
@@ -1218,6 +1226,7 @@ $(document).on('click', '.delete', function(){
     }
 });
 
+
               
 $('#supplier_id').on('change', function (e) {
   var data = {
@@ -1235,9 +1244,11 @@ $('#supplier_id').on('change', function (e) {
         csrfName = result.csrfName;
         csrfHash = result.csrfHash;
       }
+
  $('#vendor_add').html(result[0]['address']);
                    $('#vendor_type_details').html(result[0]['vendor_type']);
                    debugger;
+
       console.log(result[0]['currency_type']);
       $(".cus").html(result[0]['currency_type']);
       $("label[for='custocurrency']").html(result[0]['currency_type']);
@@ -1252,6 +1263,7 @@ $('#supplier_id').on('change', function (e) {
       
         $(".custocurrency_rate").val(Rate);
       });
+
 
 
     }
@@ -1385,6 +1397,18 @@ success: function (response) {
        
    location.reload();
 
+
+  });
+
+
+});
+ $('#product_tax').on('change', function (e) {
+  
+  var total=$('#Over_all_Total').val();
+ var tax= $('#product_tax').val();
+if(tax.indexOf(hypen) != -1){
+ var field = tax.split('-');
+
    },2000);
 }else{
   $('#payment_error').html('<div class="alert alert-danger alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>' + 'Failed to Update.Try Again..' + '</div>');
@@ -1396,6 +1420,7 @@ success: function (response) {
           
        });
    });
+
 
 
 
@@ -1424,6 +1449,7 @@ var csrf_token = {
         };
         tableData.push(rowData);
     });
+
 
     var postData = {
                           tableData: tableData
@@ -1529,6 +1555,13 @@ var overall_paid = parseFloat(data.overall[0].overall_paid);
             var count1 = 1;
 
 
+    var postData = {
+                          tableData: tableData
+                     };
+                     postData[csrfName] = csrfHash;
+ 
+
+
             for (var invoiceId in basedOnCustomer) {
     if (basedOnCustomer.hasOwnProperty(invoiceId)) {
   
@@ -1553,6 +1586,7 @@ var overall_paid = parseFloat(data.overall[0].overall_paid);
             var count2 = 1;
   all +=  total2 + table_header2 + html2 + table_footer2;
 
+
             $('#salle_list').html(all);
             $('#payment_history_modal').modal('show');
               $('#pay_now_table').hide();
@@ -1576,6 +1610,7 @@ amountPaidCells.forEach(function (cell) {
     });
 });
 
+
 function toggleTable() {
   const toggleTable = document.getElementById('toggle_table');
   const toggleButton = document.querySelector('.toggle-button');
@@ -1595,8 +1630,10 @@ function toggleTable() {
 
 
 
+
 $(document).ready(function () {
     $(document).on('keyup', '#total-amount', function () {
+
 
         var totalAmount = parseFloat($(this).val().trim());
 
@@ -1617,6 +1654,7 @@ $(document).ready(function () {
             var balance = parseFloat(balanceCell.val());
   balance = isNaN(balance) ? 0 : balance;
 
+
             if (balance > 0 && remainingAmount > 0) {
                 var amountToPay = Math.min(balance, remainingAmount);
                 amountPayInput.val(amountToPay.toFixed(2));
@@ -1634,6 +1672,7 @@ $(document).ready(function () {
 
         if (amountToPay > 0) {
             $(this).find('.checkbox-distribute').prop('checked', true);
+
         }
 
     
@@ -1758,7 +1797,6 @@ function updateTotalbalanceToPay() {
     var amount1 = parseFloat($(this).val()) || 0; 
     totalbalanceToPay += amount1;
   });
-  
 
   $('.t_bal_pay').text(totalbalanceToPay.toFixed(2));
 }
@@ -2281,7 +2319,7 @@ $(this).find('.editable-amount-paid input').val(paymentAmount);
    ddl.options.add(opt);
    }
       let dynamic_id=2;
-   
+
    function addbundle(){
    $(this).closest('table').find('.addbundle').css("display","none");
    $(this).closest('table').find('.removebundle').css("display","block");
@@ -2305,6 +2343,7 @@ $(this).find('.editable-amount-paid input').val(paymentAmount);
    
    }
 </script>
+
 
 
    

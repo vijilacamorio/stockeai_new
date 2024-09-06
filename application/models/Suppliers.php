@@ -173,20 +173,22 @@ class Suppliers extends CI_Model {
         return  $supplier_id;
 
     }
-     public function supplier_list($company_id) {
-        $this->db->select('supplier_name,supplier_id');
+
+     
+    public function supplier_list($admin_company_id) {
+        $this->db->select('supplier_name,supplier_id,created_by');
         $this->db->from('supplier_information');
-        if($company_id ==""){
-            $this->db->where('created_by',$this->session->userdata('user_id'));
-        }else{
-            $this->db->where('created_by',$company_id);
-        }
-        //echo $this->db->get_compiled_select();
+        $this->db->where('created_by',$admin_company_id);
         $query = $this->db->get();
+        // echo $this->db->last_query(); die();
         if ($query->num_rows() > 0) {
             return $query->result_array();
         }
     }
+
+
+
+
     public function getSupplierCount($searchValue,$companyId){
         $searchQuery = "";
         if($searchValue != ''){

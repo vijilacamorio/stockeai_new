@@ -731,7 +731,9 @@ $(document).ready(function() {
 									</li>
 								</ul>
 							</li>
+
 							<li class="treeview  <?php echo ($this->uri->segment(2) == 'productReport' || $this->uri->segment(2) == 'productReportStock') ? 'active' : ''; ?>">
+
 								<a href="fa fa-asl-interpreting">
 									<i class="ti-user"></i><span><?php echo "Product" ?></span>
 								</a>

@@ -82,10 +82,8 @@ $this->load->view('include/bootstrap_model', $modaldata);
                <div class="panel-heading">
                   <div class="panel-body">
                      <div class="with_po">
-                    
-                        <form id="insert_purchase"  method="post">
+                        <form id="insert_purchase" method="post">
                         </form>
-                 
                      </div>
                      <div class="without_po">
                         <div id="errormessage_expense"></div>
@@ -356,7 +354,9 @@ $this->load->view('include/bootstrap_model', $modaldata);
 
                                  <div class="form-group row">
     <label for="invoice_no" class="col-sm-4 col-form-label">
+
         <?php echo display('ISF FIELD');?><i class="text-danger">*</i>
+
     </label>
     <div class="col-sm-8">
         <select name="isf_field" class="form-control" id="isf_dropdown" tabindex="3" required="" style="width:100%;border:2px solid #d7d4d6;">
@@ -419,7 +419,9 @@ $this->load->view('include/bootstrap_model', $modaldata);
                                        <tr>
                                           <td>
                                              <input type="hidden" class="table_id" name="tableid[]" id="tableid_1"/>
+
                                              <input list="magicHouses" name="prodt[]" id="prodt_1"   class="form-control product_name"  style="width:160px;" placeholder="Search Product" />
+
                                              <datalist id="magicHouses">
                                                 <?php 
                                                    foreach($product_list as $tx){?>
@@ -465,15 +467,15 @@ $this->load->view('include/bootstrap_model', $modaldata);
                                              <input type="text"   style="width:60px;" readonly id="net_sq_ft_1" name="net_sq_ft[]" class="net_sq_ft form-control"/>
                                           </td>
                                           <td>
-                                             <span class="input-symbol-euro"><input type="text" id="cost_sq_ft_1"  name="cost_sq_ft[]"     style="width:60px;" value="0.00"  class="cost_sq_ft form-control costPerSQFT"></span>
+                                            <input type="text" id="cost_sq_ft_1"  name="cost_sq_ft[]"     style="width:60px;" value="0.00"  class="cost_sq_ft form-control costPerSQFT">
                                           <td >
-                                             <span class="input-symbol-euro"> <input type="text"  id="cost_sq_slab_1" name="cost_sq_slab[]"      style="width:60px;" value="0.00"  class="cost_sq_slab form-control"/></span>
+                                             <input type="text"  id="cost_sq_slab_1" name="cost_sq_slab[]" style="width:60px;" value="0.00"  class="cost_sq_slab form-control"/>
                                           </td>
                                           <td>
-                                             <span class="input-symbol-euro">  <input type="text" id="sales_amt_sq_ft_1"  name="sales_amt_sq_ft[]"  style="width:70px;"  placeholder="0.00" class="sales_amt_sq_ft form-control" /></span>
+                                             <input type="text" id="sales_amt_sq_ft_1"  name="sales_amt_sq_ft[]"  style="width:70px;"  placeholder="0.00" class="sales_amt_sq_ft form-control" />
                                           </td>
                                           <td >
-                                             <span class="input-symbol-euro">   <input type="text"  id="sales_slab_amt_1" name="sales_slab_amt[]"  style="width:70px;" placeholder="0.00"  class="sales_slab_amt form-control"/>
+                                             <input type="text"  id="sales_slab_amt_1" name="sales_slab_amt[]"  style="width:70px;" placeholder="0.00"  class="sales_slab_amt form-control"/>
                                           </td>
                                           </span>
                                           </td>
@@ -488,7 +490,7 @@ $this->load->view('include/bootstrap_model', $modaldata);
                                              </select>
                                           </td>
                                           <td >
-                                             <span class="input-symbol-euro"><input  type="text" class="total_price form-control" style="width:80px;" readonly  value="0.00"  id="total_amt_1"     name="total_amt[]"/></span>
+                                             <input  type="text" class="total_price form-control" style="width:80px;" readonly  value="0.00"  id="total_amt_1" name="total_amt[]"/>
                                           </td>
                                           <td style="text-align:center;">
                                              <button  class='btn btn-danger delete' id="delete_1" type='button' value='Delete' ><i class="fa fa-trash"></i></button>
@@ -522,7 +524,7 @@ $this->load->view('include/bootstrap_model', $modaldata);
                                           </td>
                                           <td style="text-align:right;" colspan="1"><b><?php  echo display('total'); ?> :</b></td>
                                           <td >
-                                             <span class="input-symbol-euro">    <input type="text" id="Total_1" name="total[]"   class="b_total form-control"  style="width: 80px" value="0.00"  readonly="readonly"  /> </span>
+                                             <input type="text" id="Total_1" name="total[]"   class="b_total form-control"  style="width: 80px" value="0.00"  readonly="readonly"  /> 
                                           </td>
                                        </tr>
                                     </tfoot>
@@ -1010,10 +1012,10 @@ foreach ($tax_data as $tx) {?>
 
 <script>
    $(document).ready(function(){
-         $(".isf_no1").hide();
-    $('#main').hide();
+  $('#main').hide();
     $('#expense_drop').hide();
    });
+
    $(document).on('change','#module_selection' ,function (e) {
    if($('#module_selection').val() =="New Expense"){
     $('#service_provider_data').hide();
@@ -1037,7 +1039,9 @@ foreach ($tax_data as $tx) {?>
    var data = {
    expense_drop:$('#expense_drop').val()
    };
-   }else if($('#module_selection').val() =="serviceProvider"){
+
+   else if($('#module_selection').val() =="serviceProvider"){
+
       
      $('#service_provider_data').show();
    $('.without_po').hide();
@@ -1049,32 +1053,35 @@ foreach ($tax_data as $tx) {?>
    };  
       
       
-   }else{
-      $('#main').show();
-         $('#service_provider_data').hide();
-   $('.with_po').show();
-   $('.without_po').hide();
-   var data = {
-   po:$('#expense_drop').val(),
-   admin_company_id : $('#admin_company_id').val()
-   };
-   data[csrfName] = csrfHash;
-   $.ajax({ 
-   url:'<?php echo base_url();?>Cpurchase/get_po_details',
-   method:'POST',
-   data: data, 
-   dataType : "html" 
-   }).done(function(data) { 
-   var obj = $(data);
-   $("#insert_purchase").html(obj.find("#insert_purchase").html());
-   $(".normalinvoice").each(function(i,v){
-   if($(this).find("tbody").html().trim().length === 0){
-   $(this).hide()
+
    }
-   })
-   getSupplierInfo($('#supplier_id').val())
-   }).fail(function(jqXHR, textStatus, errorThrown) { 
-   });
+   else{
+      $('#main').show();
+      $('#service_provider_data').hide();
+      $('.with_po').show();
+      $('.without_po').hide();
+      var data = {
+      po:$('#module_selection').val(),
+      admin_company_id : $('#admin_company_id').val()
+      };
+      data[csrfName] = csrfHash;
+      $.ajax({ 
+      url:'<?php echo base_url();?>Cpurchase/get_po_details',
+      method:'POST',
+      data: data, 
+      dataType : "html" 
+      }).done(function(data) { 
+      var obj = $(data);
+      $("#insert_purchase").html(obj.find("#insert_purchase").html());
+      $(".normalinvoice").each(function(i,v){
+      if($(this).find("tbody").html().trim().length === 0){
+      $(this).hide()
+      }
+      })
+      getSupplierInfo($('#supplier_id').val())
+      }).fail(function(jqXHR, textStatus, errorThrown) { 
+      });
+
    }
   
    });
@@ -1455,6 +1462,7 @@ $('#amount_to_pay').val($('#balance_provider').val());
    }, 2500);
    
    });
+
      $('#final_submit').on('click', function (e) {
       $('#errormessage_expense').html('<div class="alert alert-success">' + "<?php echo  ('Invoice Number')." :";?>"+$('#Final_invoice_number').val()+"<?php echo  " ".display('has been saved Successfully');?>"+ '</div>');
  window.setTimeout(function(){
@@ -1468,4 +1476,5 @@ $('#amount_to_pay').val($('#balance_provider').val());
      else
        $(".isf_no1").hide();
    }).trigger("change");
+
    </script>

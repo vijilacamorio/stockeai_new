@@ -144,6 +144,7 @@
                      </div>
                      <table class="table table-bordered" id="vendorRepTbl" cellspacing="0" width="100%">
                         <thead class="sortableTable">
+
                               <th class="btnclr" width="5%">S.No</th>
                               <th class="btnclr" width="11%"> <?php echo display('Invoice No')?></th>
                               <th class="btnclr" width="11%"><?php echo display('Sales Invoice date')?></th>
@@ -154,6 +155,7 @@
                               <th class="btnclr" width="10%"><?php echo display('Amount Paid')?></th>
                               <th class="btnclr" width="10%"> <?php echo display('Balance Amount')?> </th>
                               <th class="btnclr" width="10%"><?php echo 'Status';?></th>
+
                         </thead>
                      </table>
                   </div>

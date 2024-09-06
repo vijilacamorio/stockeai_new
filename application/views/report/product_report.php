@@ -185,6 +185,7 @@
                     </div>
                         <table class="table table-bordered" id="productReportTbl" cellspacing="0" width="100%">
                             <thead class="sortableTable">
+
                                 <th class="btnclr" width="10%">S.No</th>
                                 <th class="btnclr" width="15%">Product Id</th>
                                 <th class="btnclr" width="15%"><?php echo display('product_name') ?></th>
@@ -192,6 +193,7 @@
                                 <th class="btnclr" width="15%"><?php echo display('category') ?></th>
                                 <th class="btnclr" width="15%"><?php echo 'Supplier Name'; ?></th>
                                 <th class="btnclr" width="15%"><?php echo display('Unit') ?></th>
+
                             </thead>
                                
                   </table>

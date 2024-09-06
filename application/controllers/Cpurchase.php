@@ -1,5 +1,4 @@
-
-   <?php
+<?php
 
 
 if (!defined('BASEPATH'))
@@ -607,6 +606,7 @@ $overall_payment = $this->Purchases->get_cust_payment_overall_info($customer_id)
 echo json_encode($data);//die();
 
 }
+
 public function bulk_payment() {
     $response = ['status' => 'failure', 'msg' => 'An error occurred.'];
 
@@ -658,6 +658,7 @@ public function bulk_payment_ser_pro() {
     }
   echo json_encode($response);
 }
+
 
  
  public function payment_history_purchase_serv_provider(){
@@ -1198,10 +1199,10 @@ $result = $CI->Purchases->servicepro($date) ;
     
     }
     public function get_payment_id(){
-       $CI = & get_instance();
-          $CI->load->library('lpurchase');
+        $CI = & get_instance();
+        $CI->load->library('lpurchase');
         $po_num = $this->input->post('value');
-   $taxfield1 = $CI->db->select('*')
+        $taxfield1 = $CI->db->select('*')
         ->from('purchase_order')
         ->where('chalan_no',$po_num)
         ->get()
@@ -1209,16 +1210,18 @@ $result = $CI->Purchases->servicepro($date) ;
         echo  json_encode($taxfield1);
        
     }
-    public function get_po_details(){
-       
+
+
+    public function get_po_details()
+    {
         $po_num = $this->input->post('po');
-        $admin_company_id=$this->input->post('admin_company_id');
-     $content = $this->lpurchase->po_details($admin_company_id,$po_num);
-        $this->template->full_admin_html_view($content);
-       // echo json_encode($data);
+        $adminid = $this->input->post('admin_company_id');
+        $admin_company_id = decodeBase64UrlParameter($adminid);
+        $purchaseDetail = $this->db->select('*')->from('purchase_order')->where('chalan_no',$po_num)->get()->result_array();
+        $purchase_id = $purchaseDetail[0]['purchase_order_id'];
+        $content = $this->lpurchase->po_details($admin_company_id, $purchase_id);
 
 
-    }
     public function add_csv_purchase()
     {
          $CI = & get_instance();
@@ -1831,7 +1834,9 @@ public function uploadCsv_Serviceprovider_second()
         $currency_details = $this->Web_settings->retrieve_setting_editdata();
         $curn_info_default = $this->db->select('*')->from('currency_tbl')->where('icon',$currency_details[0]['currency'])->get()->result_array();
         $sale_costpersqft_per = $this->Invoices->sales_cost_permission();
+
          $country_code = $this->db->select('*')->from('country')->get()->result_array();
+
         $data = array(
             'tax_data'     =>  $tax,
             'attachments'   => $expense_attachment,
@@ -1840,7 +1845,9 @@ public function uploadCsv_Serviceprovider_second()
             'price'  =>$sale_costpersqft_per[1]['price'],
             'all_supplier'  => $supplier_list,
             'product_list'  => $all_product_list,
+
               'country_code' => $country_code,
+
             'purchase_info' => $purchase_detail,
            'setting_detail' => $setting_detail
          );

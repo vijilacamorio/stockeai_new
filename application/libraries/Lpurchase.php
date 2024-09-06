@@ -19,7 +19,7 @@ class Lpurchase {
         $CI = & get_instance();
         $CI1 = & get_instance();
         $CI1->load->model('Purchases');
-            $CI->load->model('Suppliers');
+        $CI->load->model('Suppliers');
         $CI->load->model('Categories');
         $CI->load->model('Units');
         $CI->load->model('Products');
@@ -1238,47 +1238,37 @@ public function servprovider_edit_data($serviceprovider_id) {
 
 
 
+public function po_details($admin_company_id, $purchase_id)
+{  
+
+   $CI = & get_instance();
+   $CI->load->model('Suppliers');
+   $CI->load->model('Products');
+   $CI->load->model('Web_settings');
+   $CI->load->model('Purchases');
+
+   $supplier_list = $CI->Suppliers->supplier_list($admin_company_id);
+   $setting_detail = $CI->Web_settings->retrieve_setting_editdata();
+   $currency_details = $CI->Web_settings->retrieve_setting_editdata(); 
+   $curn_info_default = $CI->db->select('*')->from('currency_tbl')->where('icon',$currency_details[0]['currency'])->get()->result_array();
+    $all_product_list = $CI->Products->get_all_products($admin_company_id);
+    $expense_tax =  $CI->Purchases->expense_tax($admin_company_id);
+
+    $purchase_detail = $CI->Purchases->retrieve_purchase_order_editdata($purchase_id, $admin_company_id);
+   
+    $data = array(
+        'curn_info_default' =>$curn_info_default[0]['currency_name'],
+        'currency' => $currency_details[0]['currency'],
+        'tax' =>$expense_tax,
+        'purchase_info' => $purchase_detail,
+        'supplier_list' => $supplier_list,
+        'products' =>$all_product_list
+    );
+    $chapterList = $CI->parser->parse('purchase/final_purchase', $data, true);
+    return $chapterList;
+}
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-public function po_details($po_num){
-      $supplier_list =$this->Suppliers->supplier_list(decodeBase64UrlParameter($_GET['id']));
-       $setting_detail = $this->Web_settings->retrieve_setting_editdata();
-       $currency_details = $this->Web_settings->retrieve_setting_editdata(); 
-       $curn_info_default = $this->db->select('*')->from('currency_tbl')->where('icon',$currency_details[0]['currency'])->get()->result_array();
-        $all_product_list = $this->Products->get_all_products(decodeBase64UrlParameter($_GET['id']));
-        $expense_tax =  $this->Purchases->expense_tax(decodeBase64UrlParameter($_GET['id']));
-         $purchase_id = $this->db->select('purchase_order_id')->from('purchase_order')->where('chalan_no' , $po_num)->get()->row()->purchase_order_id;
-        $purchase_detail = $this->Purchases->retrieve_purchase_order_editdata($purchase_id);
-       
-        $data = array(
-            'curn_info_default' =>$curn_info_default[0]['currency_name'],
-            'currency' => $currency_details[0]['currency'],
-          
-            'tax' =>$expense_tax,
-           
-            'purchase_info' => $purchase_detail,
-            'supplier_list' => $supplier_list,
-           'products' =>$all_product_list
-        );
-   //   print_r($data);
-        $chapterList = $CI->parser->parse('purchase/final_purchase', $data, true);
-        return $chapterList;
-    }
 public function purchase_order_edit_data($purchase_id) {
         $CI = & get_instance();
         $CI->load->model('Purchases');

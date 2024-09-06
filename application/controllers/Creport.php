@@ -794,7 +794,7 @@ class Creport extends CI_Controller {
         $this->template->full_admin_html_view($content);
     }
     public function productReportData() {
-         
+
         $this->load->model("Products");
         $this->load->library("lproduct");
         $this->load->model('Reports');
@@ -839,6 +839,7 @@ class Creport extends CI_Controller {
         ];
         echo json_encode($response);
     }
+
 
      
     public function productReportStock() {
@@ -954,6 +955,7 @@ class Creport extends CI_Controller {
         echo json_encode($response);
     }
     
+
 
 
 

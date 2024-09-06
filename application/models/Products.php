@@ -30,6 +30,7 @@ class Products extends CI_Model
             return $query->result_array();
         }
     }
+
     // public function get_products()
     // {
     //     $sql =
@@ -39,6 +40,7 @@ class Products extends CI_Model
     //         return $query->result_array();
     //     }
     // }
+
     //For Listing Products in 
     public function get_all_products_with_supplier()
     {
@@ -124,7 +126,9 @@ class Products extends CI_Model
         $query = $this->db
             ->select("*")
             ->from("product_information")
+
             ->where("created_by", $admin_id)
+
             ->where("is_deleted", 0)
             ->get();
         return $query->num_rows();
@@ -202,9 +206,8 @@ class Products extends CI_Model
         $this->db->join("product_information b", "b.product_id = a.product_id");
         $this->db->group_by("a.product_id");
         $this->db->where("a.created_by", $admin_id);
-        $query = $this->db->get(); 
 
-        // echo $this->db->last_query(); die();
+        $query = $this->db->get();
 
         if ($query->num_rows() > 0) {
             return $query->result_array();

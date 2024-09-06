@@ -1,6 +1,4 @@
-
-
-                    <div class="panel-body">
+<div class="panel-body">
 <style>
  .with_po > .navbar{
 display:none; 
@@ -9,7 +7,7 @@ display:none;
 display:none; 
 }
     
-    </style>
+</style>
 <div class="with_po">  
                       <form id="insert_purchase"  method="post">      
                         
@@ -325,7 +323,7 @@ if($a==$m){
                                               <input type="hidden" name="tableid[]" id="tableid_1" value="<?php  echo $inv['tableid'];   ?>"/>
                                 
                   <input list="magicHouses" name="prodt[]" id="prodt_<?php  echo $m.$n; ?>" class="form-control product_name" value="<?php  echo $inv['product_name'].'-'.$inv['product_model'];  ?>" style="width:140px;" />
-	<datalist id="magicHouses">
+    <datalist id="magicHouses">
 
  <?php                                
                                             foreach($products as $tx){?>
@@ -379,12 +377,12 @@ if($a==$m){
                                             </td>
                                             <td>
 
-       <span class="input-symbol-euro"><input type="text" id="cost_sq_ft_<?php  echo $m.$n; ?>"  name="cost_sq_ft[]" readonly  style="width:60px;" value="<?php  echo $inv['cost_per_sqft'];  ?>"  class="cost_sq_ft form-control" ></span>
+       <input type="text" id="cost_sq_ft_<?php  echo $m.$n; ?>"  name="cost_sq_ft[]" readonly  style="width:60px;" value="<?php  echo $inv['cost_per_sqft'];  ?>"  class="cost_sq_ft form-control" >
 
                                         
                                             <td >
                      
-      <span class="input-symbol-euro"> <input type="text"  id="cost_sq_slab_<?php  echo $m.$n; ?>" name="cost_sq_slab[]" readonly   style="width:60px;" value="<?php  echo $inv['cost_per_slab'];  ?>"  class="form-control"/></span>
+      <input type="text"  id="cost_sq_slab_<?php  echo $m.$n; ?>" name="cost_sq_slab[]" readonly   style="width:60px;" value="<?php  echo $inv['cost_per_slab'];  ?>"  class="form-control"/>
  
 
 
@@ -392,7 +390,7 @@ if($a==$m){
                                             </td>
                                             <td>
                                         
-         <span class="input-symbol-euro">  <input type="text" id="sales_amt_sq_ft_<?php  echo $m.$n; ?>"  name="sales_amt_sq_ft[]"  style="width:60px;"  value="<?php  echo $inv['sales_price_sqft'];  ?>" class="sales_amt_sq_ft form-control" /></span>
+         <input type="text" id="sales_amt_sq_ft_<?php  echo $m.$n; ?>"  name="sales_amt_sq_ft[]"  style="width:60px;"  value="<?php  echo $inv['sales_price_sqft'];  ?>" class="sales_amt_sq_ft form-control" />
 
 
 
@@ -401,7 +399,7 @@ if($a==$m){
                                         
                                             <td >
                                     
-      <span class="input-symbol-euro">   <input type="text"  id="sales_slab_amt_<?php  echo $m.$n; ?>" name="sales_slab_amt[]"  style="width:60px;" value="<?php  echo $inv['sales_slab_price'];  ?>"  class="sales_slab_amt form-control"/></td> </span>
+      <input type="text"  id="sales_slab_amt_<?php  echo $m.$n; ?>" name="sales_slab_amt[]"  style="width:60px;" value="<?php  echo $inv['sales_slab_price'];  ?>"  class="sales_slab_amt form-control"/></td> 
       </td>
                                             <td>
                                                 <input type="text" id="weight_<?php  echo $m.$n; ?>" style="width:50px;" name="weight[]"  value="<?php  echo $inv['weight'];  ?>" class="weight form-control" />
@@ -412,7 +410,7 @@ if($a==$m){
                                             </td>
 
                                             <td >
-                                                  <span class="input-symbol-euro"><input  type="text" class="total_price form-control" style="width:60px;"   value="<?php  echo $inv['total_amount'];  ?>"  id="total_<?php  echo $m.$n; ?>"     name="total_amt[]"/></span>
+                                                  <input  type="text" class="total_price form-control" style="width:60px;"   value="<?php  echo $inv['total_amount'];  ?>"  id="total_<?php  echo $m.$n; ?>"     name="total_amt[]"/>
                                             </td>
                                                
                                           
@@ -440,7 +438,7 @@ if($a==$m){
             </td> 
                                         <td style="text-align:right;" colspan="1"><b><?php  echo display('total'); ?>:</b></td>
                                         <td >
-               <span class="input-symbol-euro">     <input type="text" id="Total_<?php echo $m; ?>" name="total[]"   class="b_total form-control"   style="padding-top: 6px;width: 60px"    readonly="readonly"  />
+               <input type="text" id="Total_<?php echo $m; ?>" name="total[]"   class="b_total form-control"   style="padding-top: 6px;width: 60px"    readonly="readonly"  />
             </td>
                                                                                <td colspan="1" style="text-align: end;">
  <i id="buddle_<?php echo $m; ?>" class="btn-danger removebundle fa fa-minus"  ><?php  echo  display('Bundle');?></i>    
@@ -524,12 +522,12 @@ if($a==$m){
    </table>
                                             </td>
                                             </tr> 
-											
-											
-											
-											
-											
-											       <td colspan="21" style="text-align: end;">
+                                            
+                                            
+                                            
+                                            
+                                            
+                                                   <td colspan="21" style="text-align: end;">
                                             
                                         <input type="submit" value="<?php echo  display('Make Payment')?>" style="color:white;background-color: #38469f;" class="btn btn-large" id="paypls"/>
                                             </td>
