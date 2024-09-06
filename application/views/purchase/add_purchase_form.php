@@ -1039,7 +1039,7 @@ foreach ($tax_data as $tx) {?>
    var data = {
    expense_drop:$('#expense_drop').val()
    };
-
+}
    else if($('#module_selection').val() =="serviceProvider"){
 
       
