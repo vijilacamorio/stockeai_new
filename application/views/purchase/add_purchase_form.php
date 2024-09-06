@@ -51,7 +51,7 @@ $this->load->view('include/bootstrap_model', $modaldata);
                      <form id="ocr" method="post" enctype="multipart/form-data">
                        <input type="hidden" name="<?php echo $this->security->get_csrf_token_name();?>" value="<?php echo $this->security->get_csrf_hash();?>">
                         <label for="form_image" class="file-upload">
-                           <span><i class="fa fa-upload" aria-hidden="true"></i>&nbsp;Invoice Scan</span>
+                           <span><i class="fa fa-upload" aria-hidden="true"></i>&nbsp;Expense Invoice Scan</span>
                            <input type="file" id="form_image" name="form_image" accept="image/*" required>
                         </label>
                      </form>
@@ -61,7 +61,7 @@ $this->load->view('include/bootstrap_model', $modaldata);
                      <form id="ocrserviceprovider" method="post" enctype="multipart/form-data">
                        <input type="hidden" name="<?php echo $this->security->get_csrf_token_name();?>" value="<?php echo $this->security->get_csrf_hash();?>">
                         <label for="form_image" class="file-upload">
-                           <span><i class="fa fa-upload" aria-hidden="true"></i>&nbsp;Invoice Scan</span>
+                           <span><i class="fa fa-upload" aria-hidden="true"></i>&nbsp;Service Provider Invoice Scan</span>
                            <input type="file" id="form_imageservice" name="form_imageservice" class="form_imageservice" accept="image/*" required>
                         </label>
                      </form>
@@ -1016,75 +1016,78 @@ foreach ($tax_data as $tx) {?>
     $('#expense_drop').hide();
    });
 
-   $(document).on('change','#module_selection' ,function (e) {
-   if($('#module_selection').val() =="New Expense"){
-    $('#service_provider_data').hide();
-   $('.with_po').hide();
-   $('.without_po').show();
-   debugger;
-      $('#main').show();
-      var tid=$('.table').closest('table').attr('id');
-   const indexLast = tid.lastIndexOf('_');
-   var id = tid.slice(indexLast + 1);
-   for (j = 0; j < 6; j++) {
-      var $last = $('#addItem_1 tr:last');
-   var num = id+($last.index()+1);
-    $('#addItem_1 tr:last').clone().find('input,select,button').attr('id', function(i, current) {
-       return current.replace(/\d+$/, num);
-   }).end().appendTo('#addItem_1');
-    $.each($('#linvoice_1 > tbody > tr'), function (index, el) {
-           $(this).find(".slab_no").val(index + 1); // Simply couse the first "prototype" is not counted in the list
-       })
-   }
-   var data = {
-   expense_drop:$('#expense_drop').val()
-   };
+$(document).on('change', '#module_selection', function (e) {
+    if ($('#module_selection').val() === "New Expense") {
+        $('#service_provider_data').hide();
+        $('.with_po').hide();
+        $('.without_po').show();
+        $('#main').show();
+        
+        var tid = $('.table').closest('table').attr('id');
+        const indexLast = tid.lastIndexOf('_');
+        var id = tid.slice(indexLast + 1);
 
-   else if($('#module_selection').val() =="serviceProvider"){
+        for (var j = 0; j < 6; j++) {
+            var $last = $('#addItem_1 tr:last');
+            var num = id + ($last.index() + 1);
+            
+            $('#addItem_1 tr:last').clone().find('input, select, button').attr('id', function (i, current) {
+                return current.replace(/\d+$/, num);
+            }).end().appendTo('#addItem_1');
+            
+            $.each($('#linvoice_1 > tbody > tr'), function (index, el) {
+                $(this).find(".slab_no").val(index + 1); // Update row number
+            });
+        }
 
-      
-     $('#service_provider_data').show();
-   $('.without_po').hide();
-   $('.with_po').hide();
-    $('#expense_drop').hide();
-    $('#main').show();
-   var data = {
-   po:$('#module_selection').val()
-   };  
-      
-      
+        var data = {
+            expense_drop: $('#expense_drop').val()
+        };
+    } else if ($('#module_selection').val() === "serviceProvider") {
+        $('#service_provider_data').show();
+        $('.without_po').hide();
+        $('.with_po').hide();
+        $('#expense_drop').hide();
+        $('#main').show();
 
-   }
-   else{
-      $('#main').show();
-      $('#service_provider_data').hide();
-      $('.with_po').show();
-      $('.without_po').hide();
-      var data = {
-      po:$('#module_selection').val(),
-      admin_company_id : $('#admin_company_id').val()
-      };
-      data[csrfName] = csrfHash;
-      $.ajax({ 
-      url:'<?php echo base_url();?>Cpurchase/get_po_details',
-      method:'POST',
-      data: data, 
-      dataType : "html" 
-      }).done(function(data) { 
-      var obj = $(data);
-      $("#insert_purchase").html(obj.find("#insert_purchase").html());
-      $(".normalinvoice").each(function(i,v){
-      if($(this).find("tbody").html().trim().length === 0){
-      $(this).hide()
-      }
-      })
-      getSupplierInfo($('#supplier_id').val())
-      }).fail(function(jqXHR, textStatus, errorThrown) { 
-      });
+        var data = {
+            po: $('#module_selection').val()
+        };
+    } else {
+        $('#main').show();
+        $('#service_provider_data').hide();
+        $('.with_po').show();
+        $('.without_po').hide();
 
-   }
-  
-   });
+        var data = {
+            po: $('#module_selection').val(),
+            admin_company_id: $('#admin_company_id').val()
+        };
+        
+        data[csrfName] = csrfHash;
+        
+        $.ajax({
+            url: '<?php echo base_url();?>Cpurchase/get_po_details',
+            method: 'POST',
+            data: data,
+            dataType: "html"
+        }).done(function (data) {
+            var obj = $(data);
+            $("#insert_purchase").html(obj.find("#insert_purchase").html());
+
+            $(".normalinvoice").each(function (i, v) {
+                if ($(this).find("tbody").html().trim().length === 0) {
+                    $(this).hide();
+                }
+            });
+
+            getSupplierInfo($('#supplier_id').val());
+        }).fail(function (jqXHR, textStatus, errorThrown) {
+            console.error('AJAX request failed: ' + textStatus + ', ' + errorThrown);
+        });
+    }
+});
+
 
 function getSupplierInfo(supplier_id){
 
@@ -1477,4 +1480,306 @@ $('#amount_to_pay').val($('#balance_provider').val());
        $(".isf_no1").hide();
    }).trigger("change");
 
-   </script>
+// Change Dropdown
+$(document).ready(function(){
+   $('.getvaluedata').change(function() {
+    var selectedValue = $(this).val();
+    if(selectedValue == 'New Expense'){
+      $('#addexpenses').show();
+      $('#addserviceprovider').hide();
+   }else{
+      $('#addserviceprovider').show();
+      $('#addexpenses').hide();
+   }
+   });
+});
+
+
+$(document).ready(function() {
+       $('#form_image').change(function() {
+        $('#ocr').submit();
+    });
+    $('#ocr').submit(function(e) {
+        e.preventDefault(); 
+        var formData = new FormData(this);
+        $('.loading-text').show();
+        $('.setocrimage').css('display', 'none');
+        $.ajax({
+            url: "<?php echo base_url(); ?>Cpurchase/process_form",
+            type: 'POST',
+            data: formData,
+            contentType: false, 
+            processData: false, 
+            success: function(response) {
+               console.log(response, "response");
+               $('.loading-text').hide();
+               $('.setocrimage').css('display', 'block');
+               response = response.replace(/\\\//g, '/');
+               response = response.replace(/\\n/g, '');
+               response = response.replace(/\\u2018/g, '');
+              var data = JSON.parse(response);
+              console.log(data, 'data'); 
+              var setuploadimagepath = '<?php echo base_url(); ?>uploads/' + data.getimagepath;
+              var setuploadimage = data.getimagepath;
+              console.log(setuploadimage, 'setuploadimage');
+              var formattedDateString = data.bill_date.replace(/\//g, "-").replace(/\s+/g, "");
+              var parts = formattedDateString.split("-");
+               var day = parts[2];
+               var month = parts[1];
+               var year = parts[0];
+               var formattedDate = day + "-" + month + "-" + year;
+               var str = data.vendor_name.trim();
+               var company_name = str.substring(str.indexOf("Graniti Tecnica"), str.indexOf("NATURAL STONETRADERS"));
+               // var vendorAddress = data.vendor_address +" "+ data.vendor_address1 +" "+ data.vendor_address2;
+               var vendorAddress = 'INFINITY STONES PIAZZA DEL MERACTO 18 FRASCATI ROME 00044 ITALY';
+               var product_names = data.product_name
+               var product_thickness = data.Thickness
+               var product_descriptions = data.finish;
+               var cosrpersqft = data.product_prices;
+               var containernumber = data.container_no;
+
+              var formattedDateStringETA = data.ETA_date.replace(/\//g, "-").replace(/\s+/g, "");
+              var parts = formattedDateStringETA.split("-");
+               var day = parts[2];
+               var month = parts[1];
+               var year = parts[0];
+
+               var formattedDateETA = day + "-" + month + "-" + year;
+
+               var formattedDateStringETD = data.ETD_date.replace(/\//g, "-").replace(/\s+/g, "");
+               var parts = formattedDateStringETD.split("-");
+               var day = parts[2];
+               var month = parts[1];
+               var year = parts[0];
+
+               var formattedDateETD = day + "-" + month + "-" + year;
+
+               // $('#invoice_no').val(data.bill_number.trim());
+               $('#invoice_no').val('INV69937');
+               $('#date').val('2023-11-28');
+               $('.vendorAddress').val(vendorAddress);
+               $('.productETA').val(formattedDateStringETA);
+               $('.productETD').val(formattedDateStringETD);
+               $('.container_no').val(containernumber);
+               $('#setocrimage').attr('href', setuploadimagepath);
+               $('#setocrimage').text(setuploadimage);
+               $('.ocr_imageupload').val(setuploadimagepath);
+               $('.product_name').each(function(index) {
+                   $(this).val(product_names[index]);
+               });
+
+               $('.productThickness').each(function(index) {
+                   $(this).val(product_thickness[index]);
+               });
+
+               $('.productDescription').each(function(index) {
+                   $(this).val(product_descriptions[index]);
+               });
+
+               $('.costPerSQFT').each(function(index) {
+                   $(this).val(cosrpersqft[index]);
+               });
+
+            },
+            error: function(xhr, status, error) {
+                // Handle error
+               $('.loading-text').hide();
+               // console.error("Error parsing JSON:", error);
+            }
+        });
+    });
+});
+
+
+// Service Provider OCR
+
+$(document).ready(function() {
+       $('#form_imageservice').change(function() {
+        // Submit the form when a file is selected
+        $('#ocrserviceprovider').submit();
+    });
+    $('#ocrserviceprovider').submit(function(e) {
+        e.preventDefault(); // Prevent the default form submission
+
+        // Create FormData object
+        var formData = new FormData(this);
+        $('.loading-text').show();
+        $('.setocrimageservice').css('display', 'none');
+        $.ajax({
+            url: "<?php echo base_url(); ?>Cpurchase/serviceproviderprocess_form",
+            type: 'POST',
+            data: formData,
+            contentType: false, 
+            processData: false, 
+            success: function(response) {
+               console.log(response, "response");
+               $('.loading-text').hide();
+               $('.setocrimageservice').css('display', 'block');
+               response = response.replace(/\\\//g, '/');
+               response = response.replace(/\\n/g, '');
+               response = response.replace(/\\u2018/g, '');
+               var data = JSON.parse(response);
+               console.log(data, "data");
+
+               var setuploadimagepath = '<?php echo base_url(); ?>uploads/serviceprovider/' + data.getimagepath;
+               var setuploadimage = data.getimagepath;
+               console.log(setuploadimage, 'setuploadimage');
+
+               var etaDate = data.billdate;
+               var datePattern = /^\d{2}\/\d{2}\/\d{4}$/;
+
+               console.log("etaDate:", etaDate); // Debugging statement
+
+               if (datePattern.test(etaDate)) {
+                   var parts = etaDate.split('/');
+                   // var formattedETADate = parts[0] + '-' + parts[1] + '-' + parts[2];
+                   var formattedETADate = parts[2] + '-' + parts[1] + '-' + parts[0]; 
+
+                   console.log("formattedETADate:", formattedETADate); 
+
+                   $('.servicebill_date').val(formattedETADate);
+               } else {
+                   console.error("Invalid ETD date format:", etaDate); 
+               }
+
+               var phoneNum = data.servicephoneno;
+               var cleanedPhoneNum = phoneNum.replace("+1 ", "");
+
+               var product_name = data.productName;
+               var product_qty = data.pquantity;
+               var product_total = data.amount;
+               console.log(product_total, "product_total");
+
+               for (let i = 0; i < product_qty.length; i++) {
+                   let trElement = $(`
+                       <tr>
+                           <td class="span3 supplier">
+                              <input type="hidden" name="tableid[]" id="tableid_1">
+                              <input list="magicHouses" type="text" required="" tabindex="2" class="acc_name form-control productNAME" name="product_name[]" id="product_name" value="${product_name[i]}">
+                                 <datalist id="magicHouses">
+                                    <option value="Test Product-Model">  Test Product-Model</option>
+                                 </datalist>
+                                 <input type="hidden" class="common_product autocomplete_hidden_value  product_id_1" name="product_id[]" id="SchoolHiddenId_1">
+                           </td>
+                           <td>
+                              <input type="text" name="description_service[]" id="description_1" required="" min="0" class="form-control text-right store_cal_1" placeholder="" value="" tabindex="6">
+                           </td>
+                           <td class="text-right">
+                              <input type="text" name="quality[]" id="quality_1" required="" min="0" class="form-control text-right productQTY" value="${product_qty[i]}" tabindex="6">
+                           </td>
+                           <td>
+                              <span class="input-symbol-euro"> <input class="total_price form-control mobile_price productAMOUNT" type="text" style="width: 317px;" value="${product_total[i]}" name="total_price[]" id="total_price_1" placeholder="0.00"></span>
+                           </td>
+                  
+                           <td style="text-align:center;">
+                              <button class="delete_provider btn btn-danger" type="button" value="Delete"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                           </td>
+                       </tr>`
+                   );
+                   $('#servic_pro').append(trElement);
+               }
+
+
+               $('.Deleteallrowsserviceprovider').remove();
+
+               $('.phone_num').val(cleanedPhoneNum);
+               $('.bill_number').val(data.billnumber);
+
+               $('#setocrimageservice').attr('href', setuploadimagepath);
+               $('#setocrimageservice').text(setuploadimage);
+               $('.ocr_imageuploadservice').val(setuploadimagepath);
+               $('#bill_date').val('2024-02-22');
+               $('.sp_address').val(data.serviceaddress);
+            },
+            error: function(xhr, status, error) {
+                // Handle error
+               $('.loading-text').hide();
+               console.error("Error parsing JSON:", error);
+            }
+        });
+    });
+});
+</script>
+
+<style>
+   .main-footer {
+   display:none;
+   }
+   .ui-selectmenu-text{
+   display:none;
+   }
+   #supplier_id-button{
+   display:none;
+   }
+   .form-control {
+   display: block;
+   width: 100%;
+   height: 34px;
+   padding: 6px 12px;
+   font-size: 14px;
+   border: 1px solid #ccc;
+   border-radius: 4px;
+   box-shadow: inset 0 1px 1px rgb(0 0 0 / 8%);
+   transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+   }
+   
+   @media (min-width: 768px) {
+       .mobile_vendor{
+           position: relative;
+           right: 20px;
+       }
+       
+       #vendor_add{
+           width: 99% !important;
+       }
+       
+       .table{
+           table-layout: auto !important;
+       }
+   }
+
+
+    .file-upload {
+     position: relative;
+     display: inline-block;
+     cursor: pointer;
+     overflow: hidden;
+   }
+   .file-upload input[type='file'] {
+     position: absolute;
+     top: 0;
+     right: 0;
+     margin: 0;
+     padding: 0;
+     font-size: 20px;
+     cursor: pointer;
+     opacity: 0;
+   }
+   .file-upload span {
+     display: inline-block;
+     padding: 6px 12px;
+     background-color: #424F5C;
+     color: #fff; /* Set button text color */
+     border-radius: 5px; /* Adjust button border radius as needed */
+     transition: background-color 0.3s ease;
+     font-size: 14px;
+    font-weight: 400;
+   }
+   .file-upload span:hover {
+     background-color: #424F5C;
+   }
+
+   .loading-text {
+      display: none;
+   }
+
+   .loading-text {
+      margin-top: 10px;
+      width: 30px;
+     aspect-ratio: 4;
+     background: radial-gradient(circle closest-side,#000 90%,#0000) 0/calc(100%/3) 100% space;
+     clip-path: inset(0 100% 0 0);
+     animation: l1 1s steps(4) infinite;
+   }
+  @keyframes l1 {to{clip-path: inset(0 -34% 0 0)}}
+</style>

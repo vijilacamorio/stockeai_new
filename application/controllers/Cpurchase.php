@@ -1,5 +1,8 @@
 <?php
 
+require 'vendor/autoload.php';
+
+use thiagoalessio\TesseractOCR\TesseractOCR;
 
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
@@ -30,8 +33,6 @@ class Cpurchase extends CI_Controller {
         $text = (new TesseractOCR($image_path))->run();
         // 3. Extract Field Names
         $field_data = $this->extractFieldData($text);
-        // print_r($field_data); die();
-        // Extracting due date from the field data
         $bill_date = "";
         if(preg_match('/Date\s+(\d{4}\/\d{1,2}\s+\d{1,2}\/\d{1,2})/', $field_data[1], $matches)) {
             $bill_date = $matches[1];
@@ -304,7 +305,8 @@ class Cpurchase extends CI_Controller {
             echo json_encode($data);
         }
     }
-     public function purchaseorder_process()
+    // Purchase Ocr 
+    public function purchaseorder_process()
     {
         $CI = & get_instance();
         $config['upload_path'] = './uploads/purchase/';
@@ -1220,7 +1222,8 @@ $result = $CI->Purchases->servicepro($date) ;
         $purchaseDetail = $this->db->select('*')->from('purchase_order')->where('chalan_no',$po_num)->get()->result_array();
         $purchase_id = $purchaseDetail[0]['purchase_order_id'];
         $content = $this->lpurchase->po_details($admin_company_id, $purchase_id);
-
+    $this->template->full_admin_html_view($content);
+    }
 
     public function add_csv_purchase()
     {

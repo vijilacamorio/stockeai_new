@@ -7,6 +7,10 @@ namespace Composer\Autoload;
 class ComposerStaticInit778b5479cb5d2b31b57f40473a87f8eb
 {
     public static $prefixLengthsPsr4 = array (
+        't' => 
+        array (
+            'thiagoalessio\\TesseractOCR\\' => 27,
+        ),
         'S' => 
         array (
             'Svg\\' => 4,
@@ -27,6 +31,10 @@ class ComposerStaticInit778b5479cb5d2b31b57f40473a87f8eb
     );
 
     public static $prefixDirsPsr4 = array (
+        'thiagoalessio\\TesseractOCR\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/thiagoalessio/tesseract_ocr/src',
+        ),
         'Svg\\' => 
         array (
             0 => __DIR__ . '/..' . '/dompdf/php-svg-lib/src/Svg',
