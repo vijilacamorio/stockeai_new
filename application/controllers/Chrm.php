@@ -1053,7 +1053,6 @@ class Chrm extends CI_Controller {
  
                     }
 
- 
                     $s             = '';
                     $u             = '';
                     $m             = '';
@@ -1158,8 +1157,6 @@ class Chrm extends CI_Controller {
                         $living_state_tax_employer = array();
                         $living_state_tax          = array();
 
-                       
-
                         if ($data['employee_data'][0]['living_state_tax'] != '' && ($data['employee_data'][0]['living_state_tax'] !== 'Not Applicable')) {
                             $state_tax = $this->db->select('*')->from('state_and_tax')->where('state', $data['employee_data'][0]['living_state_tax'])->where('created_by', $this->session->userdata('user_id'))->get()->result_array();
                             $state     = $this->db->select('*')->from('state_and_tax')->where('state', $state_tax[0]['state']) ->where('created_by', $this->session->userdata('user_id'))->get()->result_array();
@@ -1243,7 +1240,6 @@ class Chrm extends CI_Controller {
                         $local_tax           = array();
                         $local_tax_employerr = array();
 
-                        
                         if (!empty($data['selected_local_tax']) && ($data['selected_local_tax'] !== 'Not Applicable')) {
                             $state_tax = $this->db->select('*')->from('state_and_tax')->where('state', $data['employee_data'][0]['local_tax'])->where('created_by', $decodedId)->get()->result_array();
                             $state     = $this->db->select('*')->from('state_and_tax')->where('state', $state_tax[0]['state'])->get()->result_array();
@@ -1292,10 +1288,12 @@ class Chrm extends CI_Controller {
                             $state_tax1 = $this->db->select('*')->from('state_and_tax')
                                 ->where('state', $data['employee_data'][0]['state_tx'])
                                 ->where('created_by', $this->session->userdata('user_id'))->get()->result_array();
-                            $state1     = $this->db->select('*')->from('state_and_tax')->where('state', $state_tax1[0]['state'])->get()->result_array();
+                            $state1     = $this->db->select('*')->from('state_and_tax')->where('state', $state_tax1[0]['state'])->where('created_by', $this->session->userdata('user_id'))->get()->result_array();
+                            
                             $tax_split1 = explode(',', $state1[0]['tax']);
                             foreach ($tax_split1 as $tax) {
                                 $tax = $this->db->select('*')->from('state_localtax')->where('tax', $state_tax1[0]['state'] . "-" . $tax)->where('create_by', $this->session->userdata('user_id'))->get()->result_array();
+                              
                                 foreach ($tax as $tx) {
                                     $split = explode('-', $tx[$data['employee_data'][0]['employee_tax']]);
                                     if ($split[0] != '' && $split[1] != '') {
@@ -1322,11 +1320,13 @@ class Chrm extends CI_Controller {
                                                         ->where('create_by', $this->session->userdata('user_id'))
                                                         ->count_all_results();
                                                     $data_employer = "'employer_" . $tx['tax'] . "'";
+                                                  
                                                     if ($row_employer == 1) {
                                                         $t_tx1                           = $local_tax_er;
                                                         $st_tax_employer[$data_employer] = $t_tx1;
                                                     }
                                                     $row           = $this->db->select('*')->from('state_localtax')->where('employee', $local_tax_employee)->where('tax', $tx['tax'])->where('create_by', $this->session->userdata('user_id'))->where($data['employee_data'][0]['employee_tax'], $state_tax_range)->count_all_results();
+                                                   
                                                     $data_employee = "'employee_" . $tx['tax'] . "'";
                                                     $search_tax    = explode('-', $tx['tax']);
                                                     if ($row == 1) {
@@ -1590,7 +1590,11 @@ class Chrm extends CI_Controller {
                         }
                         $scValue       = $scValue / 100;
                         $scValueAmount = $scValue * $sc_totalAmount1;
+                     
+                     
+
                         if ($st_tax) {
+ 
                             foreach ($st_tax as $k => $v) {
                                 $existingRecord = $this->db->select('*')
                                     ->from('tax_history')
@@ -1624,8 +1628,6 @@ class Chrm extends CI_Controller {
                                     'created_by'     => $this->session->userdata('user_id'),
                                 );
                                 $this->db->insert('tax_history', $data1);
- 
- 
                             }
                             $sql = "DELETE t1
                         FROM tax_history t1
@@ -1642,23 +1644,25 @@ class Chrm extends CI_Controller {
                         }
 
 
-                        $state_tx = $data['employee_data'][0]['state_tx'];
-
- 
+                        $state_tx = $data['employee_data'][0]['state_tx']; 
                         if ($data['employee_data'][0]['payroll_type'] == 'Hourly') {
                             $minValue = $final;
                             $maxValue = $final;
                             $emp_tax  = $data['employee_data'][0]['employee_tax'];
                             $user_id  = $this->session->userdata('user_id');
                             $query    = "SELECT `$emp_tax`
-                        FROM `state_localtax`
-                        WHERE `tax` LIKE '%" . $state_tx . "-Income tax%'
-                        AND CAST(SUBSTRING_INDEX(`$emp_tax`, '-', 1) AS UNSIGNED) <= ?
-                        AND CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(`$emp_tax`, '-', -1), '-', 1) AS UNSIGNED) >= ?
-                        AND `create_by` = '" . $user_id . "'";
-                            $result = $this->db->query($query, array($maxValue, $minValue));
-                            if ($result) {
+                            FROM `state_localtax`
+                            WHERE `tax` LIKE '%" . $state_tx . "-Income tax%'
+                            AND CAST(SUBSTRING_INDEX(`$emp_tax`, '-', 1) AS UNSIGNED) <= ?
+                            AND CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(`$emp_tax`, '-', -1), '-', 1) AS UNSIGNED) >= ?
+                            AND `create_by` = '" . $user_id . "'";
+                            $result =$this->db->query($query, array($maxValue, $minValue));
+                             
+                           
+                             if ($result) {
                                 $hourly_tax = $result->result_array();
+
+
                                 if (!empty($hourly_tax)) {
                                     $hourly_range   = $hourly_tax[0][$emp_tax];
                                     $split_values   = explode('-', $hourly_range);
@@ -1670,6 +1674,7 @@ class Chrm extends CI_Controller {
                                     $data['hourly'] = $this->Hrm_model->hourly_tax_info($data['employee_data'][0]['employee_tax'], $final, $hourly_range, $tax_name);
                                     $st_name        = $data['employee_data'][0]['state_tx'];
                                     $state_names    = $this->Hrm_model->state_names($st_name);
+
                                     if (!empty($data['hourly'][0]['employee'])) {
                                         foreach ($state_names as $name) {
                                             if (trim($name['state']) == 'Pennsylvania') {
@@ -1702,20 +1707,15 @@ class Chrm extends CI_Controller {
                                                 $houly_employee          = $data['hourly'][0]['employee'];
                                                 $holy                    = ($houly_employee / 100) * $final;
                                                 $hourly                  = round($holy, 3);
-
-                                             }
-                                             else if (trim($name['state']) == 'Virginia') {
+                                             } else if (trim($name['state']) == 'Virginia') {
                                                 $hourly_employee_details = $data['hourly'][0]['details'];
                                                 $addamt                  = explode('$', $hourly_employee_details);
                                                 $houly_employee          = $data['hourly'][0]['employee'];
                                                 $holy                    = ($houly_employee / 100) * $getvalue;
-                                                $hourly                   = $hourly_employee_details + $holy;
+                                                $hourly                   = $hourly_employee_details + $holy;  
                                             }
- 
                                         }
                                     }
- 
-
                                     $data1 = array(
                                         's_tax'          => $s,
                                         'm_tax'          => $m,
@@ -1732,20 +1732,21 @@ class Chrm extends CI_Controller {
                                         'employee_id'    => $timesheetdata[0]['templ_name'],
                                         'created_by'     => $this->session->userdata('user_id'),
                                     );
-                                    // $data2 = array(
-                                    //     'amount' => $hourly,
-                                    // );
+                                    $this->db->insert('tax_history', $data1);
+
+                                    $data2 = array(
+                                        'amount' => $hourly,
+                                    );
                                     // $this->db->where('time_sheet_id', $timesheetdata[0]['timesheet_id']);
                                     // $this->db->where('hourly IS NULL');
                                     // $query = $this->db->get('tax_history');
                                     // if ($query->num_rows() == 0) {
-                                    //     $this->db->where('time_sheet_id', $timesheetdata[0]['timesheet_id']);
-                                    //     $this->db->order_by('id', 'ASC');
-                                    //     $this->db->limit(1);
-                                    //     $this->db->update('tax_history', $data2);
+                                        $this->db->where('time_sheet_id', $timesheetdata[0]['timesheet_id']);
+                                        $this->db->order_by('id', 'ASC');
+                                        $this->db->limit(1);
+                                        $this->db->update('tax_history', $data2);
                                     // }
-                                    $this->db->insert('tax_history', $data1);
-                                    // echo $this->db->last_query(); die();
+                                    
                                 }
                             }
                         } else if ($data['employee_data'][0]['payroll_type'] == 'Salaried-weekly') {
@@ -1820,10 +1821,7 @@ class Chrm extends CI_Controller {
                                                 $wkly                    = ($weekly_employee / 100) * $getvalue;
                                                 $wkly                    = round($wkly, 2);
                                                 $weekly_tax              = $addamt[1] + $wkly;
-
-                                                print_r($weekly_tax); die();
                                             }
- 
                                         }
                                     }
                                     $data1 = array(
@@ -1842,31 +1840,35 @@ class Chrm extends CI_Controller {
                                         'employee_id'    => $timesheetdata[0]['templ_name'],
                                         'created_by'     => $this->session->userdata('user_id'),
                                     );
+                                    $this->db->insert('tax_history', $data1);
+
+
                                     $data2 = array(
                                         'amount' => $weekly_tax,
                                     );
-                                    $this->db->where('time_sheet_id', $timesheetdata[0]['timesheet_id']);
-                                    $this->db->where('weekly IS NOT NULL');
-                                    $query = $this->db->get('tax_history');
-                                    if ($query->num_rows() == 0) {
+                                    // $this->db->where('time_sheet_id', $timesheetdata[0]['timesheet_id']);
+                                    // $this->db->where('weekly IS NOT NULL');
+                                    // $query = $this->db->get('tax_history');
+                                    // if ($query->num_rows() == 0) {
                                         $this->db->where('time_sheet_id', $timesheetdata[0]['timesheet_id']);
                                         $this->db->order_by('id', 'ASC');
                                         $this->db->limit(1);
                                         $this->db->update('tax_history', $data2);
-                                    }
-                                    $this->db->insert('tax_history', $data1);
-                                    $sql = "DELETE t1
-                                    FROM tax_history t1
-                                    INNER JOIN tax_history t2 ON t1.id > t2.id
-                                    AND t1.tax = t2.tax
-                                    AND t1.code = t2.code
-                                    AND t1.amount = t2.amount
-                                    AND t1.created_by = t2.created_by
-                                    AND t1.time_sheet_id = t2.time_sheet_id
-                                    WHERE t1.weekly IS NULL
-                                    AND t1.monthly IS NULL
-                                    AND t1.biweekly IS NULL; ";
-                                        $this->db->query($sql);
+                                    // }
+                                  
+                                    // $this->db->insert('tax_history', $data1);
+                                    // $sql = "DELETE t1
+                                    // FROM tax_history t1
+                                    // INNER JOIN tax_history t2 ON t1.id > t2.id
+                                    // AND t1.tax = t2.tax
+                                    // AND t1.code = t2.code
+                                    // AND t1.amount = t2.amount
+                                    // AND t1.created_by = t2.created_by
+                                    // AND t1.time_sheet_id = t2.time_sheet_id
+                                    // WHERE t1.weekly IS NULL
+                                    // AND t1.monthly IS NULL
+                                    // AND t1.biweekly IS NULL; ";
+                                    //     $this->db->query($sql);
                                     } else {
                                     $minValue = $final;
                                     $maxValue = $final;
@@ -2072,30 +2074,32 @@ class Chrm extends CI_Controller {
                                         'created_by'     => $this->session->userdata('user_id'),
                                     );
                                     $this->db->insert('tax_history', $data1);
+                                
                                     $data2 = array(
                                         'biweekly' => $biweekly_tax,
                                     );
-                                    $this->db->where('time_sheet_id', $timesheetdata[0]['timesheet_id']);
-                                    $this->db->where('biweekly IS NOT NULL');
-                                    $query = $this->db->get('tax_history');
-                                    if ($query->num_rows() == 0) {
+
+                                    // $this->db->where('time_sheet_id', $timesheetdata[0]['timesheet_id']);
+                                    // $this->db->where('biweekly IS NOT NULL');
+                                    // $query = $this->db->get('tax_history');
+                                    // if ($query->num_rows() == 0) {
                                         $this->db->where('time_sheet_id', $timesheetdata[0]['timesheet_id']);
                                         $this->db->order_by('id', 'ASC');
                                         $this->db->limit(1);
                                         $this->db->update('tax_history', $data2);
-                                    }
-                                    $sql = "DELETE t1
-                                FROM tax_history t1
-                                INNER JOIN tax_history t2 ON t1.id > t2.id
-                                AND t1.tax = t2.tax
-                                AND t1.code = t2.code
-                                AND t1.amount = t2.amount
-                                AND t1.created_by = t2.created_by
-                                AND t1.time_sheet_id = t2.time_sheet_id
-                                WHERE t1.weekly IS NULL
-                                AND t1.monthly IS NULL
-                                AND t1.biweekly IS NULL;";
-                                    $this->db->query($sql);
+                                //     }
+                                //     $sql = "DELETE t1
+                                // FROM tax_history t1
+                                // INNER JOIN tax_history t2 ON t1.id > t2.id
+                                // AND t1.tax = t2.tax
+                                // AND t1.code = t2.code
+                                // AND t1.amount = t2.amount
+                                // AND t1.created_by = t2.created_by
+                                // AND t1.time_sheet_id = t2.time_sheet_id
+                                // WHERE t1.weekly IS NULL
+                                // AND t1.monthly IS NULL
+                                // AND t1.biweekly IS NULL;";
+                                //     $this->db->query($sql);
                                 } else {
                                     $minValue = $final;
                                     $maxValue = $final;
@@ -2182,6 +2186,7 @@ class Chrm extends CI_Controller {
                                                 'employee_id'    => $timesheetdata[0]['templ_name'],
                                                 'created_by'     => $this->session->userdata('user_id'),
                                             );
+                                          
                                             $data2 = array(
                                                 'amount' => $weekly_tax,
                                             );
@@ -2302,27 +2307,27 @@ class Chrm extends CI_Controller {
                                     $data2 = array(
                                         'monthly' => $monthly_tax,
                                     );
-                                    $this->db->where('time_sheet_id', $timesheetdata[0]['timesheet_id']);
-                                    $this->db->where('monthly IS NOT NULL');
-                                    $query = $this->db->get('tax_history');
-                                    if ($query->num_rows() == 0) {
+                                    // $this->db->where('time_sheet_id', $timesheetdata[0]['timesheet_id']);
+                                    // $this->db->where('monthly IS NOT NULL');
+                                    // $query = $this->db->get('tax_history');
+                                    // if ($query->num_rows() == 0) {
                                         $this->db->where('time_sheet_id', $timesheetdata[0]['timesheet_id']);
                                         $this->db->order_by('id', 'ASC');
                                         $this->db->limit(1);
                                         $this->db->update('tax_history', $data2);
-                                    }
-                                    $sql = "DELETE t1
-                                FROM tax_history t1
-                                INNER JOIN tax_history t2 ON t1.id > t2.id
-                                AND t1.tax = t2.tax
-                                AND t1.code = t2.code
-                                AND t1.amount = t2.amount
-                                AND t1.created_by = t2.created_by
-                                AND t1.time_sheet_id = t2.time_sheet_id
-                                WHERE t1.weekly IS NULL
-                                AND t1.monthly IS NULL
-                                AND t1.biweekly IS NULL;";
-                                    $this->db->query($sql);
+                                //     }
+                                //     $sql = "DELETE t1
+                                // FROM tax_history t1
+                                // INNER JOIN tax_history t2 ON t1.id > t2.id
+                                // AND t1.tax = t2.tax
+                                // AND t1.code = t2.code
+                                // AND t1.amount = t2.amount
+                                // AND t1.created_by = t2.created_by
+                                // AND t1.time_sheet_id = t2.time_sheet_id
+                                // WHERE t1.weekly IS NULL
+                                // AND t1.monthly IS NULL
+                                // AND t1.biweekly IS NULL;";
+                                //     $this->db->query($sql);
                                 }
                             }
                         } else {
@@ -2357,6 +2362,11 @@ class Chrm extends CI_Controller {
                         ";
                             $this->db->query($sql);
                         }
+
+
+
+
+
                         if ($st_tax_employer) {
                             foreach ($st_tax_employer as $k => $v) {
                                 if (trim(round($v, 3)) > 0) {
@@ -2406,8 +2416,8 @@ class Chrm extends CI_Controller {
                         AND t1.biweekly IS NULL;";
                             $this->db->query($sql);
                         }
-
  
+
                         if ($living_state_tax) {
                             $payperiod  = $data['timesheet_data'][0]['month'];
                             $data['sc'] = $this->Hrm_model->sc_info_count($this->input->post('templ_name'), $payperiod , $decodedId);
@@ -2438,7 +2448,7 @@ class Chrm extends CI_Controller {
                                 $code       = str_replace("'", "", $code);
 
                                 $living_tax = $data['employee_data'][0]['living_state_tax'];
-
+         
  
                                 if ($data['employee_data'][0]['payroll_type'] == 'Hourly') {
                                     $minValue = $final;
@@ -2503,10 +2513,8 @@ class Chrm extends CI_Controller {
                                                         $addamt                  = explode('$', $hourly_employee_details);
                                                         $houly_employee          = $data['hourly'][0]['employee'];
                                                         $holy                    = ($houly_employee / 100) * $getvalue;
-                                                        $hourlyliving            = $hourly_employee_details + $holy;                                            
+                                                        $hourlyliving            = $hourly_employee_details + $holy;                                                                                               
                                                     }
-
-
                                                 }
                                             }
                                         }

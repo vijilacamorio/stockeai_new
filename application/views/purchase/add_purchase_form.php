@@ -437,7 +437,7 @@ $this->load->view('include/bootstrap_model', $modaldata);
                                              <input type="text" id="description_1" name="description[]" class="form-control productDescription" />
                                           </td>
                                           <td >
-                                             <input type="text" name="thickness[]" id="thickness_1" class="form-control productThickness"/>
+                                             <input type="text" name="thickness[]" style="width:50px;" id="thickness_1" class="form-control productThickness"/>
                                           </td>
                                           <td>
                                              <input type="text" id="supplier_b_no_1" name="supplier_block_no[]"  class="form-control" />
@@ -483,7 +483,7 @@ $this->load->view('include/bootstrap_model', $modaldata);
                                              <input type="text" id="weight_1" name="weight[]"  class="weight form-control" />
                                           </td>
                                           <td style="width: 135px;"> 
-                                             <select id="origin_1" name="origin[]" class="origin form-control">
+                                             <select id="origin_1" style="width:70px;" name="origin[]" class="origin form-control">
                                                 <?php foreach ($country_code as $key => $value) { ?>
                                                 <option value="<?php echo $value['iso']; ?>"><?php echo $value['iso']; ?></option>
                                                 <?php } ?> 
@@ -1035,17 +1035,15 @@ $(document).on('change', '#module_selection', function (e) {
         });
 
    for (j = 0; j < 6; j++) {
-      var $last = $('#addPurchaseItem_1 tr:last');
-   var num = id+($last.index()+1);
- $('#addPurchaseItem_1 tr:last').clone().find('input,select,button').each(function() {
+   
+var $last = $('#addPurchaseItem_1 tr:last');
+var num = id + ($last.index() + 1);
+$last.clone().find('input,select,button').each(function() {
     var currentId = $(this).attr('id');
-    console.log("Current ID:", currentId); // Debugging statement
     if (currentId) {
         $(this).attr('id', function(i, current) {
             return current.replace(/\d+$/, num);
         });
-    } else {
-        console.warn("Element has no ID:", $(this)); // Warn if no ID is present
     }
 }).end().appendTo('#addPurchaseItem_1');
     $.each($('#normalinvoice_1 > tbody > tr'), function (index, el) {
@@ -1108,12 +1106,16 @@ $('#normalinvoice_1 > tbody > tr').each(function() {
         }).done(function (data) {
             var obj = $(data);
             $("#insert_purchase").html(obj.find("#insert_purchase").html());
+                  $(".normalinvoice").each(function(i,v){
+                      var tableId = $(this).closest('table').attr('id');
+    updateTableTotals(tableId);
+  updateOverallTotals(true);
+if($(this).find("tbody").html().trim().length === 0){
+           $(this).hide()
+       }
+    })
 
-            $(".normalinvoice").each(function (i, v) {
-                if ($(this).find("tbody").html().trim().length === 0) {
-                    $(this).hide();
-                }
-            });
+         
 
             getSupplierInfo($('#supplier_id').val());
         }).fail(function (jqXHR, textStatus, errorThrown) {
@@ -1734,6 +1736,180 @@ $(document).ready(function() {
         });
     });
 });
+$(document).on('click', '.delete', function(){
+   var $tableBody = $(this).closest('tbody');
+    var rowCount = $tableBody.find('tr').length;
+  if (rowCount > 1) {
+        $(this).closest('tr').remove();
+  updateTableTotals($tableBody.closest('table').attr('id'));
+        updateOverallTotals(true);
+    } else {
+        $('#errormessage_expense').html('<div class="alert alert-danger alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>' + 'You cannot delete the last row. At least one row must remain..' + '</div>');
+    }
+});
+function configureDropDownLists(ddl1,ddl2) {
+   var assets = ['CASH Operating Account', 'CASH Debitors', 'CASH Petty Cash'];
+   var receivables = ['A/REC Trade', 'A/REC Trade Notes Receivable', 'A/REC Installment Receivables','A/REC Retainage Withheld','A/REC Allowance for Uncollectible Accounts'];
+   var inventories = ['INV – Reserved', 'INV – Work-in-Progress', 'INV – Finished Goods','INV – Reserved','INV – Unbilled Cost & Fees','INV – Reserve for Obsolescence'];
+   var prepaid_expense = ['PREPAID – Insurance', 'PREPAID – Real Estate Taxes', 'PREPAID – Repairs & Maintenance','PREPAID – Rent','PREPAID – Deposits'];
+   var property_plant = ['PPE – Buildings', 'PPE – Machinery & Equipment', 'PPE – Vehicles','PPE – Computer Equipment','PPE – Furniture & Fixtures','PPE – Leasehold Improvements'];
+   var acc_dep = ['ACCUM DEPR Buildings', 'ACCUM DEPR Machinery & Equipment', 'ACCUM DEPR Vehicles','ACCUM DEPR Computer Equipment','ACCUM DEPR Furniture & Fixtures','ACCUM DEPR Leasehold Improvements'];
+   var noncurrenctreceivables = ['NCA – Notes Receivable', 'NCA – Installment Receivables', 'NCA – Retainage Withheld'];
+   var intercompany_receivables = ['Organization Costs', 'Patents & Licenses', 'Intangible Assets – Capitalized Software Costs'];
+   var liabilities = ['A/P Trade', 'A/P Accrued Accounts Payable', 'A/P Retainage Withheld','Current Maturities of Long-Term Debt','Bank Notes Payable','Construction Loans Payable'];
+   var accrued_compensation = ['Accrued – Payroll', 'Accrued – Commissions', 'Accrued – FICA','Accrued – Unemployment Taxes','Accrued – Workmen’s Comp'];
+   var other_accrued_expenses = ['Accrued – Rent', 'Accrued – Interest', 'Accrued – Property Taxes', 'Accrued – Warranty Expense'];
+   var accrued_taxes= ['Accrued – Federal Income Taxes', 'Accrued – State Income Taxes', 'Accrued – Franchise Taxes','Deferred – FIT Current','Deferred – State Income Taxes'];
+   var deferred_taxes= ['D/T – FIT – NON CURRENT', 'D/T – SIT – NON CURRENT'];
+   var long_term_debt=['LTD – Notes Payable','LTD – Mortgages Payable','LTD – Installment Notes Payable'];
+   var intercompany_payables=['Common Stock','Preferred Stock','Paid in Capital','Partners Capital','Member Contributions','Retained Earnings'];
+   var revenue=['REVENUE – PRODUCT 1','REVENUE – PRODUCT 2','REVENUE – PRODUCT 3','REVENUE – PRODUCT 4','Interest Income','Other Income','Finance Charge Income','Sales Returns and Allowances','Sales Discounts'];
+   var cost_goods= ['COGS – PRODUCT 1', 'COGS – PRODUCT 2','COGS – PRODUCT 3','COGS – PRODUCT 4','Freight','Inventory Adjustments','Purchase Returns and Allowances','Reserved'];
+   var operating_expenses=['Advertising Expense','Amortization Expense','Auto Expense','Bad Debt Expense','Bad Debt Expense','Bank Charges','Cash Over and Short','Commission Expense','Depreciation Expense','Employee Benefit Program','Freight Expense','Gifts Expense','Insurance – General','Interest Expense','Professional Fees','License Expense','Maintenance Expense','Meals and Entertainment','Office Expense','Payroll Taxes','Printing','Postage','Rent','Repairs Expense','Salaries Expense','Supplies Expense','Taxes – FIT Expense','Utilities Expense','Gain/Loss on Sale of Assets'];
+   switch (ddl1.value) {
+   case 'ASSETS':
+   ddl2.options.length = 0;
+   for (i = 0; i < assets.length; i++) {
+   createOption(ddl2, assets[i], assets[i]);
+   }
+   break;
+   case 'RECEIVABLES':
+   ddl2.options.length = 0;
+   for (i = 0; i < receivables.length; i++) {
+   createOption(ddl2, receivables[i], receivables[i]);
+   }
+   break;
+   case 'INVENTORIES':
+   ddl2.options.length = 0;
+   for (i = 0; i < inventories.length; i++) {
+   createOption(ddl2, inventories[i], inventories[i]);
+   }
+   break;
+   case 'PREPAID EXPENSES & OTHER CURRENT ASSETS':
+   ddl2.options.length = 0;
+   for (i = 0; i < prepaid_expense.length; i++) {
+   createOption(ddl2, prepaid_expense[i], prepaid_expense[i]);
+   }
+   break;
+   case 'PROPERTY PLANT & EQUIPMENT':
+   ddl2.options.length = 0;
+   for (i = 0; i < property_plant.length; i++) {
+   createOption(ddl2, property_plant[i], property_plant[i]);
+   }
+   break;
+   case 'ACCUMULATED DEPRECIATION & AMORTIZATION':
+   ddl2.options.length = 0;
+   for (i = 0; i < acc_dep.length; i++) {
+   createOption(ddl2, acc_dep[i], acc_dep[i]);
+   }
+   break;
+   case 'NON – CURRENT RECEIVABLES':
+   ddl2.options.length = 0;
+   for (i = 0; i < noncurrenctreceivables.length; i++) {
+   createOption(ddl2, noncurrenctreceivables[i], noncurrenctreceivables[i]);
+   }
+   break;
+   case 'INTERCOMPANY RECEIVABLES & OTHER NON-CURRENT ASSETS':
+   ddl2.options.length = 0;
+   for (i = 0; i < intercompany_receivables.length; i++) {
+   createOption(ddl2, intercompany_receivables[i], intercompany_receivables[i]);
+   }
+   break;
+   case 'LIABILITIES & PAYABLES':
+   ddl2.options.length = 0;
+   for (i = 0; i < liabilities.length; i++) {
+   createOption(ddl2, liabilities[i], liabilities[i]);
+   }
+   break;
+   case 'ACCRUED COMPENSATION & RELATED ITEMS':
+   ddl2.options.length = 0;
+   for (i = 0; i < accrued_compensation.length; i++) {
+   createOption(ddl2, accrued_compensation[i], accrued_compensation[i]);
+   }
+   break;
+   case 'OTHER ACCRUED EXPENSES':
+   ddl2.options.length = 0;
+   for (i = 0; i < other_accrued_expenses.length; i++) {
+   createOption(ddl2, other_accrued_expenses[i], other_accrued_expenses[i]);
+   }
+   break;
+   case 'ACCRUED TAXES':
+   ddl2.options.length = 0;
+   for (i = 0; i < accrued_taxes.length; i++) {
+   createOption(ddl2, accrued_taxes[i], accrued_taxes[i]);
+   }
+   break;
+   case 'DEFERRED TAXES':
+   ddl2.options.length = 0;
+   for (i = 0; i < deferred_taxes.length; i++) {
+   createOption(ddl2, deferred_taxes[i], deferred_taxes[i]);
+   }
+   break;
+   case 'LONG-TERM DEBT':
+   ddl2.options.length = 0;
+   for (i = 0; i < long_term_debt.length; i++) {
+   createOption(ddl2, long_term_debt[i], long_term_debt[i]);
+   }
+   break;
+   case 'INTERCOMPANY PAYABLES & OTHER NON CURRENT LIABILITIES & OWNERS EQUITIES':
+   ddl2.options.length = 0;
+   for (i = 0; i < intercompany_payables.length; i++) {
+   createOption(ddl2, intercompany_payables[i], intercompany_payables[i]);
+   }
+   break;
+   case 'REVENUE':
+   ddl2.options.length = 0;
+   for (i = 0; i < revenue.length; i++) {
+   createOption(ddl2, revenue[i], revenue[i]);
+   }
+   break;
+   case 'COST OF GOODS SOLD':
+   ddl2.options.length = 0;
+   for (i = 0; i < cost_goods.length; i++) {
+   createOption(ddl2, cost_goods[i], cost_goods[i]);
+   }
+   break;
+   case 'OPERATING EXPENSES':
+   ddl2.options.length = 0;
+   for (i = 0; i < operating_expenses.length; i++) {
+   createOption(ddl2, operating_expenses[i], operating_expenses[i]);
+   }
+   break;
+   default:
+   ddl2.options.length = 0;
+   break;
+   }
+   }
+   function createOption(ddl, text, value) {
+   var opt = document.createElement('option');
+   opt.value = value;
+   opt.text = text;
+   ddl.options.add(opt);
+   }
+
+      let dynamic_id=2;
+
+   function addbundle(){
+   $(this).closest('table').find('.addbundle').css("display","none");
+   $(this).closest('table').find('.removebundle').css("display","block");
+   
+   var newdiv = document.createElement('div');
+   var tabin="crate_wrap_"+dynamic_id;
+   
+   newdiv = document.createElement("div");
+   
+   
+   newdiv.innerHTML ='<table class="table normalinvoice table-bordered table-hover"     style="border:2px solid #d7d4d6;"               id="normalinvoice_'+ dynamic_id +'"> <thead> <tr class="btnclr"> <th rowspan="2" class="text-center" style="width: 170px;" ><?php echo display('product_name'); ?><i class="text-danger">*</i></th> <th rowspan="2"  class="text-center"><?php echo display('Bundle No');?><i class="text-danger">*</i></th> <th rowspan="2"  class="text-center"><?php echo  display('description'); ?></th> <th rowspan="2" style="width:60px;" class="text-center"><?php echo display('Thick ness');?><i class="text-danger">*</i></th> <th rowspan="2" class="text-center"><?php echo display('Supplier Block No');?><i class="text-danger">*</i></th>  <th rowspan="2" class="text-center" ><?php echo display('Supplier Slab No');?><i class="text-danger">*</i> </th> <th colspan="2" style="width:150px;" class="text-center"><?php echo display('Gross Measurement');?><i class="text-danger">*</i> </th> <th rowspan="2" class="text-center"><?php echo display('Gross Sq.Ft');?></th>  <th rowspan="2" style="width:40px;" class="text-center"><?php echo display('Slab No');?><i class="text-danger">*</i></th> <th colspan="2" style="width:150px;" class="text-center"><?php echo display('Net Measure');?><i class="text-danger">*</i></th> <th rowspan="2" class="text-center"><?php echo display('Net Sq.Ft');?></th> <th rowspan="2" class="text-center"><?php echo display('Cost per Sq.Ft');?></th> <th rowspan="2"  class="text-center"><?php echo display('Cost per Slab');?></th> <th rowspan="2"  class="text-center"><?php echo display('sales'); ?><br/><?php echo display('Price per Sq.Ft');?></th> <th rowspan="2"  class="text-center"><?php echo display('Sales Slab Price');?></th> <th rowspan="2" class="text-center"><?php echo display('Weight');?></th> <th rowspan="2" class="text-center"><?php echo display('Origin');?></th>  <th rowspan="2" style="width: 100px" class="text-center"><?php  echo  display('total'); ?></th> <th rowspan="2" class="text-center"><?php  echo  display('action'); ?></th> </tr>  <tr> <th class="btnclr text-center"><?php echo display('Width');?></th> <th class="btnclr  text-center"><?php echo display('Height');?></th> <th class="btnclr text-center"><?php echo display('Width');?></th> <th class="btnclr text-center"><?php echo display('Height');?></th> </tr>  </thead> <tbody id="addPurchaseItem_'+ dynamic_id +'"> <tr> <input type="hidden" name="tableid[]" id="tableid_'+ dynamic_id +'"/><td> <input   list="magicHouses"  style="width:160px;" name="prodt[]" id="prodt_'+ dynamic_id +'"   class="form-control product_name"  placeholder="Search Product" > <datalist id="magicHouses"> <option value="Select the Product" selected>Select the Product</option> <?php  foreach($product_list as $tx){?>  <option value="<?php echo $tx["product_name"]."-".$tx["product_model"];?>">  <?php echo $tx["product_name"]."-".$tx["product_model"];  ?></option> <?php } ?> </datalist> <input type="hidden" class="common_product autocomplete_hidden_value  product_id_'+ dynamic_id +'" name="product_id[]" id="product_id_'+ dynamic_id +'" /> </td> <td>  <input list="magic_bundle" name="bundle_no[]" id="bundle_no_'+ dynamic_id +'"   class="form-control bundle_no"'+
+   'onchange="this.blur();" /><datalist id="magic_bundle"><?php foreach($bundle as $tx){?> <option value="<?php echo $tx['bundle_no'];?>">  <?php echo $tx['bundle_no'];  ?></option> <?php } ?>'+
+   
+   '</datalist></td> <td> <input type="text" id="description_'+ dynamic_id +'" name="description[]" class="form-control" /> </td>  <td > <input type="text" name="thickness[]" id="thickness_'+ dynamic_id +'" style="width:50px;" class="form-control"/> </td>  <td><input list="magic_supplier_block" name="supplier_block_no[]"  id="supplier_b_no_'+ dynamic_id +'"   class="form-control supplier_block_no"  placeholder="Search Product"  onchange="this.blur();" /><datalist id="magic_supplier_block"><?php foreach($supplier_block_no as $tx){?><option value="<?php echo $tx['supplier_block_no'];?>">  <?php echo $tx['supplier_block_no'];  ?></option><?php } ?></datalist> </td>  <td > <input type="text"  id="supplier_s_no_'+ dynamic_id +'" name="supplier_slab_no[]" required="" class="form-control"/> </td> <td> <input type="text" id="gross_width_'+ dynamic_id +'" name="gross_width[]" required="" class="gross_width  form-control" /> </td> <td> <input type="text" id="gross_height_'+ dynamic_id +'" name="gross_height[]"  required="" class="gross_height form-control" /> </td>  <td > <input type="text"   style="width:60px;" readonly id="gross_sq_ft_'+ dynamic_id +'" name="gross_sq_ft[]" class="gross_sq_ft form-control"/> </td>   <td style="text-align:center;" >  <input type="text"   style="width:20px;" value="1" class="slab_no" id="slab_no_'+ dynamic_id +'" name="slab_no[]"   readonly  required=""/>  </td> <td> <input type="text" id="net_width_'+ dynamic_id +'" name="net_width[]" required="" class="net_width form-control" /> </td> <td> <input type="text" id="net_height_'+ dynamic_id +'" name="net_height[]"    required="" class="net_height form-control" /> </td> <td > <input type="text"   style="width:60px;" readonly id="net_sq_ft_'+ dynamic_id +'" name="net_sq_ft[]" class="net_sq_ft form-control"/> </td> <td>   <span class="input-symbol-euro"><input type="text" id="cost_sq_ft_'+ dynamic_id +'"  name="cost_sq_ft[]"   style="width:70px;" placeholder="0.00"  class="cost_sq_ft form-control" ></span>   <td >  <span class="input-symbol-euro"> <input type="text"  id="cost_sq_slab_'+ dynamic_id +'" name="cost_sq_slab[]"    style="width:70px;" placeholder="0.00"  class="cost_sq_slab form-control"/></span>     </td> <td>  <span class="input-symbol-euro">  <input type="text" id="sales_amt_sq_ft_'+ dynamic_id +'"  name="sales_amt_sq_ft[]"  style="width:70px;"  placeholder="0.00" class="sales_amt_sq_ft form-control" /></span>     </td>  <td >  <span class="input-symbol-euro">   <input type="text"  id="sales_slab_amt_'+ dynamic_id +'" name="sales_slab_amt[]"  style="width:70px;" placeholder="0.00"  class="sales_slab_amt form-control"/></td> </span>     </td> <td> <input type="text" id="weight_'+ dynamic_id +'" name="weight[]"  class="weight form-control" /> </td>  <td >  <select  style="width:70px;" id="origin_'+ dynamic_id +'"    name="origin[]" class="origin form-control">  <?php foreach ($country_code as $key => $value) { ?>  <option value="<?php echo $value['iso']; ?>"><?php echo $value['iso']; ?></option> <?php } ?> </select> </td>  <td > <span class="input-symbol-euro"><input  type="text" class="total_price form-control" style="width:80px;" readonly value="0.00"  id="total_amt_'+ dynamic_id +'"     name="total_amt[]"/></span> </td>  <td style="text-align:center;"> <button  class="delete btn btn-danger" id="delete_'+ dynamic_id +'" type="button" value="Delete" ><i class="fa fa-trash"></i></button> </td>  </tr> </tbody> <tfoot> <tr> <td style="text-align:right;" colspan="8"><b>Gross Sq.Ft :</b></td> <td > <input type="text" id="overall_gross_'+ dynamic_id +'" name="overall_gross[]"   class="overall_gross form-control" style="width: 60px"  readonly="readonly"  /> </td> <td style="text-align:right;" colspan="3"><b>Net Sq.Ft :</b></td> <td > <input type="text" id="overall_net_'+ dynamic_id +'" name="overall_net[]"  class="overall_net form-control"  style="width: 60px"  readonly /> </td>  <td><input type="text" id="costpersqft_'+ dynamic_id +'"  name="costpersqft[]"   style="width:60px;"   readonly   class="costpersqft form-control" /></span></td>'+
+   '<td ><input type="text"  id="costperslab_'+ dynamic_id +'" name="costperslab[]"  readonly  style="width:60px;"   class="costperslab form-control"/></td><td>  <input type="text" id="salespricepersqft_'+ dynamic_id +'"  name="salespricepersqft[]"  readonly style="width:60px;"   class="salespricepersqft form-control" /></td><td >   <input type="text"  id="salesslabprice_'+ dynamic_id +'" name="salesslabprice[]"  style="width:60px;"  readonly  class="salesslabprice form-control"/></td> </span><td ><input type="text" id="overall_weight_'+ dynamic_id +'" name="overall_weight[]"  class="overall_weight form-control"  style="width: 60px"  readonly /></td><td style="text-align:right;font-size: 13px;" colspan="1"><b><?php echo "Total" ?> :</b></td><td ><span class="input-symbol-euro">    <input type="text" id="Total_'+ dynamic_id +'" name="total[]"   class="b_total form-control"  style="width: 80px" value="0.00"  readonly="readonly"  /></span></td>  <td  style="text-align:center;"><i id="buddle_'+ dynamic_id +'" onclick="removebundle(); " class="btn-danger removebundle fa fa-minus" aria-hidden="true"></i></td>   </tr> </foot></table> <i id="buddle_'+ dynamic_id +'"  style="float:right;"   onclick="addbundle(); " class="btnclr addbundle fa fa-plus" aria-hidden="true"></i>';  
+   
+   
+   document.getElementById('content').appendChild(newdiv);
+   
+   dynamic_id++;
+   }
 </script>
 
 <style>
@@ -1817,4 +1993,5 @@ $(document).ready(function() {
      animation: l1 1s steps(4) infinite;
    }
   @keyframes l1 {to{clip-path: inset(0 -34% 0 0)}}
+  
 </style>
