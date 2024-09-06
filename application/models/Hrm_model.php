@@ -3006,6 +3006,33 @@ SUM(a.monthly) as monthly_amount'
         }
         return true;
     }
+
+
+    public function weekly_tax_info_livingtax($lt_name ,$employee_status,$final,$weekly_range ){
+        $this->db->select('employee,employer,details');
+        $this->db->from('weekly_tax_info');
+        $this->db->where($employee_status,$weekly_range);
+        $query = $this->db->get(); 
+
+        echo $this->db->last_query(); die();
+
+
+            if (!$query) {
+                $error = $this->db->error(); 
+                log_message('error', 'Database Query Error: ' . $error['message']);
+                return false;  
+            }
+            if ($query->num_rows() > 0) {
+                return $query->result_array();
+            }
+            return false;
+        }
+
+
+
+
+
+
     public function biweekly_tax_info($employee_status, $final, $biweekly_range) {
         $this->db->select('employee,employer,details');
         $this->db->from('biweekly_tax_info');
@@ -3026,6 +3053,8 @@ SUM(a.monthly) as monthly_amount'
         }
         return true;
     }
+
+
     public function state_names($st_name) {
         $user_id = $this->session->userdata('user_id');
         $this->db->select('state');
@@ -3038,6 +3067,10 @@ SUM(a.monthly) as monthly_amount'
         }
         return true;
     }
+
+
+
+
     public function living_hourly_tax_info($employee_status, $final, $hourly_range, $st_name) {
         $this->db->select('employee,employer,details');
         $this->db->from('state_localtax');
