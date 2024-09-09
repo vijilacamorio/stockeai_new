@@ -1214,15 +1214,12 @@ $result = $CI->Purchases->servicepro($date) ;
    public function get_po_details()
     {
         $po_num = $this->input->post('po');
-     
-     
         $adminid = $this->input->post('admin_company_id');
         $admin_company_id = decodeBase64UrlParameter($adminid);
         $purchaseDetail = $this->db->select('*')->from('purchase_order')->where('chalan_no',$po_num)->get()->result_array();
         $purchase_id = $purchaseDetail[0]['purchase_order_id'];
         $content = $this->lpurchase->po_details($admin_company_id, $purchase_id);
-
-
+        $this->template->full_admin_html_view($content);
     }
     public function add_csv_purchase()
     {

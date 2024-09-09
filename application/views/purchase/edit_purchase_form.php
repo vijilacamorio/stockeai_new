@@ -848,13 +848,7 @@ foreach ($tax_data as $tx) {?>
     })
 
                               
-//  $('.normalinvoice tbody tr').find('select').each(function() {
-//     var $select = $(this);
-//    if ($select.data('select2')) {
-//         $select.select2('destroy');
-//     }
-//     $select.select2();
-// });
+
                         $('.normalinvoice tbody tr').each(function() {
 
 
@@ -2330,7 +2324,6 @@ $(this).find('.editable-amount-paid input').val(paymentAmount);
    document.getElementById('content').appendChild(newdiv);
    
    dynamic_id++;
-   
    }
 </script>
 

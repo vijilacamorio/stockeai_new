@@ -74,7 +74,11 @@
               <div class="col-sm-6">
                 <div class="form-group row"> <label for="country" class="col-sm-4 col-form-label"><?php echo display('country') ?></label>
                   <div class="col-sm-8"> <select class="form-control" name="country" id="country">
-                      <option value="<?php echo $product_detail[0]['country'];  ?>"> <?php echo $product_detail[0]['country'];  ?> </option> <?php if (!empty($country_list)): ?> <?php foreach ($country_list as $country): ?> <option value="<?php echo $country['iso3'] . ' - ' . $country['nickname']; ?>"> <?php echo $country['iso3'] . ' - ' . $country['nickname'] ; ?> </option> <?php endforeach;?> <?php else: ?> <option value="">No Countries found</option> <?php endif;?>
+                  <?php if (!empty($country_list)): ?> <?php foreach ($country_list as $country): 
+                        $selectedcon    = $country['id'] == $product_detail[0]['country'] ? 'selected' : '';
+                        ?> 
+                        <option value="<?php echo $country['id']; ?>" <?php echo $selectedcon; ?> > <?php echo $country['iso3'] . ' - ' . $country['nickname'] ; ?> </option> <?php endforeach;?> <?php else: ?> <option value="">No Countries found</option> <?php endif;?>
+
                     </select> </div>
                 </div> <!-- Category -->
                 <div class="form-group row"> <label for="category_id" class="col-sm-4 col-form-label"><?php echo display('category') ?>&nbsp;<i class="text-danger">*</i></label>
