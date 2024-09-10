@@ -145,7 +145,7 @@ class Web_settings extends CI_Model
     }
        public function getCountryDetails()
     {
-        $this->db->select('iso,iso3,nickname');
+        $this->db->select('iso,iso3,nickname,id');
         $this->db->from('country');
         $query = $this->db->get();
         if ($query->num_rows() > 0) {

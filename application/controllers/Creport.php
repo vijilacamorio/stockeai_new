@@ -516,13 +516,13 @@ class Creport extends CI_Controller {
                 $status = '';
         
                 if ($arr['total_amt'] == $arr['amt_paid']) {
-                    $status = 'Paid';
+                    $status = '<span class="badge bg-success">Paid</span>';
                 } else if ($arr['total_amt'] != $arr['amt_paid'] && $arr['amt_paid'] != '0.00' && $arr['amt_paid'] != '0' && substr($arr['due_amount'], 0, 1) != '-') {
-                    $status = 'Partially Paid';
+                    $status = '<span class="badge bg-warning">Partially Paid</span>';
                 } else if ($arr['total_amt'] != $arr['amt_paid'] && $arr['amt_paid'] == '0.00') {
-                    $status = 'Not Paid';
+                    $status = '<span class="badge bg-danger">Not Paid</span>';
                 } else if (substr($arr['balance'], 0, 1) == '-') {
-                    $status = 'Paid';
+                    $status = '<span class="badge bg-success">Paid</span>';
                 }
                 $row = [
                     "customer_id"     => $i,
