@@ -165,6 +165,10 @@
    .color_text{
        color: #000 !important;
    }
+
+   .fc-time{
+      display: none !important;
+   }
 </style>
 
 <script src='https://fullcalendar.io/js/fullcalendar-2.4.0/lib/moment.min.js'></script>
@@ -176,7 +180,8 @@
     var insertdata = '<?php echo $insertdata; ?>';
     var eventData = JSON.parse(insertdata);
     var currentDate = new Date();
-      $('#calendar').fullCalendar({
+    
+    $('#calendar').fullCalendar({
         header: {
             left: 'prev,next today',
             center: 'title',
@@ -186,27 +191,26 @@
         editable: true,
         eventLimit: true,
         events: eventData, 
-         eventRender: function(event, element) {
-             var start = moment(event.start);
-             var end = moment(event.end);
+        eventRender: function(event, element) {
+            var start = moment(event.start);
+            var end = moment(event.end);
+            if (start.isValid() && end.isValid()) {
+                element.find('.fc-title').append(
+                    "<br/>Start: " + start.format('MM-DD-YYYY hh:mm A') + 
+                    "<br/>End: " + end.format('MM-DD-YYYY hh:mm A')
+                );
+            } else {
+                console.warn('Invalid start or end date', event);
+            }
+        }
+    });
 
-             if (start.isValid() && end.isValid()) {
-                 element.find('.fc-title').append(
-                     "<br/>Start: " + start.format('YYYY-MM-DD HH:mm') + 
-                     "<br/>End: " + end.format('YYYY-MM-DD HH:mm')
-                 );
-             } else {
-                 console.warn('Invalid start or end date', event);
-             }
-         }
-
-      });
-
-      $('#calendar').on('click', '.fc-prev-button, .fc-next-button', function() {
+    $('#calendar').on('click', '.fc-prev-button, .fc-next-button', function() {
         $('#calendar').fullCalendar('removeEvents');
         $('#calendar').fullCalendar('addEventSource', eventData);
-      });
+    });
 });
+
 
 
 
