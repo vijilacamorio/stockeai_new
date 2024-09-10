@@ -3,7 +3,7 @@ $modaldata['bootstrap_model'] = array('vendor', 'tax_info', 'payment_model','pay
 $this->load->view('include/bootstrap_model', $modaldata);
 ?>
 <div class="content-wrapper" >
- <section class="content">
+
       <!-- Alert Message -->
       <?php
          $message = $this->session->userdata('message');
@@ -23,6 +23,7 @@ $this->load->view('include/bootstrap_model', $modaldata);
          $this->session->unset_userdata('error_message');
          }
          ?>
+
          <style>
             .slab_no{
    border:none;
@@ -626,8 +627,9 @@ foreach ($tax_data as $tx) {?>
         </tr>
     </tfoot>
 </table>
+</div>
                             
-                           </div>
+            
                            <div class="row">
                               <div class="col-sm-12">
                                  <div class="form-group row">
@@ -1006,7 +1008,7 @@ foreach ($tax_data as $tx) {?>
                            </form>
                         </div>
                      </div>
-
+ </div> </div> </div></div> </div>
 <input type="hidden" id="Final_invoice_number" /> 
 <input type="hidden" id="Final_invoice_id" /> 
 
@@ -1114,10 +1116,7 @@ if($(this).find("tbody").html().trim().length === 0){
            $(this).hide()
        }
     })
-
-         
-
-            getSupplierInfo($('#supplier_id').val());
+ getSupplierInfo($('#supplier_id').val());
         }).fail(function (jqXHR, textStatus, errorThrown) {
             console.error('AJAX request failed: ' + textStatus + ', ' + errorThrown);
         });
@@ -1228,6 +1227,9 @@ updateOverallTotals(true);
                 $('#paypls').on('click',function(){
 $('#amount_to_pay').val($('#balance').val());
 $('#custocurrencyrate').val($('.custocurrency_rate').val());
+});
+$('.paypls').on('click',function(){debugger;
+$('#amount_to_pay').val($('#balance').val());
 });
 $.validator.addMethod('isfNoRequired', function(value, element, param) {
     var isfField = $('select[name="isf_field"]').val();

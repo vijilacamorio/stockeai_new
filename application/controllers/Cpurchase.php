@@ -795,7 +795,6 @@ public function insert_purchasetax()
 {
     $CI = & get_instance();
 
-        // print_r($this->input->post()); die();
 
          $data = array(
             'tax_id' => $this->auth->generator(10),
@@ -1778,9 +1777,9 @@ public function uploadCsv_Serviceprovider_second()
 
     //Insert purchase
     public function insert_purchase() {
- $data=$this->Purchases->purchase_entry();
-        echo json_encode($data);
-  }
+    $data=$this->Purchases->purchase_entry();
+    echo json_encode($data);
+    }
 
 
       //Insert purchase
