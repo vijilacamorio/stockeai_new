@@ -1,4 +1,12 @@
- <?php print_r($supplier_list); ?>
+
+
+<?php
+$modaldata['bootstrap_model'] = array('vendor', 'tax_info', 'payment_model','payment_terms', 'bank_info','payment_type');
+
+$data['payment_id'] = $purchase_info[0]['payment_id'];
+
+$this->load->view('include/bootstrap_model', $modaldata ,$data);
+?>
  <div class="panel-body">
 <div class="with_po">  
    <div id="errormessage_expense"></div><br>
@@ -6,7 +14,7 @@
                <div class="row">
                            <div class="col-sm-6">  
                           <input type="hidden" id="admin_company_id" name="admin_company_id" value="<?php  echo $_GET['id']; ?>">
-                          <input type="hidden" id="makepaymentId" name="makepaymentId">
+                          <input type="text" id="makepaymentId" name="makepaymentId" value="<?php  echo $purchase_info[0]['payment_id']; ?>">
                           <input type="hidden" name="paid_customer_currency" id="paid_customer_currency"/>
                           <input type="hidden" name="balance_customer_currency" id="balance_customer_currency"/>
                            <div class="form-group row">
@@ -81,10 +89,7 @@
                                     </div>
                                  </div>
 
-
-
-                               
-                             
+ 
                                    <div class="form-group row">
                                     <label for="billing_address" class="col-sm-4     col-form-label"><?php echo display('Payment Terms');?>
                                     <i class="text-danger">*</i></label>
@@ -194,12 +199,8 @@
 
                               </div>
                               <div class="col-sm-6">
-
-
-                          
-
-
- <div class="form-group row">
+ 
+                               <div class="form-group row">
                                     <label for="payment_type" class="col-sm-4 col-form-label"><?php
                                        echo display('payment_type');
                                        ?> <i class="text-danger">*</i></label>
@@ -218,12 +219,7 @@
                                   
                                  </div>
 
-
-
-
-                            
-
-
+ 
                                  <div class="form-group row">
                                     <label for="port_of_discharge" class="col-sm-4 col-form-label">Account Subcategory</label>
                                     <div class="col-sm-8">
@@ -588,16 +584,27 @@ foreach ($tax_data as $tx) {?>
     <tfoot>
         <tr style="border-right:none; border-left:none; border-bottom:none; border-top:none;">
             <td colspan="2" style="text-align: right; padding: 20px;">
-         
-              <a class="client-add-btn btn btnclr" aria-hidden="true" id="paypls" data-toggle="modal" data-target="#payment_modal">
+              <a class="paypls client-add-btn btn btnclr" aria-hidden="true" id="paypls" data-toggle="modal" data-target="#payment_modal">
                         Make Payment
              </a>
             </td>
         </tr>
     </tfoot>
 </table>
-                            
-                           </div>
+
+               <script>
+                  $('.paypls').on('click', function() {
+                     var balance = $('#balance').val();
+                     $('#amount_to_pay').val(balance);
+
+                     var paymentid = $purchase_info[0]['payment_id'];
+                     $('#payment_id').val(paymentid);
+
+                  });
+               </script>
+
+ 
+                         
                            <div class="row">
                               <div class="col-sm-12">
                                  <div class="form-group row">
@@ -622,16 +629,7 @@ foreach ($tax_data as $tx) {?>
                               <div class="col-sm-12">
                                  <div class="form-group row" style="   margin-top: 1%;">
                                     <table>
-                                       <tr>
-
-                                        <!-- <td>
-                                 <input type="submit" id="add_purchase" name="add_purchase"     class="btnclr btn" value="<?php// echo display('save') ?>">
-                                 <a     id="final_submit_provider" class='btnclr final_submit_provider btn  '><?php //echo display('submit'); ?></a>
-                                 <a id="download_provider"  class='btn  btnclr'><?php  //echo  display('download'); ?></a>
-                                 <a id="print_provider"    class='btn  btnclr'><?php  //echo  display('print'); ?></a>                   
-                              </td> -->
-
-                                          <td style="width:140px;">
+                                       <tr> <td style="width:140px;">
                                              <input type="submit" id="add_purchase"   class="btnclr btn btn-large" name="add-packing-list" value="<?php  echo  display('save'); ?>" />
                                         
                                              <a    id="final_submit"   class='btnclr final_submit btn'><?php echo display('submit'); ?></a>
@@ -663,16 +661,18 @@ foreach ($tax_data as $tx) {?>
  </div></div>
                     
 
-</div>
+
 
 <script>
-   $('#payplse').on('click', function (e) {
-      alert('hi');
-$('#amount_to_pay').val($('#vendor_gtotal').val()-$('#amount_paid').val());
-    $('#payment_modal').modal('show');
-  e.preventDefault();
 
-});
+
+
+
+
+
+
+
+ 
    $(document).ready(function(){
    $(".sidebar-mini").addClass('sidebar-collapse') ;
    });
@@ -718,9 +718,7 @@ $('#amount_to_pay').val($('#vendor_gtotal').val()-$('#amount_paid').val());
    $('#final_submit_provider').hide();
    $('#print_provider').hide();
     });
-   // $('#supplier_id').on('change', function (e) {getSupplierInfo($(this).val())});
-   // $(document).ready(function(){ getSupplierInfo($('#supplier_id').val()) });
-
+    
    $('#isf_dropdown1').on('change', function() {
      if ( this.value == '2')
        $("#isf_no1").show();
@@ -744,67 +742,7 @@ $('#amount_to_pay').val($('#vendor_gtotal').val()-$('#amount_paid').val());
         payment_update();
     });
 // Insert Expense Data
-
-// $(".insert_purchase").validate({
-//    rules: {
-//       supplier_id: "required",
-//       invoice_no: "required", 
-//       payment_due_date : "required", 
-//       bill_date : "required",
-//       payment_terms: "required",  
-//       paytype_drop : "required",
-//       isf_no: {
-//          isfNoRequired: true
-//       }
-//  },
-//  messages: {
-//      supplier_id: "Supplier Name is required",
-//      invoice_no: "Invoice Number is required",
-//      payment_terms: "Payment Term is required",
-//      paytype_drop: "Payment Type is required",
-//      payment_due_date: "Payment Due Date is required",
-//      bill_date: "Bill Date is required",
-//      isf_no: "ISF No is required when ISF Field is YES.",
-//  },
-//    errorPlacement: function(error, element) {
-//       if (element.hasClass("select2-hidden-accessible")) {
-//          error.insertAfter(element.next('span.select2')); 
-//       } else {
-//          error.insertAfter(element);
-//       }
-//    },
-// submitHandler: function(form) {
-//   var formData = new FormData(form);
-//   formData.append(csrfName, csrfHash);
-//   $.ajax({
-//     type: "POST",
-//     dataType: "json",
-//     url:"<?php echo base_url(); ?>Cpurchase/insert_purchase",
-//     data: formData,
-//     contentType: false,
-//     processData: false,
-//     success: function(response) {
-//       console.log(response);
-//     if (response.status == 'success') {
-//     $('.final_submit').show();
-//       $('#errormessage_expense').html('<div class="alert alert-success">' + response.msg + '</div>');
-//       $('#Final_invoice_number').val(response.invoice_no);
-//       $('#Final_invoice_id').val(response.invoice_id);
-         
-//       }else{
-//          $('#errormessage_expense').html(failalert+response.msg+'</div>'); 
-//       }                  
-//       },
-//         error: function(xhr, status, error) {
-//         $('#errormessage_expense').html(failalert+error+'</div>'); 
-//     }
-//   })
-// }
-// });
-
-// $('.final_submit').on('click', function () {
-//    window.location.href = "<?php echo base_url(); ?>Cpurchase/manage_purchase?id=<?php echo $_GET['id']; ?>";
-// });
+ 
     function addbundle(){
    $(this).closest('table').find('.addbundle').css("display","none");
    $(this).closest('table').find('.removebundle').css("display","block");
