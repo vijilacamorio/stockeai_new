@@ -123,17 +123,13 @@ class Products extends CI_Model
     //Count Product
     public function count_product($admin_id)
     {
-        $query = $this->db
-            ->select("*")
-            ->from("product_information")
+        $query = $this->db->select("*")->from("product_information")->where("created_by", $admin_id)->where("is_deleted", 0)->get();
 
-            ->where("created_by", $admin_id)
-
-            ->where("is_deleted", 0)
-            ->get();
+        if ($query === false) {
+            return 0;
+        }
         return $query->num_rows();
     }
-
 
     public function get_profarma_product()
     {

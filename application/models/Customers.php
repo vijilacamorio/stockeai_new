@@ -89,8 +89,14 @@ class Customers extends CI_Model {
         $this->db->where('create_by', $this->session->userdata('user_id'));
         $this->db->order_by('created_date', 'desc');
         $query = $this->db->get();
+        
+        if ($query === false) {
+            return 0; 
+        }
+        
         return $query->num_rows();
     }
+
     public function get_customer_type() {
         $this->db->select('*');
         $this->db->from('customer_type');

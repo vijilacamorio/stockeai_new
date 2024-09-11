@@ -1,5 +1,4 @@
-
-   <?php
+<?php
 
 require 'vendor/autoload.php';
 
@@ -168,7 +167,6 @@ class Cpurchase extends CI_Controller {
         $items          = $this->Purchases->getPaginatedPurchases($limit, $start, $orderField, $orderDirection, $search, $decodedId,$date);
         $data           = [];
         $i              = $start + 1;
-       
         foreach ($items as $item) {
             if($item['source'] == 'Product Purchase'){
             $edit   = '<a href="' . base_url('Cpurchase/purchase_update_form?id=' . $encodedId. '&invoice_id=' . $item['purchase_id']) . '" class="btnclr btn btn-sm" style="margin-right: 5px;"><i class="fa fa-pencil" aria-hidden="true"></i></a>';
@@ -180,7 +178,7 @@ class Cpurchase extends CI_Controller {
              }else{
             $delete = '<a style="margin-right: 5px;" onClick=deleteInvoicedata('.$item["purchase_id"].') class="btnclr btn btn-sm" ><i class="fa fa-trash" aria-hidden="true"></i></a>' ;
             }
-            //serviceprovider_update_form $mail = '<a href="' . base_url('Cinvoice/invoice_update_form?id=' . $encodedId. '&invoice_id=' . $item['invoice_id']) . '" class="btn btn-sm btn-danger" ><i class="fa fa-trash" aria-hidden="true"></i></a>';
+          
             $mail = '<a data-toggle="modal" data-target="#sendemailmodal" onClick=sendEmailproforma('.$item["purchase_id"].') class="btnclr btn btn-sm" style="margin-right: 5px;"><i class="fa fa-envelope" aria-hidden="true"></i></a>';
            if($item['invoice_id'] != ''){
             $download = '<a href="' . base_url('Cinvoice/invoice_inserted_data?id=' . $encodedId. '&invoice_id=' . $item['purchase_id']) . '" class="btnclr btn btn-sm" ><i class="fa fa-download" aria-hidden="true"></i></a>';
@@ -200,9 +198,9 @@ class Cpurchase extends CI_Controller {
                 "payment_id"         => $item['payment_id'],
                 'gtotal_preferred_currency'   => $item['gtotal_preferred_currency'],
                 "purchase_date"    => $item['purchase_date'],
-                  "payment_due_date"    => $item['payment_due_date'],
-                  "create_date"    => $item['create_date'],
-                  "source"  =>$item['source'],
+                "payment_due_date"    => $item['payment_due_date'],
+                "create_date"    => $item['create_date'],
+                "source"  =>$item['source'],
                 'action'          => $download .'&nbsp;'. $edit . $mail . $delete,
             ];
             $data[] = $row;
@@ -1034,14 +1032,13 @@ $CI = & get_instance();
             'supplier_list' => $supplier_list,
             'product_list'  => $all_product_list,
             'expense_tax' => $expense_tax,
-              'po_number' =>$po_number,
+            'po_number' =>$po_number,
            
-        
             'country_code' => $country_code,
             
              'payment_type' =>   $payment_type_dropdown,
             'payment_terms' => $payment_terms_dropdown,
-                       'setting_detail' => $setting_detail
+            'setting_detail' => $setting_detail
 
         );
       
@@ -1138,15 +1135,15 @@ $result = $CI->Purchases->servicepro($date) ;
      
      
     
- public function manage_purchase() {
-    $setting_detail = $this->Web_settings->retrieve_setting_editdata();
-  $data = array(
-               'currency'               =>$currency_details[0]['currency'],
-                'setting_detail' => $setting_detail,
-   );
+    public function manage_purchase() 
+    {
+        $setting_detail = $this->Web_settings->retrieve_setting_editdata();
+        $data = array(
+            'currency' =>$currency_details[0]['currency'],
+            'setting_detail' => $setting_detail,
+        );
         $content = $this->load->view('purchase/purchase', $data, true);
         $this->template->full_admin_html_view($content);
-
     }
 
 
@@ -1777,8 +1774,8 @@ public function uploadCsv_Serviceprovider_second()
 
     //Insert purchase
     public function insert_purchase() {
-    $data=$this->Purchases->purchase_entry();
-    echo json_encode($data);
+        $data=$this->Purchases->purchase_entry();
+        echo json_encode($data);
     }
 
 

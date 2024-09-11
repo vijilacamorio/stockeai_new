@@ -1,5 +1,3 @@
-
-
 <?php
 $modaldata['bootstrap_model'] = array('vendor', 'tax_info', 'payment_model','payment_terms', 'bank_info','payment_type');
 
@@ -9,12 +7,12 @@ $this->load->view('include/bootstrap_model', $modaldata ,$data);
 ?>
  <div class="panel-body">
 <div class="with_po">  
-   <div id="errormessage_expense"></div><br>
-           <form id="insert_purchase" class="insert_purchase" method="post">
+   <div id="errormessage_expense" class="errormessage_expense"></div><br>
+           <form id="insert_purchase" class="insert_purchase commonInsert" method="post">
                <div class="row">
                            <div class="col-sm-6">  
                           <input type="hidden" id="admin_company_id" name="admin_company_id" value="<?php  echo $_GET['id']; ?>">
-                          <input type="text" id="makepaymentId" name="makepaymentId" value="<?php  echo $purchase_info[0]['payment_id']; ?>">
+                          <input type="hidden" id="makepaymentId" name="makepaymentId" value="<?php  echo $purchase_info[0]['payment_id']; ?>">
                           <input type="hidden" name="paid_customer_currency" id="paid_customer_currency"/>
                           <input type="hidden" name="balance_customer_currency" id="balance_customer_currency"/>
                            <div class="form-group row">
@@ -23,10 +21,9 @@ $this->load->view('include/bootstrap_model', $modaldata ,$data);
                                     </label>
                                     <div class="col-sm-8">
                                        <select name="supplier_id" id="supplier_id" class="form-control vendorNAME"  style="border:2px solid #d7d4d6;width:100%;"     required=""  tabindex="1">
-                                         <option value="<?php echo $supplier_list[0]['supplier_id']; ?>"><?php echo $supplier_list[0]['supplier_name']; ?></option>
-                                          {supplier_list}
-                                          <option value="{supplier_id}">{supplier_name}</option>
-                                          {/supplier_list}
+                                          <?php foreach ($supplier_list as $key => $supplier) { ?>
+                                          <option value="<?php echo $supplier_list[0]['supplier_id']; ?>"><?php echo $supplier['supplier_name'] ?></option>
+                                          <?php } ?>
                                        </select>
                                     </div>
                                   
@@ -74,9 +71,6 @@ $this->load->view('include/bootstrap_model', $modaldata ,$data);
                                  </div>
                               </div>
                            </div>
-
-
-
 
                            <div class="row">
                               <div class="col-sm-6">
@@ -508,10 +502,9 @@ $this->load->view('include/bootstrap_model', $modaldata ,$data);
                            <td style="border:none;text-align:right;font-weight:bold;"><?php echo display('Tax') ?> :
                            </td>
                            <td style="width:12%">
-                           <input list="magic_tax" name="tx"  id="product_tax" class="form-control"  value="<?php echo $tax_description; ?>"  onchange="this.blur();" />
+                           <input list="magic_tax" name="tx" id="Taxproduct_tax" class="form-control"  value="<?php echo $tax_description; ?>"  onchange="this.blur();" />
                               <datalist id="magic_tax">
-                                 <?php
-foreach ($tax_data as $tx) {?>
+                                 <?php foreach ($tax_data as $tx) {?>
                                  <option value="<?php echo $tx['tax_id'] . '-' . $tx['tax'] . '%'; ?>">  <?php echo $tx['tax_id'] . '-' . $tx['tax'] . '%'; ?></option>
                                  <?php }?>
                               </datalist>
@@ -630,9 +623,9 @@ foreach ($tax_data as $tx) {?>
                                  <div class="form-group row" style="   margin-top: 1%;">
                                     <table>
                                        <tr> <td style="width:140px;">
-                                             <input type="submit" id="add_purchase"   class="btnclr btn btn-large" name="add-packing-list" value="<?php  echo  display('save'); ?>" />
+                                             <input type="submit" id="insertPurchase" class="btnclr btn btn-large" value="<?php echo display('save'); ?>" />
                                         
-                                             <a    id="final_submit"   class='btnclr final_submit btn'><?php echo display('submit'); ?></a>
+                                             <a id="purchasefinal_submit" class='btnclr final_submit btn'><?php echo display('submit'); ?></a>
                                        </td> <td>
                                          
                                              <select name="download_select" id="download_select" class="form-control btnclr" style="background-color:<?php echo $setting_detail[0]['button_color']; ?>;width: auto;color:white;" >
@@ -664,15 +657,6 @@ foreach ($tax_data as $tx) {?>
 
 
 <script>
-
-
-
-
-
-
-
-
- 
    $(document).ready(function(){
    $(".sidebar-mini").addClass('sidebar-collapse') ;
    });
@@ -774,5 +758,67 @@ foreach ($tax_data as $tx) {?>
     } else {
         $('#errormessage_expense').html('<div class="alert alert-danger alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>' + 'You cannot delete the last row. At least one row must remain..' + '</div>');
     }
+});
+
+
+// Insert Purchase
+   // $("#insert_purchase").validate({
+   //    rules: {
+   //    supplier_id: "required",
+   //    invoice_no: "required", 
+   //    payment_due_date : "required", 
+   //    bill_date : "required",
+   //    payment_terms: "required",  
+   //    paytype_drop : "required",
+   //    isf_no: {
+   //       isfNoRequired: true
+   //    }
+   //   },
+   //    messages: {
+   //    supplier_id: "Supplier Name is required",
+   //    invoice_no: "Invoice Number is required",
+   //    payment_terms: "Payment Term is required",
+   //    paytype_drop: "Payment Type is required",
+   //    payment_due_date: "Payment Due Date is required",
+   //    bill_date: "Bill Date is required",
+   //    isf_no: "ISF No is required when ISF Field is YES.",
+   //   },
+   //    errorPlacement: function(error, element) {
+   //       if (element.hasClass("select2-hidden-accessible")) {
+   //          error.insertAfter(element.next('span.select2')); 
+   //       } else {
+   //          error.insertAfter(element);
+   //       }
+   //    },
+   //    submitHandler: function(form, event) {
+   //       event.preventDefault();
+   //       var formData = new FormData($("#insert_purchase")[0]);
+   //       formData.append(csrfName, csrfHash);
+   //       console.log(formData, "formData");
+   //      //  $.ajax({
+   //      //   type: "POST",
+   //      //   dataType: "json",
+   //      //   url:"<?php echo base_url(); ?>Cpurchase/insert_purchase",
+   //      //   data: formData,
+   //      //   contentType: false,
+   //      //   processData: false,
+   //      //   success: function(response) {
+   //      //   console.log(response);
+   //      //   if (response.status == 'success') {
+   //      //     $('#errormessage_expense').html('<div class="alert alert-success">' + response.msg + '</div>');
+   //      //     $('#Final_invoice_number').val(response.invoice_no);
+   //      //     $('#Final_invoice_id').val(response.invoice_id);
+   //      //   }else{
+   //      //     $('#errormessage_expense').html(failalert+response.msg+'</div>'); 
+   //      //     console.log(response.msg, "Error");
+   //      //   }                  
+   //      //   },
+   //      //     error: function(xhr, status, error) {
+   //      //     debugger;
+   //      //     $('#errormessage_expense').html(failalert+error+'</div>'); 
+   //      //   }
+   //      // });
+   //    }
+   // });
 });
 </script>
