@@ -87,7 +87,7 @@
                  
                   </div>
                   <div class="Column" style="float: right;">
-                     <a  href="<?php echo base_url('Cpurchase/manage_purchase') ?>" class="btnclr btn  m-b-5 m-r-2"><i class="ti-align-justify"> </i> <?php echo "Manage Expense"; ?> </a>
+                     <a  href="<?php  echo base_url(); ?>Cpurchase/manage_purchase?id=<?php echo $_GET['id']; ?>" class="btnclr btn  m-b-5 m-r-2"><i class="ti-align-justify"> </i> <?php echo display('manage_expense'); ?> </a>
                   </div>
                </div>
             </div>
