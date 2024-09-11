@@ -83,12 +83,14 @@ $this->load->view('include/bootstrap_model', $modaldata);
                <div class="panel-heading">
                   <div class="panel-body">
                      <div class="with_po">
-                        <form id="insert_purchase" method="post">
+                        <div id="errormessage_expense" class="errormessage_expense"></div>
+                        <form id="insert_purchase" class="commonInsert" method="post">
+                           <div class="text-center" style="display: none; font-size: 20px;" id="purchaseLoading">Loading...</div>
                         </form>
                      </div>
                      <div class="without_po">
-                        <div id="errormessage_expense"></div>
-                        <form id="insert_expense"  method="post">
+                        <div id="errormessage_expense" class="errormessage_expense"></div>
+                        <form id="insert_expense" class="commonInsert" method="post">
                            <div class="row">
                            <div class="col-sm-6">  
                           <input type="hidden" id="admin_company_id" name="admin_company_id" value="<?php  echo $_GET['id']; ?>">
@@ -227,6 +229,7 @@ $this->load->view('include/bootstrap_model', $modaldata);
                                     <label for="invoice_no" class="col-sm-4 col-form-label"><?php echo display('Estimated Time Of Arrival');?>
                                     </label>
                                     <div class="col-sm-8">
+                                       <?php $date1 = date('Y-m-d'); ?>
                                        <input type="date"  tabindex="2" class="form-control datepicker productETA" style="border:2px solid #d7d4d6;" name="eta" value="<?php echo $date1; ?>" id="date1"  />
                                        <div id="loadingText" class="loading-text"></div>
                                     </div>
@@ -277,7 +280,8 @@ $this->load->view('include/bootstrap_model', $modaldata);
                                  <div class="form-group row">
                                     <label for="date" class="col-sm-4 col-form-label"><?php echo display('Payment Due Date');?> <i class="text-danger">*</i></label>
                                     <div class="col-sm-8">
-                                       <input class=" form-control" type="date" size="50" name="payment_due_date"   style="border:2px solid #d7d4d6;"  id="payment_due_date" required value="" tabindex="4" />
+                                       <?php $paymentdate = date('Y-m-d'); ?>
+                                       <input class=" form-control" type="date" size="50" name="payment_due_date"   style="border:2px solid #d7d4d6;"  id="payment_due_date" required value="<?php echo $paymentdate; ?>" tabindex="4" />
                                     </div>
                                  </div>
 
@@ -666,7 +670,7 @@ foreach ($tax_data as $tx) {?>
                                           <td style="width:140px;">
                                              <input type="submit" id="add_purchase"   class="btnclr btn btn-large" name="add-packing-list" value="<?php  echo  display('save'); ?>" />
                                         
-                                             <a    id="final_submit"   class='btnclr final_submit btn'><?php echo display('submit'); ?></a>
+                                             <a id="final_submit" class='btnclr final_submit btn'><?php echo display('submit'); ?></a>
                                        </td> <td>
                                          
                                              <select name="download_select" id="download_select" class="form-control btnclr" style="background-color:<?php echo $setting_detail[0]['button_color']; ?>;width: auto;color:white;" >
@@ -732,8 +736,8 @@ foreach ($tax_data as $tx) {?>
                                        <i class="text-danger">*</i>
                                        </label>
                                        <div class="col-sm-8">
-                                          <?php $date = date('Y-m-d'); ?>
-                                          <input type="date" tabindex="2" class="form-control servicebill_date" name="bill_date" id="bill_date" alue="<?php echo $date; ?>"  style="border:2px solid #d7d4d6;"  required/>
+                                          <?php $billdate = date('Y-m-d'); ?>
+                                          <input type="date" tabindex="2" class="form-control servicebill_date" name="bill_date" id="bill_date" value="<?php echo $billdate; ?>"  style="border:2px solid #d7d4d6;"  required/>
                                           <div id="loadingText" class="loading-text"></div>
                                        </div>
                                     </div>
@@ -1071,6 +1075,7 @@ $('#normalinvoice_1 > tbody > tr').each(function() {
     // Reinitialize select2
     $selects.select2();
 });
+
         var data = {
             expense_drop: $('#expense_drop').val()
         };
@@ -1099,13 +1104,14 @@ $('#normalinvoice_1 > tbody > tr').each(function() {
         };
         
         data[csrfName] = csrfHash;
-        
+        $('#purchaseLoading').show();
         $.ajax({
             url: '<?php echo base_url();?>Cpurchase/get_po_details',
             method: 'POST',
             data: data,
             dataType: "html"
         }).done(function (data) {
+         $('#purchaseLoading').hide();
             var obj = $(data);
             $("#insert_purchase").html(obj.find("#insert_purchase").html());
                   $(".normalinvoice").each(function(i,v){
@@ -1118,6 +1124,7 @@ if($(this).find("tbody").html().trim().length === 0){
     })
  getSupplierInfo($('#supplier_id').val());
         }).fail(function (jqXHR, textStatus, errorThrown) {
+           $('#purchaseLoading').hide();
             console.error('AJAX request failed: ' + textStatus + ', ' + errorThrown);
         });
     }
@@ -1236,7 +1243,7 @@ $.validator.addMethod('isfNoRequired', function(value, element, param) {
     return isfField != '2' || $.trim(value).length > 0;
 }, 'ISF No is required when ISF Field is YES.');
 
-$("#insert_expense").validate({
+$(".commonInsert").validate({
    rules: {
     supplier_id: "required",
     invoice_no: "required", 
@@ -1259,7 +1266,7 @@ $("#insert_expense").validate({
  },
     errorPlacement: function(error, element) {
             if (element.hasClass("select2-hidden-accessible")) {
-                error.insertAfter(element.next('span.select2')); // Place error message after the Select2 element
+                error.insertAfter(element.next('span.select2')); 
             } else {
                 error.insertAfter(element);
             }
@@ -1279,13 +1286,13 @@ submitHandler: function(form) {
       console.log(response);
     if (response.status == 'success') {
 
-   $('#errormessage_expense').html('<div class="alert alert-success">' + response.msg + '</div>');
+   $('.errormessage_expense').html('<div class="alert alert-success">' + response.msg + '</div>');
      $('#Final_invoice_number').val(response.invoice_no);
           $('#Final_invoice_id').val(response.invoice_id);
          
                   }else{
 
-          $('#errormessage_expense').html(failalert+response.msg+'</div>'); 
+          $('.errormessage_expense').html(failalert+response.msg+'</div>'); 
           console.log(response.msg, "Error");
        }                  
     },
@@ -1408,57 +1415,58 @@ var rowCount = $(this).closest('tbody').find('tr').length;
    });
 
    $("#serviceprovider").validate({
-   rules: {
-    service_provider_name: "required",
-    bill_date: "required", 
-    payment_terms : "required", 
-    bill_num : "required",
-   },
- messages: {
-     service_provider_name: "Service Provider Name is required",
-    bill_date: "Bill Date is required",
-    bill_num: "Bill Number is required",
-    payment_terms: "Payment Terms is required",
-},
-    errorPlacement: function(error, element) {
-            if (element.hasClass("select2-hidden-accessible")) {
-                error.insertAfter(element.next('span.select2')); // Place error message after the Select2 element
-            } else {
-                error.insertAfter(element);
-            }
-        },
-submitHandler: function(form) {
-  var formData = new FormData(form);
-  formData.append(csrfName, csrfHash);
-  $.ajax({
-    type: "POST",
-    dataType: "json",
-    url:"<?php echo base_url(); ?>Cpurchase/insert_service_provider",
-    data: formData,
-    contentType: false,
-    processData: false,
-    success: function(response) {
-    
-      console.log(response);
-    if (response.status == 'success') {
+      rules: {
+       service_provider_name: "required",
+       bill_date: "required", 
+       payment_terms : "required", 
+       bill_num : "required",
+      },
+      messages: {
+         service_provider_name: "Service Provider Name is required",
+         bill_date: "Bill Date is required",
+         bill_num: "Bill Number is required",
+         payment_terms: "Payment Terms is required",
+      },
+      errorPlacement: function(error, element) {
+         if (element.hasClass("select2-hidden-accessible")) {
+             error.insertAfter(element.next('span.select2')); 
+         } else {
+             error.insertAfter(element);
+         }
+      },
+      submitHandler: function(form) {
+        var formData = new FormData(form);
+        formData.append(csrfName, csrfHash);
+        $.ajax({
+          type: "POST",
+          dataType: "json",
+          url:"<?php echo base_url(); ?>Cpurchase/insert_service_provider",
+          data: formData,
+          contentType: false,
+          processData: false,
+          success: function(response) {
+          
+            console.log(response);
+          if (response.status == 'success') {
 
-   $('#errormessage_service_provider').html('<div class="alert alert-success">' + response.msg + '</div>');
-     $('#Final_invoice_number').val(response.invoice_no);
-          $('#Final_invoice_id').val(response.invoice_id);
-         
-                  }else{
-
-          $('#errormessage_service_provider').html(failalert+response.msg+'</div>'); 
-          console.log(response.msg, "Error");
-       }                  
-    },
-        error: function(xhr, status, error) {
-        alert('An error occurred: ' + error);
-    }
-  })
-}
+            $('#errormessage_service_provider').html('<div class="alert alert-success">' + response.msg + '</div>');
+            $('#Final_invoice_number').val(response.invoice_no);
+            $('#Final_invoice_id').val(response.invoice_id);
+               
+         }else{
+            $('#errormessage_service_provider').html(failalert+response.msg+'</div>'); 
+            console.log(response.msg, "Error");
+            }                  
+         },
+            error: function(xhr, status, error) {
+            $('#errormessage_service_provider').html('<div class="alert alert-success">' + error + '</div>');
+          }
+        })
+      }
 });
- $('#product_tax_provider').on('change', function (e) {
+
+ 
+$('#product_tax_provider').on('change', function (e) {
         var total=$('#Total_provider').val();
                 var tax= $('#product_tax_provider').val();
                 var percent='';
@@ -1507,7 +1515,7 @@ $('#amount_to_pay').val($('#balance_provider').val());
 
      $('#final_submit').on('click', function (e) {
       $('#errormessage_expense').html('<div class="alert alert-success">' + "<?php echo  ('Invoice Number')." :";?>"+$('#Final_invoice_number').val()+"<?php echo  " ".display('has been saved Successfully');?>"+ '</div>');
- window.setTimeout(function(){
+     window.setTimeout(function(){
     window.location = "<?php  echo base_url(); ?>Cpurchase/manage_purchase?id=<?php echo $_GET['id']; ?>";
    }, 2500);
    
@@ -1531,6 +1539,10 @@ $(document).ready(function(){
       $('#addexpenses').hide();
    }
    });
+});
+
+$(document).on('click', '#purchasefinal_submit', function (e) {
+   window.location = "<?php  echo base_url(); ?>Cpurchase/manage_purchase?id=<?php echo $_GET['id']; ?>";
 });
 
 
@@ -1912,6 +1924,42 @@ function configureDropDownLists(ddl1,ddl2) {
    
    dynamic_id++;
    }
+
+
+// Purchase Tax change
+
+$(document).on('change','#Taxproduct_tax',function(){
+   event.preventDefault();
+   var total =$('#Over_all_Total').val();
+   var tax = $('#Taxproduct_tax').val();
+   var percent='';
+   var hypen='-';
+   if(tax.indexOf(hypen) != -1){
+      var field = tax.split('-');
+      var percent = field[1];
+    }else{
+      percent=tax;
+   }
+   percent=percent.replace("%","");
+   var answer = (percent / 100) * parseFloat(total);
+   var final_g= $('#final_gtotal').val();
+   var amt=parseFloat(answer)+parseFloat(total);
+   var num = isNaN(parseFloat(amt)) ? 0 : parseFloat(amt);
+   var additional_cost =parseFloat($('#additional_cost').val()) || 0;
+   $('#gtotal').val((num+additional_cost).toFixed(2)); 
+   var paid_amount =parseFloat($('#amount_paid').val()) || 0;
+   var custo_amt=$('.custocurrency_rate').val(); 
+   console.log("numhere :"+num +"-"+custo_amt);
+   var value=(num+additional_cost)*custo_amt;
+   var custo_final = isNaN(parseFloat(value)) ? 0 : parseFloat(value);
+   var balance_amount= (num+additional_cost)- paid_amount;
+   $('#tax_details').val(answer.toFixed(2) +" ( "+tax+" )");
+   $('#customer_gtotal').val(custo_final.toFixed(2));  
+   $('#balance').val(balance_amount.toFixed(2));
+   $('#balance_customer_currency').val((balance_amount*custo_amt).toFixed(2));
+   $('#paid_customer_currency').val((paid_amount*custo_amt).toFixed(2));
+   updateOverallTotals();
+});
 </script>
 
 <style>
