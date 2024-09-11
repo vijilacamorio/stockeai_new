@@ -25,10 +25,9 @@ public function add_payment_terms($postData){
     }
 //For Expense Index Page  - Surya
 public function getPaginatedPurchases($limit, $offset, $orderField, $orderDirection, $search, $Id, $date="") {
-    $this->db->select('a.id, a.purchase_id, a.chalan_no, a.total_amt, a.grand_total_amount, a.gtotal_preferred_currency, a.total_tax, a.paid_amount, a.balance, a.payment_id, a.purchase_date, a.payment_due_date, a.create_date, "Product Purchase" as source, b.supplier_name');
+    $this->db->select('a.id, a.purchase_id, a.chalan_no, a.supplier_id, a.total_amt, a.grand_total_amount, a.gtotal_preferred_currency, a.total_tax, a.paid_amount, a.balance, a.payment_id, a.purchase_date, a.payment_due_date, a.create_date, "Product Purchase" as source, b.supplier_name');
     $this->db->from('product_purchase a');
     $this->db->join('supplier_information b', 'a.supplier_id = b.supplier_id');
-
     if ($search != "") {
         $this->db->group_start();
         $this->db->like('a.chalan_no', $search);
@@ -39,17 +38,16 @@ public function getPaginatedPurchases($limit, $offset, $orderField, $orderDirect
         if (count($dates) == 2) {
             $start_date = date('Y-m-d', strtotime($dates[0]));
             $end_date = date('Y-m-d', strtotime($dates[1]));
-            $this->db->where("a.purchase_date >=", $start_date);
-            $this->db->where("a.purchase_date <=", $end_date);
+            $this->db->where("a.create_date >=", $start_date);
+            $this->db->where("a.create_date <=", $end_date);
         }
     }
     $this->db->where('a.create_by', $Id);
-
-    $query1 = $this->db->get_compiled_select(); 
-  $this->db->select('a.id, a.serviceprovider_id as purchase_id, a.bill_number as chalan_no, a.total, a.gtotals as grand_total_amount, a.tax_detail as total_tax, a.amount_paids as paid_amount, a.balances as balance, a.payment_id, a.bill_date as purchase_date, a.due_date as payment_due_date, a.create_date, "Service Provider" as source, b.supplier_name');
+    $this->db->where('a.is_deleted', 0);
+    $query1 = $this->db->get_compiled_select();
+  $this->db->select('a.id, a.serviceprovider_id as purchase_id, a.bill_number as chalan_no, a.supplier_id, a.total, a.gtotals as grand_total_amount, a.gtotal_preferred_currency, a.tax_detail as total_tax, a.amount_paids as paid_amount, a.balances as balance, a.payment_id, a.bill_date as purchase_date, a.due_date as payment_due_date, a.create_date, "Service Provider" as source, b.supplier_name');
     $this->db->from('service a');
     $this->db->join('supplier_information b', 'a.supplier_id = b.supplier_id');
-
     if ($search != "") {
         $this->db->group_start();
         $this->db->like('a.serviceprovider_id', $search);
@@ -65,25 +63,21 @@ public function getPaginatedPurchases($limit, $offset, $orderField, $orderDirect
         }
     }
     $this->db->where('a.create_by', $Id);
-
-     $query2 = $this->db->get_compiled_select();
-  $combined_query = "($query1) UNION ALL ($query2) ORDER BY $orderField $orderDirection LIMIT $limit OFFSET $offset";
-
+    $query2 = $this->db->get_compiled_select();
+    $combined_query = "($query1) UNION ALL ($query2) ORDER BY $orderField $orderDirection LIMIT $limit OFFSET $offset";
     $query = $this->db->query($combined_query);
-
      if (!$query) {
         $error = $this->db->error();
         echo "Error Code: " . $error['code'];
         echo "Error Message: " . $error['message'];
         return [];
     }
-
      return $query->result_array();
 }
 
+
 //For Expense Index Page  - Surya
-public function getTotalPurchases($search, $Id, $date="") 
-{
+public function getTotalPurchases($search, $Id, $date="") {
     $this->db->select('id');
     $this->db->from('product_purchase');
     if ($search != "") {
@@ -101,8 +95,9 @@ public function getTotalPurchases($search, $Id, $date="")
         }
     }
     $this->db->where('create_by', $Id);
-    $query1 = $this->db->get_compiled_select();
-    $this->db->select('id');
+    $this->db->where('is_deleted', 0);
+ $query1 = $this->db->get_compiled_select();
+  $this->db->select('id');
     $this->db->from('service');
     if ($search != "") {
         $this->db->group_start();
@@ -119,19 +114,17 @@ public function getTotalPurchases($search, $Id, $date="")
         }
     }
     $this->db->where('create_by', $Id);
-    $query = $this->db->get();
-    if ($query === false) {
-        return false;
-    }
-    return $query->result_array();
-    $query2 = $this->db->get_compiled_select();
-    $total_query = $this->db->query("($query1) UNION ALL ($query2)");
+  $query2 = $this->db->get_compiled_select();
+ $total_query = $this->db->query("($query1) UNION ALL ($query2)");
     return $total_query->num_rows();
 }
 
 
+
+
+
     
-            public function delete_pay_info() {
+public function delete_pay_info() {
     $payment_id = $this->input->post('payment_id');
         $bal = $this->input->post('bal');
                 $paid_amt = $this->input->post('paid_amt');
@@ -2142,7 +2135,7 @@ public function purchase_entry()
         $paid_amount = $this->input->post('paid_amount', TRUE);
         $due_amount = $this->input->post('due_amount', TRUE);
         $msg = $this->input->post('message_invoice', TRUE) ?: 'Product Purchased on ' . $this->input->post('bill_date', TRUE);
-
+        
         $purchase_data = [
             'purchase_id' => rand(),
             'create_by' => $createdby,
@@ -2150,7 +2143,6 @@ public function purchase_entry()
             'supplier_id' => $supplier_id,
             'total_amt' => $this->input->post('overall_total', TRUE),
             'grand_total_amount' => $this->input->post('gtotal', TRUE),
-            'g_weight' => $this->input->post('hidden_weight', TRUE),
             'purchase_date' => $this->input->post('bill_date', TRUE),
             'payment_due_date' => $this->input->post('payment_due_date', TRUE),
             'remarks' => $this->input->post('remark', TRUE),
@@ -2191,6 +2183,7 @@ public function purchase_entry()
         } else {
             $this->db->insert('product_purchase', $purchase_data);
             $purchase_id = $this->db->insert_id(); 
+            $purchase_data = $this->db->where('id', $purchase_id)->get('product_purchase')->row_array();
         }
 
         $this->db->where('purchase_id', $purchase_id)->delete('product_purchase_details');
@@ -2225,15 +2218,14 @@ public function purchase_entry()
 
         for ($i = 0, $n = count($prodt); $i < $n; $i++) {
             $purchase_table2 = [
-                'purchase_id' => $purchase_id,
+                'purchase_id' => $purchase_data['purchase_id'],
                 'product_id' => $product_id[$i],
-                'product_name' => $prodt[$i],
                 'thickness' => $thickness[$i],
                 'supplier_block_no' => $supplier_b_no[$i],
                 'supplier_slab_no' => $supplier_slab_no[$i],
                 'gross_width' => $gross_width[$i],
                 'gross_height' => $gross_height[$i],
-                'gross_sq_ft_1' => $gross_sq_ft[$i],
+                'gross_sqft' => $gross_sq_ft[$i],
                 'bundle_no' => $bundle_no[$i],
                 'total' => $total_amt[$i],
                 'tableid' => $tableid[$i],
@@ -2245,9 +2237,6 @@ public function purchase_entry()
                 'cost_sq_slab' => $cost_sq_slab[$i],
                 'sales_amt_sq_ft ' => $sales_amt_sq_ft[$i],
                 'sales_slab_amt' => $sales_slab_amt[$i],
-                'overall_gross' => $overall_gross[$i],
-                'overall_net' => $overall_net[$i],
-                'overall_total' => $overall_total[$i],
                 'weight' => $weight[$i],
                 'origin' => $origin[$i],
                 'description' => $description[$i],

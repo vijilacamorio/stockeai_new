@@ -870,7 +870,8 @@ public function availability($product_nam,$product_model){
     $this->db->where('product_name', $product_nam);
     $this->db->where('product_model', $product_model);
     $query = $this->db->get()->result();
- return $query;
+    // echo $this->db->last_query(); die();
+    return $query;
 }
 // To get the List of Payment Type - Surya
 public function payment_type(){

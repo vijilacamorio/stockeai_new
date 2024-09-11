@@ -83,13 +83,13 @@ $this->load->view('include/bootstrap_model', $modaldata);
                <div class="panel-heading">
                   <div class="panel-body">
                      <div class="with_po">
-                        <div id="errormessage_expense" class="errormessage_expense"></div>
-                        <form id="insert_purchase" class="commonInsert" method="post">
+                        <div id="errormessage_expense" class="errormessage_expense"></div><br>
+                        <form id="insert_purchase" method="post">
                            <div class="text-center" style="display: none; font-size: 20px;" id="purchaseLoading">Loading...</div>
                         </form>
                      </div>
                      <div class="without_po">
-                        <div id="errormessage_expense" class="errormessage_expense"></div>
+                        <div id="errormessage_expense" class="errormessage_expense"></div><br>
                         <form id="insert_expense" class="commonInsert" method="post">
                            <div class="row">
                            <div class="col-sm-6">  
@@ -102,11 +102,11 @@ $this->load->view('include/bootstrap_model', $modaldata);
                                     <i class="text-danger">*</i>
                                     </label>
                                     <div class="col-sm-7">
-                                       <select name="supplier_id" id="supplier_id" class="form-control vendorNAME"  style="border:2px solid #d7d4d6;width:100%;"     required=""  tabindex="1">
+                                       <select name="supplier_id" id="supplier_id" class="form-control vendorNAME"  style="border:2px solid #d7d4d6;width:100%;" required tabindex="1">
                                           <option value=" "><?php echo display('select_one') ?></option>
-                                          {supplier_list}
-                                          <option value="{supplier_id}">{supplier_name}</option>
-                                          {/supplier_list}
+                                          <?php foreach ($supplier_list as $key => $supplier) { ?>
+                                          <option value="<?php echo $supplier['supplier_id']; ?>"><?php echo $supplier['supplier_name']; ?></option>
+                                          <?php } ?>
                                        </select>
                                     </div>
                                     <?php //if($this->permission1->method('add_supplier','create')->access()){ ?>
@@ -131,7 +131,7 @@ $this->load->view('include/bootstrap_model', $modaldata);
                                     <i class="text-danger"></i>
                                     </label>
                                     <div class="col-sm-8">
-                                       <textarea class="form-control vendorAddress" tabindex="4" id="vendor_add" rows="4" cols="50"  style="border:2px solid #d7d4d6;" name="vendor_add" placeholder="" rows="1" required></textarea>
+                                       <textarea class="form-control vendorAddress" tabindex="4" id="vendor_add" rows="4" cols="50"  style="border:2px solid #d7d4d6;" name="vendor_add" placeholder="" rows="1"></textarea>
                                        <div id="loadingText" class="loading-text"></div>
                                     </div>
                                  </div>
@@ -140,7 +140,7 @@ $this->load->view('include/bootstrap_model', $modaldata);
                                  <div class="form-group row">
                                     <label for="date" class="col-sm-4 col-form-label"><?php echo display('invoice_no');  ?><i class="text-danger">*</i></label>
                                     <div class="col-sm-8">
-                                       <input  class=" form-control" type="" size="50"     style="border:2px solid #d7d4d6;"   name="invoice_no" id="invoice_no" required value="" tabindex="4" />
+                                       <input  class=" form-control" type="" size="50"     style="border:2px solid #d7d4d6;"   name="invoice_no" id="invoice_no" value="" tabindex="4" />
                                        <div id="loadingText" class="loading-text"></div>
                                     </div>
                                  </div>
@@ -1302,12 +1302,78 @@ submitHandler: function(form) {
   })
 }
 });
+
+
+// // Purchase Section Insert 
+// $("#insert_purchase").validate({
+//    rules: {
+//     supplier_id: "required",
+//     invoice_no: "required", 
+//     payment_due_date : "required", 
+//     bill_date : "required",
+//     payment_terms: "required",  
+//     paytype_drop : "required",
+//      isf_no: {
+//             isfNoRequired: true
+//         }
+//  },
+//  messages: {
+//      supplier_id: "Supplier Name is required",
+//     invoice_no: "Invoice Number is required",
+//     payment_terms: "Payment Term is required",
+//     paytype_drop: "Payment Type is required",
+//       payment_due_date: "Payment Due Date is required",
+//       bill_date: "Bill Date is required",
+//        isf_no: "ISF No is required when ISF Field is YES.",
+//  },
+//     errorPlacement: function(error, element) {
+//             if (element.hasClass("select2-hidden-accessible")) {
+//                 error.insertAfter(element.next('span.select2')); 
+//             } else {
+//                 error.insertAfter(element);
+//             }
+//         },
+// submitHandler: function(form) {
+//   var formData = new FormData(form);
+//   formData.append(csrfName, csrfHash);
+//   $.ajax({
+//     type: "POST",
+//     dataType: "json",
+//     url:"<?php echo base_url(); ?>Cpurchase/insert_purchase",
+//     data: formData,
+//     contentType: false,
+//     processData: false,
+//     success: function(response) {
+   
+//       console.log(response);
+//     if (response.status == 'success') {
+
+//    $('.errormessage_expense').html('<div class="alert alert-success">' + response.msg + '</div>');
+//      $('#Final_invoice_number').val(response.invoice_no);
+//           $('#Final_invoice_id').val(response.invoice_id);
+         
+//                   }else{
+
+//           $('.errormessage_expense').html(failalert+response.msg+'</div>'); 
+//           console.log(response.msg, "Error");
+//        }                  
+//     },
+//         error: function(xhr, status, error) {
+//         alert('An error occurred: ' + error);
+//     }
+//   })
+// }
+// });
+
+
+
 $(document).on('change', '.product_name', function(){
    
 var product_id=$(this).closest('td').find('.common_product');
 var table_id=$(this).closest('td').find('.table_id');
     var id= $(this).attr('id');
      var id_num = id.substring(id.indexOf('_') + 1);
+     console.log(id_num);
      table_id.val(id_num);
       var pdt=$('#'+id).val();
       console.log(pdt);
@@ -1322,11 +1388,12 @@ var table_id=$(this).closest('td').find('.table_id');
        $.ajax({
            type:'POST',
            data: data,
-        dataType:"json",
+           dataType:"json",
            url:'<?php echo base_url();?>Cinvoice/availability',
            success: function(result, statut) {
-              product_id.val(result[0]['product_id']);
-            
+            console.log(result)
+              // product_id.val(result[0]['product_id']);
+            $("#product_id_"+ id_num).val(result[0]['product_id']);
            }
        });
 
