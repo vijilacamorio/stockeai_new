@@ -1496,7 +1496,8 @@ public function deletesale(){
         $content = $this->load->view('invoice/packing_list', $data, true);
         $this->template->full_admin_html_view($content);
     }
-    public function availability(){
+    public function availability()
+    {
         $CI = & get_instance();
         $output = new stdClass;
         $output->csrfName = $this->security->get_csrf_token_name();
@@ -1506,7 +1507,7 @@ public function deletesale(){
         $product_nam=$this->input->post('product_nam');
         $product_model=$this->input->post('product_model');
         $CI->load->model('Invoices');
-      $data=  $CI->Invoices->availability($product_nam,$product_model);
+        $data=  $CI->Invoices->availability($product_nam,$product_model);
         echo json_encode($data);
 
      }

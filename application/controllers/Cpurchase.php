@@ -174,11 +174,10 @@ class Cpurchase extends CI_Controller {
             $edit   = '<a href="' . base_url('Cpurchase/serviceprovider_update_form?id=' . $encodedId. '&invoice_id=' . $item['purchase_id']) . '" class="btnclr btn btn-sm" style="margin-right: 5px;"><i class="fa fa-pencil" aria-hidden="true"></i></a>';
             }
              if($item['invoice_id'] != ''){
-            $delete = '<a style="margin-right: 5px;" onClick=deleteInvoicedata('.$item["purchase_id"].') class="btnclr btn btn-sm" ><i class="fa fa-trash" aria-hidden="true"></i></a>' ;
+            $delete = '<a style="margin-right: 5px;" onClick=deleteExpensedata('.$item["purchase_id"].') class="btnclr btn btn-sm" ><i class="fa fa-trash" aria-hidden="true"></i></a>' ;
              }else{
-            $delete = '<a style="margin-right: 5px;" onClick=deleteInvoicedata('.$item["purchase_id"].') class="btnclr btn btn-sm" ><i class="fa fa-trash" aria-hidden="true"></i></a>' ;
+            $delete = '<a style="margin-right: 5px;" onClick=deleteExpensedata('.$item["purchase_id"].') class="btnclr btn btn-sm" ><i class="fa fa-trash" aria-hidden="true"></i></a>' ;
             }
-          
             $mail = '<a data-toggle="modal" data-target="#sendemailmodal" onClick=sendEmailproforma('.$item["purchase_id"].') class="btnclr btn btn-sm" style="margin-right: 5px;"><i class="fa fa-envelope" aria-hidden="true"></i></a>';
            if($item['invoice_id'] != ''){
             $download = '<a href="' . base_url('Cinvoice/invoice_inserted_data?id=' . $encodedId. '&invoice_id=' . $item['purchase_id']) . '" class="btnclr btn btn-sm" ><i class="fa fa-download" aria-hidden="true"></i></a>';
@@ -214,6 +213,7 @@ class Cpurchase extends CI_Controller {
         ];
         echo json_encode($response);
     }
+
 
     private function extractFieldData($text) {
         $lines = explode("\n", $text);
@@ -1033,10 +1033,8 @@ $CI = & get_instance();
             'product_list'  => $all_product_list,
             'expense_tax' => $expense_tax,
             'po_number' =>$po_number,
-           
             'country_code' => $country_code,
-            
-             'payment_type' =>   $payment_type_dropdown,
+            'payment_type' =>   $payment_type_dropdown,
             'payment_terms' => $payment_terms_dropdown,
             'setting_detail' => $setting_detail
 
@@ -2637,23 +2635,45 @@ public function deletepurchase(){
             force_download(FCPATH.'assets/data/pdf/'.$file_name, null);
     }
 
-public function insert_po_product()
-{
+    public function insert_po_product()
+    {
 
+        $date=date('d-m-Y');
 
-$date=date('d-m-Y');
-
-    $sql=array(
-    'product_id'  => $this->input->post('product_id',TRUE),
-    'products_model'  =>$this->input->post('model',TRUE),
-    'supplier_id'   =>$this->input->post('supplier_id',TRUE),
-    'supplier_price' =>$this->input->post('price',TRUE),
-    'created_by'=>$this->session->userdata('user_id')
-);
-$this->db->insert('supplier_product',$sql);
-    redirect('Cpurchase/purchase_order');
-}
-
+            $sql=array(
+            'product_id'  => $this->input->post('product_id',TRUE),
+            'products_model'  =>$this->input->post('model',TRUE),
+            'supplier_id'   =>$this->input->post('supplier_id',TRUE),
+            'supplier_price' =>$this->input->post('price',TRUE),
+            'created_by'=>$this->session->userdata('user_id')
+        );
+        $this->db->insert('supplier_product',$sql);
+        redirect('Cpurchase/purchase_order');
+    }
+    
+    // Delete Expense Data - Madhu
+    public function deleteExpensedata()
+    {
+        $purchase_id = $this->input->post('id');
+        $payment_id = $this->db->select('payment_id')->from('product_purchase')->where('purchase_id',$purchase_id)->get()->row()->payment_id;
+        $data['purchase_id'] = $this->input->post('purchase_id',TRUE);
+        $updateexpensedata = array('is_deleted' => 1);
+        $result1 = $this->db->delete('payment', array('payment_id' => $payment_id)); 
+        $result2 = $this->Invoices->update_proformaData($purchase_id, $updateexpensedata, 'product_purchase');
+        $result3 = $this->Invoices->update_proformaData($purchase_id, $updateexpensedata, 'product_purchase_details');
+        if ($result1 && $result2 && $result3) {
+            $response = array(
+                'status' => 'success',
+                'msg'    => 'Expense has been deleted successfully!'
+            );
+        } else {
+            $response = array(
+                'status' => 'failure',
+                'msg'    => 'Sorry !! Unable to delete the expense. Please try again!'
+            );
+        }
+        echo json_encode($response);
+    }
 
    
 }
