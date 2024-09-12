@@ -713,20 +713,18 @@ public function tax_data() {
         $data = array(
             'title'         => 'Add New Export Invoice',
             'discount_type' => $setting_detail[0]['discount_type'],
-            //'taxes'         => $taxfield,
             'customer_name' => $customer_details,
             'customer_id'   => isset($customer_details[0]['customer_id']) ? $customer_details[0]['customer_id']:'',
             'bank_list'     => $bank_list,
             'all_supplier'  => $all_supplier,
-            'ocean_remarks' => $ocean_remarks[0]->remarks,   
-            //'remarks' =>  $ocean_remarks[0]->remarks,
+            'ocean_remarks' => $ocean_remarks,   
             'setting_detail' => $setting_detail,
             'company_id'     => $company_id
         );
         $invoiceForm = $CI->parser->parse('sales/ocean_export_track_add', $data, true);
         return $invoiceForm;
     }
-
+     
       //Invoice add form ->vijila
     public function trucking_add_form($data) {
         $company_id = $data['company_id'];
@@ -767,7 +765,7 @@ public function tax_data() {
             'voucher_no' => $voucher,
             'trucking_data' => $trucking_data,
             'roadtransport_remarks' =>$roadtransport_remarks,   
-            'remarks' =>  $roadtransport_remarks[0]->remarks
+            'remarks' =>  $roadtransport_remarks 
         );
         $invoiceForm = $CI->parser->parse('invoice/trucking', $data, true);
         return $invoiceForm;

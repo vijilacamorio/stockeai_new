@@ -450,7 +450,6 @@ public function createRoadTrans(){
 
         $pro_number = $this->Invoices->pro_number($company_id);
         $voucher = $this->Invoices->sale_trucking_voucher($company_id);
-       // print_r($customer_details);
         $currency_details = $this->Web_settings->retrieve_setting_editdata($company_id);
         $curn_info_default = $this->db->select('*')->from('currency_tbl')->where('icon',$currency_details[0]['currency'])->get()->result_array();
         $taxfield = $this->db->select('tax_name,default_value')->from('tax_settings')->get()->result_array();
@@ -483,7 +482,7 @@ public function createRoadTrans(){
             'voucher_no' => $voucher,
             'trucking_data' => $trucking_data,
             'roadtransport_remarks' =>$roadtransport_remarks,   
-            'remarks' =>  $roadtransport_remarks[0]->remarks
+            'remarks' =>  $roadtransport_remarks 
         );
         $invoiceForm = $this->parser->parse('sales/road_trans_add', $data, true);
         return $invoiceForm;
