@@ -167,6 +167,7 @@ class Cpurchase extends CI_Controller {
         $items          = $this->Purchases->getPaginatedPurchases($limit, $start, $orderField, $orderDirection, $search, $decodedId,$date);
         $data           = [];
         $i              = $start + 1;
+       
         foreach ($items as $item) {
             if($item['source'] == 'Product Purchase'){
             $edit   = '<a href="' . base_url('Cpurchase/purchase_update_form?id=' . $encodedId. '&invoice_id=' . $item['purchase_id']) . '" class="btnclr btn btn-sm" style="margin-right: 5px;"><i class="fa fa-pencil" aria-hidden="true"></i></a>';
@@ -174,10 +175,11 @@ class Cpurchase extends CI_Controller {
             $edit   = '<a href="' . base_url('Cpurchase/serviceprovider_update_form?id=' . $encodedId. '&invoice_id=' . $item['purchase_id']) . '" class="btnclr btn btn-sm" style="margin-right: 5px;"><i class="fa fa-pencil" aria-hidden="true"></i></a>';
             }
              if($item['invoice_id'] != ''){
-            $delete = '<a style="margin-right: 5px;" onClick=deleteExpensedata('.$item["purchase_id"].') class="btnclr btn btn-sm" ><i class="fa fa-trash" aria-hidden="true"></i></a>' ;
+            $delete = '<a style="margin-right: 5px;" onClick=deleteInvoicedata('.$item["purchase_id"].') class="btnclr btn btn-sm" ><i class="fa fa-trash" aria-hidden="true"></i></a>' ;
              }else{
-            $delete = '<a style="margin-right: 5px;" onClick=deleteExpensedata('.$item["purchase_id"].') class="btnclr btn btn-sm" ><i class="fa fa-trash" aria-hidden="true"></i></a>' ;
+            $delete = '<a style="margin-right: 5px;" onClick=deleteInvoicedata('.$item["purchase_id"].') class="btnclr btn btn-sm" ><i class="fa fa-trash" aria-hidden="true"></i></a>' ;
             }
+            //serviceprovider_update_form $mail = '<a href="' . base_url('Cinvoice/invoice_update_form?id=' . $encodedId. '&invoice_id=' . $item['invoice_id']) . '" class="btn btn-sm btn-danger" ><i class="fa fa-trash" aria-hidden="true"></i></a>';
             $mail = '<a data-toggle="modal" data-target="#sendemailmodal" onClick=sendEmailproforma('.$item["purchase_id"].') class="btnclr btn btn-sm" style="margin-right: 5px;"><i class="fa fa-envelope" aria-hidden="true"></i></a>';
            if($item['invoice_id'] != ''){
             $download = '<a href="' . base_url('Cinvoice/invoice_inserted_data?id=' . $encodedId. '&invoice_id=' . $item['purchase_id']) . '" class="btnclr btn btn-sm" ><i class="fa fa-download" aria-hidden="true"></i></a>';
@@ -197,9 +199,9 @@ class Cpurchase extends CI_Controller {
                 "payment_id"         => $item['payment_id'],
                 'gtotal_preferred_currency'   => $item['gtotal_preferred_currency'],
                 "purchase_date"    => $item['purchase_date'],
-                "payment_due_date"    => $item['payment_due_date'],
-                "create_date"    => $item['create_date'],
-                "source"  =>$item['source'],
+                  "payment_due_date"    => $item['payment_due_date'],
+                  "create_date"    => $item['create_date'],
+                  "source"  =>$item['source'],
                 'action'          => $download .'&nbsp;'. $edit . $mail . $delete,
             ];
             $data[] = $row;
@@ -213,7 +215,6 @@ class Cpurchase extends CI_Controller {
         ];
         echo json_encode($response);
     }
-
 
     private function extractFieldData($text) {
         $lines = explode("\n", $text);
@@ -661,7 +662,7 @@ public function bulk_payment_ser_pro() {
 
  
  public function payment_history_purchase_serv_provider(){
-    $payment_id=$this->input->post('payment_id');
+    $payment_id=$this->input->post('makepaymentId');
      $customer_id=$this->input->post('supplier_id_payment');
               $current_in_id=$this->input->post('current_in_id');
 $overall_payment = $this->Purchases->get_cust_payment_overall_info_ser_pro($customer_id);
@@ -1821,6 +1822,7 @@ public function uploadCsv_Serviceprovider_second()
         $setting_detail =$this->Web_settings->retrieve_setting_editdata();
         $purchase_detail = $this->Purchases->retrieve_purchase_editdata(decodeBase64UrlParameter($_GET['id']),$_GET['invoice_id']);
         $expense_attachment = $this->Purchases->getEditExpensesData(decodeBase64UrlParameter($_GET['id']),$purchase_detail[0]['purchase_id']);
+       
         $supplier_list =$this->Suppliers->supplier_list(decodeBase64UrlParameter($_GET['id']));
         $tax = $this->Purchases->expense_tax(decodeBase64UrlParameter($_GET['id']));
         $all_product_list = $this->Products->get_all_products(decodeBase64UrlParameter($_GET['id']));
@@ -1828,7 +1830,7 @@ public function uploadCsv_Serviceprovider_second()
         $curn_info_default = $this->db->select('*')->from('currency_tbl')->where('icon',$currency_details[0]['currency'])->get()->result_array();
         $sale_costpersqft_per = $this->Invoices->sales_cost_permission();
          $country_code = $this->db->select('*')->from('country')->get()->result_array();
-     //    print_r($expense_attachment);die();
+      
         $data = array(
             'tax_data'     =>  $tax,
             'attachments'   => $expense_attachment,
@@ -2021,6 +2023,7 @@ public function insert_service_provider() {
         $CI->load->model('Purchases');
         $data=$CI->Purchases->service_provider_entry();
         echo json_encode($data);
+        exit;
     }
 
 

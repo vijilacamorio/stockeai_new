@@ -232,7 +232,7 @@ if (!function_exists('insertAttachments')) {
 
         $res = $ci->db->insert('attachments',$data);
         
-        // echo $ci->db->last_query(); die;
+         
 
         return $ci->db->insert_id;
     }
