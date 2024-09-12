@@ -15,7 +15,7 @@ class Csupplier extends CI_Controller {
         $this->load->library('session');
         $this->load->model('Suppliers');
         $this->auth->check_admin_auth();
-        $encodedId = $_GET['id'];
+        $encodedId = isset($_GET['id']) ? $_GET['id'] : '';
         $this->admin_id   = decodeBase64UrlParameter($encodedId);
     }
     public function add_payment_terms(){
