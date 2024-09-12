@@ -2486,6 +2486,7 @@ public function service_provider_entry() {
     $product_name_ser = $this->input->post('product_name', TRUE);
     $description_service = $this->input->post('description_service', TRUE);
     $qua_ser = $this->input->post('quality', TRUE);
+    
     $total_price = $this->input->post('total_price', TRUE);
     for ($i = 0, $n = count($qua_ser); $i < $n; $i++) {
       $productname = $product_name_ser[$i];
