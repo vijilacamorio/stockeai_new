@@ -274,6 +274,7 @@
                                 
                                  <td> <?php echo  round($f_tax['f_ftax_sum'],2); ?> </td>
                                  <td> <?php if($mergedArray[$i]['f_ftax_sum_er']){echo  round($mergedArray[$i]['f_ftax_sum_er'],2); }else{echo '0';}?> </td>
+                             
                                  <td> <?php echo  round($f_tax['s_stax_sum'],2); ?> </td>
                                  <td> <?php if($mergedArray[$i]['s_stax_sum_er']){echo  round($mergedArray[$i]['s_stax_sum_er'],2); }else{echo '0';}?> </td>
                                  <td> <?php echo  round($f_tax['m_mtax_sum'],2); ?> </td>
