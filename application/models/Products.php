@@ -123,17 +123,13 @@ class Products extends CI_Model
     //Count Product
     public function count_product($admin_id)
     {
-        $query = $this->db
-            ->select("*")
-            ->from("product_information")
+        $query = $this->db->select("*")->from("product_information")->where("created_by", $admin_id)->where("is_deleted", 0)->get();
 
-            ->where("created_by", $admin_id)
-
-            ->where("is_deleted", 0)
-            ->get();
+        if ($query === false) {
+            return 0;
+        }
         return $query->num_rows();
     }
-
 
     public function get_profarma_product()
     {
@@ -179,18 +175,17 @@ class Products extends CI_Model
     public function expense_product_all($admin_id)
     {
         $this->db->select(
-            "a.product_id,a.product_name,COUNT(*) as available,b.p_quantity"
+            "a.product_id,b.product_name,COUNT(*) as available,b.p_quantity"
         );
         $this->db->from("product_purchase_details a");
         $this->db->join("product_information b", "b.product_id = a.product_id");
         $this->db->where("a.create_by", $admin_id);
         $this->db->group_by("a.product_id");
         $query = $this->db->get();
-
-        // echo $this->db->last_query(); die();
-
         if ($query->num_rows() > 0) {
             return $query->result_array();
+        }else{
+            return array();
         }
     }
 

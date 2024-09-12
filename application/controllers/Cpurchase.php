@@ -1,5 +1,4 @@
-
-   <?php
+<?php
 
 require 'vendor/autoload.php';
 
@@ -168,7 +167,6 @@ class Cpurchase extends CI_Controller {
         $items          = $this->Purchases->getPaginatedPurchases($limit, $start, $orderField, $orderDirection, $search, $decodedId,$date);
         $data           = [];
         $i              = $start + 1;
-       
         foreach ($items as $item) {
             if($item['source'] == 'Product Purchase'){
             $edit   = '<a href="' . base_url('Cpurchase/purchase_update_form?id=' . $encodedId. '&invoice_id=' . $item['purchase_id']) . '" class="btnclr btn btn-sm" style="margin-right: 5px;"><i class="fa fa-pencil" aria-hidden="true"></i></a>';
@@ -176,11 +174,10 @@ class Cpurchase extends CI_Controller {
             $edit   = '<a href="' . base_url('Cpurchase/serviceprovider_update_form?id=' . $encodedId. '&invoice_id=' . $item['purchase_id']) . '" class="btnclr btn btn-sm" style="margin-right: 5px;"><i class="fa fa-pencil" aria-hidden="true"></i></a>';
             }
              if($item['invoice_id'] != ''){
-            $delete = '<a style="margin-right: 5px;" onClick=deleteInvoicedata('.$item["purchase_id"].') class="btnclr btn btn-sm" ><i class="fa fa-trash" aria-hidden="true"></i></a>' ;
+            $delete = '<a style="margin-right: 5px;" onClick=deleteExpensedata('.$item["purchase_id"].') class="btnclr btn btn-sm" ><i class="fa fa-trash" aria-hidden="true"></i></a>' ;
              }else{
-            $delete = '<a style="margin-right: 5px;" onClick=deleteInvoicedata('.$item["purchase_id"].') class="btnclr btn btn-sm" ><i class="fa fa-trash" aria-hidden="true"></i></a>' ;
+            $delete = '<a style="margin-right: 5px;" onClick=deleteExpensedata('.$item["purchase_id"].') class="btnclr btn btn-sm" ><i class="fa fa-trash" aria-hidden="true"></i></a>' ;
             }
-            //serviceprovider_update_form $mail = '<a href="' . base_url('Cinvoice/invoice_update_form?id=' . $encodedId. '&invoice_id=' . $item['invoice_id']) . '" class="btn btn-sm btn-danger" ><i class="fa fa-trash" aria-hidden="true"></i></a>';
             $mail = '<a data-toggle="modal" data-target="#sendemailmodal" onClick=sendEmailproforma('.$item["purchase_id"].') class="btnclr btn btn-sm" style="margin-right: 5px;"><i class="fa fa-envelope" aria-hidden="true"></i></a>';
            if($item['invoice_id'] != ''){
             $download = '<a href="' . base_url('Cinvoice/invoice_inserted_data?id=' . $encodedId. '&invoice_id=' . $item['purchase_id']) . '" class="btnclr btn btn-sm" ><i class="fa fa-download" aria-hidden="true"></i></a>';
@@ -200,9 +197,9 @@ class Cpurchase extends CI_Controller {
                 "payment_id"         => $item['payment_id'],
                 'gtotal_preferred_currency'   => $item['gtotal_preferred_currency'],
                 "purchase_date"    => $item['purchase_date'],
-                  "payment_due_date"    => $item['payment_due_date'],
-                  "create_date"    => $item['create_date'],
-                  "source"  =>$item['source'],
+                "payment_due_date"    => $item['payment_due_date'],
+                "create_date"    => $item['create_date'],
+                "source"  =>$item['source'],
                 'action'          => $download .'&nbsp;'. $edit . $mail . $delete,
             ];
             $data[] = $row;
@@ -216,6 +213,7 @@ class Cpurchase extends CI_Controller {
         ];
         echo json_encode($response);
     }
+
 
     private function extractFieldData($text) {
         $lines = explode("\n", $text);
@@ -795,7 +793,6 @@ public function insert_purchasetax()
 {
     $CI = & get_instance();
 
-        // print_r($this->input->post()); die();
 
          $data = array(
             'tax_id' => $this->auth->generator(10),
@@ -1035,14 +1032,11 @@ $CI = & get_instance();
             'supplier_list' => $supplier_list,
             'product_list'  => $all_product_list,
             'expense_tax' => $expense_tax,
-              'po_number' =>$po_number,
-           
-        
+            'po_number' =>$po_number,
             'country_code' => $country_code,
-            
-             'payment_type' =>   $payment_type_dropdown,
+            'payment_type' =>   $payment_type_dropdown,
             'payment_terms' => $payment_terms_dropdown,
-                       'setting_detail' => $setting_detail
+            'setting_detail' => $setting_detail
 
         );
       
@@ -1139,15 +1133,15 @@ $result = $CI->Purchases->servicepro($date) ;
      
      
     
- public function manage_purchase() {
-    $setting_detail = $this->Web_settings->retrieve_setting_editdata();
-  $data = array(
-               'currency'               =>$currency_details[0]['currency'],
-                'setting_detail' => $setting_detail,
-   );
+    public function manage_purchase() 
+    {
+        $setting_detail = $this->Web_settings->retrieve_setting_editdata();
+        $data = array(
+            'currency' =>$currency_details[0]['currency'],
+            'setting_detail' => $setting_detail,
+        );
         $content = $this->load->view('purchase/purchase', $data, true);
         $this->template->full_admin_html_view($content);
-
     }
 
 
@@ -1778,9 +1772,9 @@ public function uploadCsv_Serviceprovider_second()
 
     //Insert purchase
     public function insert_purchase() {
- $data=$this->Purchases->purchase_entry();
+        $data=$this->Purchases->purchase_entry();
         echo json_encode($data);
-  }
+    }
 
 
       //Insert purchase
@@ -2641,23 +2635,45 @@ public function deletepurchase(){
             force_download(FCPATH.'assets/data/pdf/'.$file_name, null);
     }
 
-public function insert_po_product()
-{
+    public function insert_po_product()
+    {
 
+        $date=date('d-m-Y');
 
-$date=date('d-m-Y');
-
-    $sql=array(
-    'product_id'  => $this->input->post('product_id',TRUE),
-    'products_model'  =>$this->input->post('model',TRUE),
-    'supplier_id'   =>$this->input->post('supplier_id',TRUE),
-    'supplier_price' =>$this->input->post('price',TRUE),
-    'created_by'=>$this->session->userdata('user_id')
-);
-$this->db->insert('supplier_product',$sql);
-    redirect('Cpurchase/purchase_order');
-}
-
+            $sql=array(
+            'product_id'  => $this->input->post('product_id',TRUE),
+            'products_model'  =>$this->input->post('model',TRUE),
+            'supplier_id'   =>$this->input->post('supplier_id',TRUE),
+            'supplier_price' =>$this->input->post('price',TRUE),
+            'created_by'=>$this->session->userdata('user_id')
+        );
+        $this->db->insert('supplier_product',$sql);
+        redirect('Cpurchase/purchase_order');
+    }
+    
+    // Delete Expense Data - Madhu
+    public function deleteExpensedata()
+    {
+        $purchase_id = $this->input->post('id');
+        $payment_id = $this->db->select('payment_id')->from('product_purchase')->where('purchase_id',$purchase_id)->get()->row()->payment_id;
+        $data['purchase_id'] = $this->input->post('purchase_id',TRUE);
+        $updateexpensedata = array('is_deleted' => 1);
+        $result1 = $this->db->delete('payment', array('payment_id' => $payment_id)); 
+        $result2 = $this->Invoices->update_proformaData($purchase_id, $updateexpensedata, 'product_purchase');
+        $result3 = $this->Invoices->update_proformaData($purchase_id, $updateexpensedata, 'product_purchase_details');
+        if ($result1 && $result2 && $result3) {
+            $response = array(
+                'status' => 'success',
+                'msg'    => 'Expense has been deleted successfully!'
+            );
+        } else {
+            $response = array(
+                'status' => 'failure',
+                'msg'    => 'Sorry !! Unable to delete the expense. Please try again!'
+            );
+        }
+        echo json_encode($response);
+    }
 
    
 }

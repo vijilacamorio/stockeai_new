@@ -761,8 +761,9 @@ if(in_array(BOOTSTRAP_MODELS['payment_model'],$bootstrap_model)){ ?>
                      </div>
                   </div>
                   <input type="hidden" id="custocurrencyrate"/>
-                  <input type="hidden" id="cutomer_name" name="cutomer_name"/>
-                  <?php //$payment_id = rand();  ?>
+                  <input type="hidden" id="cutomer_name" name="cutomer_name" value="<?php  echo $payment_id ;?>"/>
+                  
+                  
                   <input type="hidden" value="<?php echo isset($payment_id) ? $payment_id : rand(); ?>"  name="payment_id" id="payment_id"/>
                   <input type='hidden'  name="invoice_number" id="invoice_number"/>
                   <div class="form-group row">

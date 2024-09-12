@@ -1,4 +1,3 @@
-
 <div class="content-wrapper">
    <section class="content-header">
       <div class="header-icon">
@@ -75,8 +74,9 @@
             </div>
            
       <div class="row">
-         <div class="col-sm-12"  >
-            <div class="panel panel-bd lobidrag"    id="panel"  style="border: 3px solid #d7d4d6;">
+         <div class="col-sm-12">
+            <div class="error_display mb-2"></div><br>
+            <div class="panel panel-bd lobidrag" id="panel"  style="border: 3px solid #d7d4d6;">
                <div class="panel-body">
                 
                         <table class="table table-bordered" cellspacing="0" width="100%" id="purchase">
@@ -113,185 +113,172 @@
 </div>
 
 <script>
-     $(document).ready(function() {
-                var invoicetable;
-                if ($.fn.DataTable.isDataTable('#purchase')) {
-                    $('#purchase').DataTable().clear().destroy();
-                }
-                var csrfName = '<?php echo $this->security->get_csrf_token_name(); ?>';
-                var csrfHash = '<?php echo $this->security->get_csrf_hash(); ?>';
-           invoicetable=     $('#purchase').DataTable({
-                    "processing": true,
-                    "serverSide": true,
-                    "lengthMenu": [
-                        [10, 25, 50, 100],
-                        [10, 25, 50, 100]
-                    ],
-                    "ajax": {
-                        "url": "<?php echo base_url('Cpurchase/getpurchaseDatas?id='); ?>" +
-                            encodeURIComponent('<?php echo $_GET['id']; ?>'),
-                        "type": "POST",
-                        "data": function(d) {
-                            d['<?php echo $this->security->get_csrf_token_name(); ?>'] =
-                                '<?php echo $this->security->get_csrf_hash(); ?>';
-                                  d.date = $('.dateSearch').val();
-                        },
-                        "dataSrc": function(json) {
-                           csrfHash = json[
-                                '<?php echo $this->security->get_csrf_token_name(); ?>'];
-                            return json.data;
-                        }
-                    },
-                    "columns": [
-                        { "data": "sl" },
-                        {
-                            "data": "purchase_id"
-                        },
-                        {
-                            "data": "chalan_no"
-                        },
-                        {
-                            "data": "supplier_id"
-                        },
-                        {
-                            "data": "total_amt"
-                        },
-                        {
-                            "data": "total_tax"
-                        },
-                        {
-                            "data": "grand_total_amount"
-                        },
-                        {
-                            "data": "paid_amount"
-                        },
-                        {
-                            "data": "balance"
-                        },
-                        {
-                            "data": "payment_id"
-                        },
-                        {
-                            "data": "gtotal_preferred_currency"
-                        },
-                        {
-                            "data": "purchase_date"
-                        },
-                          {
-                            "data": "payment_due_date"
-                        },
-                          {
-                            "data": "create_date"
-                        },
-                         {
-                            "data": "source"
-                        },
-                        {
-                            "data": "action"
-                        },
-                    ],
-                    "columnDefs": [{
-                        "orderable": false,
-                        "targets": [0, 15],
-                        searchBuilder: {
-                            defaultCondition: '='
-                        },
-                        "initComplete": function() {
-                            this.api().columns().every(function() {
-                                var column = this;
-                                var select = $(
-                                        '<select><option value=""></option></select>'
-                                    )
-                                    .appendTo($(column.footer()).empty())
-                                    .on('change', function() {
-                                        var val = $.fn.dataTable.util
-                                            .escapeRegex(
-                                                $(this).val()
-                                            );
-                                        column.search(val ? '^' + val + '$' :
-                                            '', true, false).draw();
-                                    });
-                                column.data().unique().sort().each(function(d, j) {
-                                    select.append('<option value="' + d +
-                                        '">' + d + '</option>')
-                                });
-                            });
-                        },
-                    }],
-                    "pageLength": 10,
-                    "colReorder": true,
-                    "stateSave": true,
-                    "stateSaveCallback": function(settings, data) {
-                        localStorage.setItem('invoice', JSON.stringify(data));
-                    },
-                    "stateLoadCallback": function(settings) {
-                        var savedState = localStorage.getItem('invoice');
-                        return savedState ? JSON.parse(savedState) : null;
-                    },
-                    "dom": "<'row'<'col-sm-4'l><'col-sm-4 text-center'B><'col-sm-4'f>>" +
-                        "<'row'<'col-sm-12'tr>>" + "<'row'<'col-sm-6'i><'col-sm-6'p>>",
-                    "buttons": [{
-                            "extend": "copy",
-                            "className": "btn-sm",
-                            "exportOptions": {
-                                "columns": ':visible'
-                            }
-                        },
-                        {
-                            "extend": "csv",
-                            "title": "Report",
-                            "className": "btn-sm",
-                            "exportOptions": {
-                                "columns": ':visible'
-                            }
-                        },
-                        {
-                            "extend": "pdf",
-                            "title": "Report",
-                            "className": "btn-sm",
-                            "exportOptions": {
-                                "columns": ':visible'
-                            }
-                        },
-                        {
-                            "extend": "print",
-                            "className": "btn-sm",
-                            "exportOptions": {
-                                "columns": ':visible'
-                            },
-                            "customize": function(win) {
-                                $(win.document.body)
-                                    .css('font-size', '10pt')
-                                    .prepend(
-                                        '<div style="text-align:center;"><h3>Manage Sale</h3></div>'
-                                    )
-                                    .append(
-                                        '<div style="text-align:center;"><h4>amoriotech.com</h4></div>'
-                                    );
-                                $(win.document.body).find('table')
-                                    .addClass('compact')
-                                    .css('font-size', 'inherit');
-                                var rows = $(win.document.body).find('table tbody tr');
-                                rows.each(function() {
-                                    if ($(this).find('td').length === 0) {
-                                        $(this).remove();
-                                    }
-                                });
-                                $(win.document.body).find('div:last-child')
-                                    .css('page-break-after', 'auto');
-                                $(win.document.body)
-                                    .css('margin', '0')
-                                    .css('padding', '0');
-                            }
-                        },
-                        {
-                            "extend": "colvis",
-                            "className": "btn-sm"
-                        }
-                    ]
+$(document).ready(function() {
+    var quotationDataTable;
+
+    if ($.fn.DataTable.isDataTable('#purchase')) {
+        $('#purchase').DataTable().clear().destroy();
+    }
+
+    var csrfName = '<?php echo $this->security->get_csrf_token_name(); ?>';
+    var csrfHash = '<?php echo $this->security->get_csrf_hash(); ?>';
+
+    quotationDataTable = $('#purchase').DataTable({
+        "processing": true,
+        "serverSide": true,
+        "lengthMenu": [
+            [10, 25, 50, 100],
+            [10, 25, 50, 100]
+        ],
+        "ajax": {
+            "url": "<?php echo base_url('Cpurchase/getpurchaseDatas?id='); ?>" +
+                encodeURIComponent('<?php echo $_GET['id']; ?>'),
+            "type": "POST",
+            "data": function(d) {
+                d[csrfName] = csrfHash;
+                d.date = $('.dateSearch').val();
+            },
+            "dataSrc": function(json) {
+                csrfHash = json[csrfName];
+                return json.data;
+            }
+        },
+        "columns": [
+            { "data": "sl" },
+            { "data": "purchase_id" },
+            { "data": "chalan_no" },
+            { "data": "supplier_id" },
+            { "data": "total_amt" },
+            { "data": "total_tax" },
+            { "data": "grand_total_amount" },
+            { "data": "paid_amount" },
+            { "data": "balance" },
+            { "data": "payment_id" },
+            { "data": "gtotal_preferred_currency" },
+            { "data": "purchase_date" },
+            { "data": "payment_due_date" },
+            { "data": "create_date" },
+            { "data": "source" },
+            { "data": "action" }
+        ],
+        "columnDefs": [{
+            "orderable": false,
+            "targets": [0, 15],
+            searchBuilder: {
+                defaultCondition: '='
+            },
+            "initComplete": function() {
+                this.api().columns().every(function() {
+                    var column = this;
+                    var select = $('<select><option value=""></option></select>')
+                        .appendTo($(column.footer()).empty())
+                        .on('change', function() {
+                            var val = $.fn.dataTable.util.escapeRegex($(this).val());
+                            column.search(val ? '^' + val + '$' : '', true, false).draw();
+                        });
+                    column.data().unique().sort().each(function(d, j) {
+                        select.append('<option value="' + d + '">' + d + '</option>')
+                    });
                 });
-                $('.dateSearch').on('change', function() {
-        invoicetable.ajax.reload();
+            }
+        }],
+        "pageLength": 10,
+        "colReorder": true,
+        "stateSave": true,
+        "stateSaveCallback": function(settings, data) {
+            localStorage.setItem('invoice', JSON.stringify(data));
+        },
+        "stateLoadCallback": function(settings) {
+            var savedState = localStorage.getItem('invoice');
+            return savedState ? JSON.parse(savedState) : null;
+        },
+        "dom": "<'row'<'col-sm-4'l><'col-sm-4 text-center'B><'col-sm-4'f>>" +
+            "<'row'<'col-sm-12'tr>>" + "<'row'<'col-sm-6'i><'col-sm-6'p>>",
+        "buttons": [
+            {
+                "extend": "copy",
+                "className": "btn-sm",
+                "exportOptions": { "columns": ':visible' }
+            },
+            {
+                "extend": "csv",
+                "title": "Report",
+                "className": "btn-sm",
+                "exportOptions": { "columns": ':visible' }
+            },
+            {
+                "extend": "pdf",
+                "title": "Report",
+                "className": "btn-sm",
+                "exportOptions": { "columns": ':visible' }
+            },
+            {
+                "extend": "print",
+                "className": "btn-sm",
+                "exportOptions": { "columns": ':visible' },
+                "customize": function(win) {
+                    $(win.document.body)
+                        .css('font-size', '10pt')
+                        .prepend('<div style="text-align:center;"><h3>Manage Expense</h3></div>')
+                        .append('<div style="text-align:center;"><h4>amoriotech.com</h4></div>');
+                    $(win.document.body).find('table')
+                        .addClass('compact')
+                        .css('font-size', 'inherit');
+                    var rows = $(win.document.body).find('table tbody tr');
+                    rows.each(function() {
+                        if ($(this).find('td').length === 0) {
+                            $(this).remove();
+                        }
+                    });
+                    $(win.document.body).find('div:last-child').css('page-break-after', 'auto');
+                    $(win.document.body).css('margin', '0').css('padding', '0');
+                }
+            },
+            {
+                "extend": "colvis",
+                "className": "btn-sm"
+            }
+        ]
     });
+
+    $('.dateSearch').on('change', function() {
+        quotationDataTable.ajax.reload();
+    });
+});
+
+// Delete Expense Data Function
+function deleteExpensedata(id) {
+    var succalert = '<div class="alert alert-success alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>';
+    var failalert = '<div class="alert alert-danger alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>';
+
+    if (id !== "") {
+        var confirmDelete = confirm("Are you sure you want to delete this expense?");
+    
+        if (confirmDelete) {
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "<?php echo base_url(); ?>Cpurchase/deleteExpensedata",
+                data: {[csrfName]: csrfHash, id: id},
+                success: function(response) {
+                    console.log(response, "response");
+                    if (response.status === 'success') {
+                        $('.error_display').html(succalert + response.msg + '</div>');
+                        window.setTimeout(function() {
+                            location.reload();
+                            // quotationDataTable.ajax.reload();
+                            // $('.error_display').html('');
+                        }, 2500);
+                    } else {
+                        $('.error_display').html(failalert + response.msg + '</div>'); 
+                    }
+                },
+                error: function() {
+                    $('.error_display').html(failalert + 'An unexpected error occurred. Please try again.' + '</div>');
+                }
             });
- </script>
+        }
+    }
+}
+
+</script>

@@ -1727,6 +1727,22 @@ $('#amount_to_pay').val($('#balance').val());
    dynamic_id++;
 
    }
+   $(document).ready(function(){
+
+var tid=$('.table').closest('table').attr('id');
+   const indexLast = tid.lastIndexOf('_');
+   var id = tid.slice(indexLast + 1);
+   for (j = 0; j < 6; j++) {
+      var $last = $('#addPurchaseItem_1 tr:last');
+   var num = id+($last.index()+1);
+    $('#addPurchaseItem_1 tr:last').clone().find('input,select,button').attr('id', function(i, current) {
+       return current.replace(/\d+$/, num);
+   }).end().appendTo('#addPurchaseItem_1');
+    $.each($('#normalinvoice_1 > tbody > tr'), function (index, el) {
+           $(this).find(".slab_no").val(index + 1); // Simply couse the first "prototype" is not counted in the list
+       })
+   }
+   });
    </script>
 	  </div>
       <!-- For Sale - SOLD BY Field -  Add Employee / Sales Partner -->

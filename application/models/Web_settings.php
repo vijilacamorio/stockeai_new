@@ -125,19 +125,29 @@ class Web_settings extends CI_Model
     }
     public function getCurrencyDetails()
     {
-        $this->db->select('code,description,symbol');
+        $this->db->select('code, description, symbol');
         $this->db->from('currency');
         $query = $this->db->get();
+        if ($query === false) {
+            return false;
+        }
+
         if ($query->num_rows() > 0) {
             return $query->result_array();
         }
+
         return false;
     }
+
     public function getStateDetails()
     {
         $this->db->select('state_name');
         $this->db->from('states');
         $query = $this->db->get();
+        if ($query === false) {
+            return false;
+        }
+
         if ($query->num_rows() > 0) {
             return $query->result_array();
         }
@@ -145,9 +155,13 @@ class Web_settings extends CI_Model
     }
        public function getCountryDetails()
     {
-        $this->db->select('iso,iso3,nickname');
+        $this->db->select('iso,iso3,nickname,id');
         $this->db->from('country');
         $query = $this->db->get();
+        if ($query === false) {
+            return false;
+        }
+
         if ($query->num_rows() > 0) {
             return $query->result_array();
         }
@@ -159,6 +173,10 @@ class Web_settings extends CI_Model
         $this->db->from('employee_history');
         $this->db->where('create_by', $this->session->userdata('user_id'));
         $query = $this->db->get();
+        if ($query === false) {
+            return false;
+        }
+
         if ($query->num_rows() > 0) {
             return $query->result_array();
         }
@@ -173,6 +191,10 @@ class Web_settings extends CI_Model
         $this->db->where('source', 'CALENDER');
         $this->db->where('created_by', $admin_comp_id);
         $query = $this->db->get();
+        if ($query === false) {
+            return false;
+        }
+
         if ($query->num_rows() > 0) {
             return $query->result();
         }

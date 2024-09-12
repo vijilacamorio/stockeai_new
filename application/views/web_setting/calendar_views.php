@@ -41,9 +41,9 @@
             <div class="panel panel-bd lobidrag">
                <div class="panel-heading">
                   <div class="panel-title">
-                     <button class="btn btn-info" id="reminder_task" data-toggle="modal" data-target="#reminderModal">+ Add Reminder</button>
-                     <a href="<?php echo base_url('Cweb_setting') ?>" class="btn btn-info text-white">Manage Setting</a>
-                     <button class="btn btn-info" data-toggle="modal" data-target="#schedulerModal"><i class="ti-alarm-clock"></i>&nbsp;Scheduler Status</button>
+                     <button class="btn btnclr" id="reminder_task" data-toggle="modal" data-target="#reminderModal">+ Add Reminder</button>
+                     <a href="<?php echo base_url('Cweb_setting') ?>" class="btn btnclr text-white">Manage Setting</a>
+                     <button class="btn btnclr" data-toggle="modal" data-target="#schedulerModal"><i class="ti-alarm-clock"></i>&nbsp;Scheduler Status</button>
                   </div>
                </div>
                <div class="panel-body">
@@ -165,6 +165,14 @@
    .color_text{
        color: #000 !important;
    }
+
+   .fc-time{
+      display: none !important;
+   }
+   .fc-event{
+      border: 1px solid #424f5c;
+      background-color: #424f5c;
+   }
 </style>
 
 <script src='https://fullcalendar.io/js/fullcalendar-2.4.0/lib/moment.min.js'></script>
@@ -176,7 +184,8 @@
     var insertdata = '<?php echo $insertdata; ?>';
     var eventData = JSON.parse(insertdata);
     var currentDate = new Date();
-      $('#calendar').fullCalendar({
+    
+    $('#calendar').fullCalendar({
         header: {
             left: 'prev,next today',
             center: 'title',
@@ -186,27 +195,26 @@
         editable: true,
         eventLimit: true,
         events: eventData, 
-         eventRender: function(event, element) {
-             var start = moment(event.start);
-             var end = moment(event.end);
+        eventRender: function(event, element) {
+            var start = moment(event.start);
+            var end = moment(event.end);
+            if (start.isValid() && end.isValid()) {
+                element.find('.fc-title').append(
+                    "<br/>Start: " + start.format('MM-DD-YYYY hh:mm A') + 
+                    "<br/>End: " + end.format('MM-DD-YYYY hh:mm A')
+                );
+            } else {
+                console.warn('Invalid start or end date', event);
+            }
+        }
+    });
 
-             if (start.isValid() && end.isValid()) {
-                 element.find('.fc-title').append(
-                     "<br/>Start: " + start.format('YYYY-MM-DD HH:mm') + 
-                     "<br/>End: " + end.format('YYYY-MM-DD HH:mm')
-                 );
-             } else {
-                 console.warn('Invalid start or end date', event);
-             }
-         }
-
-      });
-
-      $('#calendar').on('click', '.fc-prev-button, .fc-next-button', function() {
+    $('#calendar').on('click', '.fc-prev-button, .fc-next-button', function() {
         $('#calendar').fullCalendar('removeEvents');
         $('#calendar').fullCalendar('addEventSource', eventData);
-      });
+    });
 });
+
 
 
 
@@ -272,6 +280,24 @@ $(document).ready(function(){
       }
    });
 
+});
+
+$(document).ready(function(){
+  $('body').removeClass('hold-transition');
+  $('.pe-7s-keypad').click(function(event){
+   event.preventDefault();
+   if ($('body').hasClass('sidebar-collapse')) {
+      $('body').removeClass('sidebar-collapse');
+   } else {
+      $('body').addClass('sidebar-mini pace-done sidebar-collapse');
+   }
+  });
+
+  $('.treeview').click(function(event){
+   event.preventDefault();
+    // $('.treeview').addClass('active');
+    $('.treeview-menu').addClass('menu-open');
+  });
 });
 </script>
 

@@ -87,6 +87,18 @@
   animation: loadingJ 2s cubic-bezier(0.17, 0.37, 0.43, 0.67) infinite;
 }
 
+.bg-success{
+    background-color: #28a745 !important;
+}
+
+.bg-danger{
+    background-color: #dc3545 !important;
+}
+
+.bg-warning{
+    background-color: #ffc107 !important;
+}
+
 
 @keyframes loadingJ {
   0%,
@@ -173,23 +185,25 @@
       </div>
       <div class="row">
          <div class="col-sm-16 col-md-14">
-            <div class="panel panel-bd lobidrag" id="printableArea"   style="border: 3px solid #d7d4d6;" >
+            <div class="panel panel-bd lobidrag" id="printableArea">
                <div class="panel-body">
                    <div class="sortableTable__container">
                     <div class="sortableTable__discard">
                     </div>
                         <table class="table table-bordered" id="transactionList" cellspacing="0" width="100%">
                             <thead class="sortableTable">
-                                <th width="5%">S.No</th>
-                                <th width="11%">Customer Name</th>
-                                <th width="11%">Invoice Number</th>
-                                <th width="11%">Payment ID</th>
-                                <th width="11%">Payment Date</th>
-                                <th width="11%">Total Amount</th>
-                                <th width="10%">Amount Paid</th>
-                                <th width="10%">Balance</th>
-                                <th width="10%">Details</th>
-                                <th width="10%">Status</th>
+                                <tr class="btnclr">
+                                    <th width="5%">S.No</th>
+                                    <th width="11%">Customer Name</th>
+                                    <th width="11%">Invoice Number</th>
+                                    <th width="11%">Payment ID</th>
+                                    <th width="11%">Payment Date</th>
+                                    <th width="11%">Total Amount</th>
+                                    <th width="10%">Amount Paid</th>
+                                    <th width="10%">Balance</th>
+                                    <th width="10%">Details</th>
+                                    <th width="10%">Status</th>
+                                </tr>
                             </thead>
                                
                   </table>
