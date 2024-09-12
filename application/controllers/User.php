@@ -434,9 +434,6 @@ $company_assign_role = $this->db->update('company_assignrole', $update_data);
                 'status'     => 0
             );
             $insert=  $this->db->insert('company_information',$data);  
-
-            echo $this->db->last_query(); die();
-
             $insert_id = $this->db->insert_id();
             $user_name=$this->input->post('user_name',TRUE);
             $password=$this->input->post('password',TRUE);

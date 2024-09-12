@@ -581,7 +581,7 @@ echo json_encode($result, JSON_NUMERIC_CHECK);
             'account' =>$update_invoice_set[0]->account,
             'remarks' =>  $update_invoice_set[0]->remarks,
             'desig' => $designation,
-            'paytype' => $PayType,
+            'paytype' => $PayType,   
             'bank_data' => $bankData,
             'state_tx' => $state_tx,
             'get_info_city_tax' => $get_info_city_tax,

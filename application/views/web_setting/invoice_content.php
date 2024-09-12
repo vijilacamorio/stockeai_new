@@ -49,26 +49,26 @@
 <form action="updateinvoice2" method="post">
     <div class="panel-body"> 
        <div class="form-group">
-           <label>Buisness Name</label>
+           <label>Business Name</label>
            <input type="text" name="name" class="form-control" value="<?php if($cname!=''){echo $cname ; }?>">
        </div>
        <div class="form-group">
-           <label>Buisness Address</label>
+           <label>Business Address</label>
            <input type="text" name="address" class="form-control" value="<?php if($address!=''){
             echo $address;
              }?>">
        </div>
        <div class="form-group">
-           <label>Buisness Phone</label>
+           <label>Business Phone</label>
            <input type="text" name="phone" class="form-control" value="<?php if($phone!=''){echo $phone ; }?>">
        </div>
        <div class="form-group">
-           <label>Buisness Email</label>
+           <label>Business Email</label>
            <input type="text" name="email" class="form-control" value="<?php if($email!=''){echo $email ; }?>">
        </div>
       
        <div class="form-group">
-           <label>Buisness Register no</label>
+           <label>Business Register no</label>
            <input type="text" name="regno" class="form-control" value="<?php if($reg_number!=''){
             echo $reg_number;
              }?>">
@@ -140,7 +140,7 @@ if($email!=='')
         </div>
         <div class="row">
 <table width="95%" height='100%'  style="margin-left:19px;" border="1">
-  <tr style="background-color: #<?php echo $color; ?>;color: black;">
+  <tr style="background-color: #<?php echo $color; ?>;color:white;">
     <td>Product Name</td>
     <td>Description</td>
     <td>Qty</td>
