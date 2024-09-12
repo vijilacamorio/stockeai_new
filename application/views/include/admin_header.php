@@ -1076,38 +1076,44 @@ $(document).ready(function() {
 
 
 
+				<li class="treeview <?php echo in_array($this->uri->segment(1), ['Cweb_setting', 'Company_setup']) ? 'active' : ''; ?>">
+				<a href="#">
+					<i class="ti-settings"></i> <span><?php echo display('settings'); ?></span>
+					<span class="pull-right-container">
+						<i class="fa fa-angle-left pull-right"></i>
+					</span>
+				</a>
+				<ul class="treeview-menu">
+					<li class="treeview <?php echo in_array($this->uri->segment(2), ['invoice_template', 'invoice_design', 'invoice_content']) ? 'active' : ''; ?>">
+						<a href="#">
+							 </i> <span><?php echo ('Invoice Template') ?></span>
+							<span class="pull-right-container">
+								<i class="fa fa-angle-left pull-right"></i>
+							</span>
+						</a>
+						<ul class="treeview-menu">
+							<li class="<?php echo ($this->uri->segment(2) == 'invoice_template') ? 'active' : ''; ?>">
+								<a href="<?php echo base_url(); ?>Cweb_setting/invoice_template?id=<?php echo $encode_com_id; ?>">
+									<?php echo display('Sales Invoice'); ?>
+								</a>
+							</li>
+							<li class="<?php echo ($this->uri->segment(2) == 'invoice_design') ? 'active' : ''; ?>">
+								<a href="<?php echo base_url(); ?>Cweb_setting/invoice_design?id=<?php echo $encode_com_id; ?>">
+									<?php echo display('Invoice Design'); ?>
+								</a>
+							</li>
+							<li class="<?php echo ($this->uri->segment(2) == 'invoice_content') ? 'active' : ''; ?>">
+								<a href="<?php echo base_url(); ?>Cweb_setting/invoice_content?id=<?php echo $encode_com_id; ?>">
+									<?php echo display('Invoice Content'); ?>
+								</a>
+							</li>
+						</ul>
+					</li>
  
 
-
-				<li class="treeview">
-					<a href="#">
-						<i class="ti-settings"></i> <span><?php echo display('settings'); ?></span>
-						<span class="pull-right-container">
-							<i class="fa fa-angle-left pull-right"></i>
-						</span>
-					</a>
-					<ul class="treeview-menu">
- 						<li class="treeview  ">
-							<a href="fa fa-asl-interpreting">
-								<i class="ti-user"></i><span><?php echo display('Manage Invoice Template') ?></span>
-							</a>
-							<ul class="treeview-menu">
-								<li class="treeview">
-							    <a href="<?php echo base_url(); ?>Cweb_setting/invoice_template?id=<?php echo $encode_com_id; ?>"><?php echo display('Sales Invoice'); ?></a>
-								</li>
-								<li class="treeview">
-										<a href="<?php echo base_url(); ?>Cweb_setting/invoice_design?id=<?php echo $encode_com_id; ?>"><?php echo display('Invoice Design'); ?></a>
-									</li>
-								<li class="treeview">
-										<a href="<?php echo base_url(); ?>Cweb_setting/invoice_content?id=<?php echo $encode_com_id; ?>"><?php echo display('Invoice Content'); ?></a>
-								
- 
-									</li>
-							</ul>
-						</li>
-						<li class="treeview  ">
+					<li class="treeview  ">
 							<a href="">
-								<i class="fa-solid fa-list"></i> <span><?php echo display('Template Content') ?></span>
+ 								<span><?php echo display('Template Content') ?></span>
 								<span class="pull-right-container">
 									<i class="fa fa-angle-left pull-right"></i>
 								</span>
@@ -1140,13 +1146,13 @@ $(document).ready(function() {
 													</a>
 													<ul class="treeview-menu">
 														<li class="treeview  "><a
-																href=""><?php echo display('Payment Due date'); ?></a>
+																href="#"><?php echo display('Payment Due date'); ?></a>
 														</li>
 														<li class="treeview  "><a
-																href=""><?php echo display('Estimated Time of Arrival'); ?>
+																href="#"><?php echo display('Estimated Time of Arrival'); ?>
 															</a></li>
 														<li class="treeview  "><a
-																href=""><?php echo display('Estimated Time of Departure'); ?></a>
+																href="#"><?php echo display('Estimated Time of Departure'); ?></a>
 														</li>
 													</ul>
 												</li>
@@ -1160,10 +1166,10 @@ $(document).ready(function() {
 													</a>
 													<ul class="treeview-menu">
 														<li class="treeview  "><a
-																href=""><?php echo display('Estimated Time of Arrival'); ?>
+																href="#"><?php echo display('Estimated Time of Arrival'); ?>
 															</a></li>
 														<li class="treeview  "><a
-																href=""><?php echo display('Estimated Time of Departure'); ?></a>
+																href="#"><?php echo display('Estimated Time of Departure'); ?></a>
 														</li>
 													</ul>
 												</li>
@@ -1177,9 +1183,9 @@ $(document).ready(function() {
 													</a>
 													<ul class="treeview-menu">
 														<li class="treeview  "><a
-																href=""><?php echo display('Container / Goods Pick up date'); ?></a>
+																href="#"><?php echo display('Container / Goods Pick up date'); ?></a>
 														</li>
-														<li class="treeview  "><a href="">
+														<li class="treeview  "><a href="#">
 																<?php echo display('Delivery date'); ?></a></li>
 													</ul>
 												</li>
@@ -1203,13 +1209,13 @@ $(document).ready(function() {
 												</span>
 											</a>
 											<ul class="treeview-menu">
-												<li class="treeview  "><a href=""><?php echo display('Payment Due Date'); ?>
+												<li class="treeview  "><a href="#"><?php echo display('Payment Due Date'); ?>
 													</a></li>
 												<li class="treeview  "><a
-														href=""><?php echo display('Estimated Time of Arrival'); ?> </a>
+														href="#"><?php echo display('Estimated Time of Arrival'); ?> </a>
 												</li>
 												<li class="treeview  "><a
-														href=""><?php echo display('Estimated Time of Departure'); ?>
+														href="#"><?php echo display('Estimated Time of Departure'); ?>
 													</a>
 												</li>
 											</ul>
@@ -1222,7 +1228,7 @@ $(document).ready(function() {
 												</span>
 											</a>
 											<ul class="treeview-menu">
-												<li class="treeview  "><a href="">Est. Shipment date </a></li>
+												<li class="treeview  "><a href="#">Est. Shipment date </a></li>
 											</ul>
 										</li>
 										<li class="treeview  ">
@@ -1235,10 +1241,10 @@ $(document).ready(function() {
 											</a>
 											<ul class="treeview-menu">
 												<li class="treeview  "><a
-														href=""><?php echo display('Estimated Time of Arrival'); ?> </a>
+														href="#"><?php echo display('Estimated Time of Arrival'); ?> </a>
 												</li>
 												<li class="treeview  "><a
-														href=""><?php echo display('Estimated Time of Departure'); ?></a>
+														href="#"><?php echo display('Estimated Time of Departure'); ?></a>
 												</li>
 											</ul>
 										</li>
@@ -1250,42 +1256,58 @@ $(document).ready(function() {
 												</span>
 											</a>
 											<ul class="treeview-menu">
-												<li class="treeview  "><a href="">
+												<li class="treeview  "><a href="#">
 														<?php echo display('Container / Goods Pick up date'); ?> </a>
 												</li>
 												<li class="treeview  "><a
-														href=""><?php echo display('Delivery date'); ?></a></li>
+														href="#"><?php echo display('Delivery date'); ?></a></li>
 											</ul>
 										</li>
 									</ul>
 								</li>
 							</ul>
 						</li>
- 				  
 
-						<li class="treeview  ">
-						<a href="<?php echo base_url(); ?>Company_setup/manage_company?id=<?php echo $encode_com_id; ?>"><?php echo display('Manage my Company'); ?></a>
-						</li>
 
- 
-						<li class="treeview  "><a
+
+
+
+					<li class="<?php echo ($this->uri->segment(2) == 'manage_company') ? 'active' : ''; ?>">
+						<a href="<?php echo base_url(); ?>Company_setup/manage_company?id=<?php echo $encode_com_id; ?>">
+							<?php echo display('Manage my Company'); ?>
+						</a>
+					</li>
+
+
+					<li class="treeview  "><a
 								href="<?php echo base_url(); ?>Language"><?php echo display('language'); ?> </a></li>
-						<li class="treeview  "><a
+						
+								<li class="treeview  "><a
 								href="<?php echo base_url(); ?>Currency"><?php echo display('currency'); ?> </a></li>
-						<li class="treeview  "><a
+					
+								<li class="treeview  "><a
 								href="<?php echo base_url(); ?>Cweb_setting"><?php echo display('setting'); ?> </a>
 						</li>
+					
 						<li class="treeview  "><a
 								href="<?php echo base_url(); ?>Cweb_setting/mail_setting"><?php echo display('mail_setting'); ?>
 							</a></li>
-						<li class="treeview "><a
+					
+							<li class="treeview "><a
 								href="<?php echo base_url(); ?>Language/import_page"><?php echo ('Import CSV'); ?> </a>
 						</li>
+
 						<li style="display:none" class="treeview  "><a
 								href="<?php echo base_url(); ?>Cweb_setting/app_setting"><?php echo  display('app_setting');  ?>
-							</a></li>
-					</ul>
-				</li>
+						</a></li>
+
+
+
+				</ul>
+			</li>
+
+				 
+
 				<li class="treeview">
 					<a href="#">
 						<i class="ti-key"></i> <span><?php echo display('role_permission');  ?></span>

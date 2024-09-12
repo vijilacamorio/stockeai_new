@@ -220,8 +220,7 @@
                                     <option value="<?php echo html_escape($customer->customer_id);?>"><?php echo html_escape($customer->customer_name);?></option>
                                     <?php }?>
                                  </select>
-                                 <!--    <textarea rows="4" cols="50" name="bill_to" class=" form-control" placeholder='Add Exporter Detail' id=""> </textarea> -->
-                              </div>
+                               </div>
                            </div>
                         </div>
                         <div class="col-sm-6">
@@ -261,8 +260,7 @@
                                     <option value="<?php echo html_escape($customer->customer_name);?>"><?php echo html_escape($customer->customer_name);?></option>
                                     <?php }?>
                                  </select>
-                                 <!--    <textarea rows="4" cols="50" name="bill_to" class=" form-control" placeholder='Add Exporter Detail' id=""> </textarea> -->
-                              </div>
+                               </div>
                            </div>
                         </div>
                         <div class="col-sm-6">
@@ -397,10 +395,6 @@
                                        <?php } ?>
                                     </select>
                                  </td>
-
-                                  <!-- <td class="text-right"><select name="pro_no[]" id="invoice_no" class="form-control" tabindex="1"> <option value=""><?php echo display('select_one') ?></option><?php foreach($invoice as $inv){ ?><option value="<?php echo $inv['commercial_invoice_number'] ; ?>"><?php echo $inv['commercial_invoice_number'] ; ?></option><?php    }?></select></td> -->
-
-
                                  <td>
                                     <input class="total_price form-control mobile_price" type="text"  name="total_price[]" id="total_price_1" value="0.00" readonly="readonly" />
                                  </td>
@@ -484,16 +478,18 @@
                            </tfoot>
                         </table>
                      </div>
-                     <!-- <div class="form-group row">
-                        <div class="col-sm-6">
-                            <input type="submit" id="add_trucking" class="btn btn-primary btn-large" name="add-trucking" value="Save" />
-                            <input type="submit" value="Save & Sales bill expenses" name="add-trucking-another" class="btn btn-large btn-success" id="add_purchase_another">
-                        </div> -->
+                
                      <!-- </div> -->
                      <div class="form-group row">
                         <label for="remarks" class="col-sm-2 col-form-label"><?php echo display('Remarks') ?></label>
                         <div class="col-sm-8">
-                           <textarea rows="4" cols="50" name="remarks" class="form-control" style="border:2px solid #d7d4d6;" id="remarks"></textarea>
+                        <textarea rows="4" cols="30" name="remarks" class="form-control" style="border:2px solid #d7d4d6; text-align: start;" id="remarks">
+                           <?php if (!empty($remarks[0]->remarks)) {
+                              echo $remarks[0]->remarks;
+                           } ?>
+                        </textarea>
+
+                     
                         </div>
                      </div>
                      <div class="form-group row">
@@ -622,37 +618,7 @@ $this->load->view('include/bootstrap_model', $modaldata);
    var csrfName = '<?php echo $this->security->get_csrf_token_name();?>';
    var csrfHash = '<?php echo $this->security->get_csrf_hash();?>';
    $(document).on('keyup','#truckingTable_1 #addPurchaseItem_1 tr:last',function (e) {
-   
-   /*var tid=$(this).closest('table').attr('id');
-   const indexLast = tid.lastIndexOf('_');
-   var id = tid.slice(indexLast + 1);
-   var s=$(this).closest('table').find('.quantity').attr('id');
-   var $last = $('#addPurchaseItem_'+id + ' tr:last');
-   var num = id+($last.index()+1);
-   
-   $('#addPurchaseItem_'+id  + ' tr:last').clone().find('input,select').attr('id', function(i, current) {
-   return current.replace(/\d+$/, num);
-   
-   }).end().appendTo('#addPurchaseItem_'+id );
-   */
- /* var tid = $(this).closest('table').attr('id');
-const indexLast = tid.lastIndexOf('_');
-var id = tid.slice(indexLast + 1);
-var $last = $('#addPurchaseItem_' + id + ' tr:last');
-var num = id + ($last.index() + 1);
-
-// Clone the last row
-var $newRow = $last.clone();
-
-// Update IDs for inputs, selects, and options
-$newRow.find('input, select, option').each(function() {
-    var $this = $(this);
-    var newId = $this.attr('id') ? $this.attr('id').replace(/\d+$/, num) : null;
-    if (newId) {
-        $this.attr('id', newId);
-    }
-}); */
-
+    
 // Append the new row to the table
 var tid = $(this).closest('table').attr('id');
 const indexLast = tid.lastIndexOf('_');

@@ -380,7 +380,7 @@ class Web_settings extends CI_Model
     {
         $this->db->select('*');
         $this->db->from('sales_invoice_settings');
-        $this->db->where('invoice_template', 'sales&Profarma');
+        $this->db->where('invoice_template', 'Sales_Quote');
         $this->db->where('create_by', $_SESSION['user_id']);
         $query = $this->db->get();
         if ($query->num_rows() > 0) {
@@ -392,7 +392,7 @@ class Web_settings extends CI_Model
     {
         $this->db->select('*');
         $this->db->from('sales_invoice_settings');
-        $this->db->where('invoice_template', 'oet');
+        $this->db->where('invoice_template', 'Ocean_Export_Tracking');
         if($company_id !=""){
             $this->db->where('create_by', $company_id);
         }else{
@@ -409,7 +409,7 @@ class Web_settings extends CI_Model
     {
         $this->db->select('*');
         $this->db->from('sales_invoice_settings');
-        $this->db->where('invoice_template', 'truck');
+        $this->db->where('invoice_template', 'Road_Transport');
         $this->db->where('create_by', $adminid);
         $query = $this->db->get();
         if ($query->num_rows() > 0) {
