@@ -138,12 +138,10 @@
 											<?php } ?>
 										 </select>
 									  </div>
-									  <?php //if($this->permission1->method('add_supplier','create')->access()){ ?>
-									  <div class="col-sm-1">
+ 									  <div class="col-sm-1">
 										 <a href="#" class="btnclr client-add-btn btn mobile_icon"   aria-hidden="true" data-toggle="modal" data-target="#add_vendor"><i class="fa fa-user"></i></a>
 									  </div>
-									  <?php //}?>
-								   </div>
+ 								   </div>
 								</div>
 								<div class="col-sm-6">
 								   <div class="form-group row">
@@ -184,10 +182,8 @@
 										 </select>
 									  </div>
 									  <div class="col-sm-1">
-										 <?php //if($this->permission1->method('add_customer','create')->access()){ ?>
-										 <a href="#" class="btnclr client-add-btn btn mobile_icon1" aria-hidden="true"    data-toggle="modal" data-target="#cust_info"><i class="fa fa-user-circle"></i></a>
-										 <?php //}?>
-									  </div>
+ 										 <a href="#" class="btnclr client-add-btn btn mobile_icon1" aria-hidden="true"    data-toggle="modal" data-target="#cust_info"><i class="fa fa-user-circle"></i></a>
+ 									  </div>
 								   </div>
 								</div>
 							 </div>
@@ -365,10 +361,7 @@
                               </p>
                               
 									  </div>
-									  <?php /*<div class="col-sm-2 mobile_alignview">
-										 <button type="button" class="btnclr btn  m-b-5 m-r-2 mobile_widthview" data-toggle="modal" data-target="#myModal">
-										 <?php echo display('Track Online') ?></button>
-									  </div> */ ?>
+								 
 								   </div>
 								</div>
 							 </div>
@@ -402,10 +395,12 @@
 									  <i class="text-danger"></i>
 									  </label>
 									  <div class="col-sm-4">
-										 <textarea class="form-control" tabindex="4" id="particular" name="particulars" style="border:2px solid #d7d4d6;"   rows="2">
-										 <?php   if(!empty($ocean_remarks[0]->remarks)){
-											echo $ocean_remarks[0]->remarks;
-											} ?></textarea>
+                             <textarea class="form-control" tabindex="4" id="particular" name="particulars" style="border:2px solid #d7d4d6; text-align:left;" rows="2">
+                              <?php if (!empty($ocean_remarks[0]->remarks)) {
+                                 echo $ocean_remarks[0]->remarks;
+                              } ?>
+                           </textarea>
+
 									  </div>
 								   </div>
 								</div>
