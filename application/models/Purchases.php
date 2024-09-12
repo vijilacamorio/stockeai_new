@@ -28,6 +28,7 @@ public function getPaginatedPurchases($limit, $offset, $orderField, $orderDirect
     $this->db->select('a.id, a.purchase_id, a.chalan_no, a.supplier_id, a.total_amt, a.grand_total_amount, a.gtotal_preferred_currency, a.total_tax, a.paid_amount, a.balance, a.payment_id, a.purchase_date, a.payment_due_date, a.create_date, "Product Purchase" as source, b.supplier_name');
     $this->db->from('product_purchase a');
     $this->db->join('supplier_information b', 'a.supplier_id = b.supplier_id');
+
     if ($search != "") {
         $this->db->group_start();
         $this->db->like('a.chalan_no', $search);
@@ -43,11 +44,12 @@ public function getPaginatedPurchases($limit, $offset, $orderField, $orderDirect
         }
     }
     $this->db->where('a.create_by', $Id);
-    $this->db->where('a.is_deleted', 0);
-    $query1 = $this->db->get_compiled_select();
+
+    $query1 = $this->db->get_compiled_select(); 
   $this->db->select('a.id, a.serviceprovider_id as purchase_id, a.bill_number as chalan_no, a.supplier_id, a.total, a.gtotals as grand_total_amount, a.gtotal_preferred_currency, a.tax_detail as total_tax, a.amount_paids as paid_amount, a.balances as balance, a.payment_id, a.bill_date as purchase_date, a.due_date as payment_due_date, a.create_date, "Service Provider" as source, b.supplier_name');
     $this->db->from('service a');
     $this->db->join('supplier_information b', 'a.supplier_id = b.supplier_id');
+
     if ($search != "") {
         $this->db->group_start();
         $this->db->like('a.serviceprovider_id', $search);
@@ -63,18 +65,21 @@ public function getPaginatedPurchases($limit, $offset, $orderField, $orderDirect
         }
     }
     $this->db->where('a.create_by', $Id);
-    $query2 = $this->db->get_compiled_select();
-    $combined_query = "($query1) UNION ALL ($query2) ORDER BY $orderField $orderDirection LIMIT $limit OFFSET $offset";
+
+     $query2 = $this->db->get_compiled_select();
+  $combined_query = "($query1) UNION ALL ($query2) ORDER BY $orderField $orderDirection LIMIT $limit OFFSET $offset";
+
     $query = $this->db->query($combined_query);
+
      if (!$query) {
         $error = $this->db->error();
         echo "Error Code: " . $error['code'];
         echo "Error Message: " . $error['message'];
         return [];
     }
+
      return $query->result_array();
 }
-
 
 //For Expense Index Page  - Surya
 public function getTotalPurchases($search, $Id, $date="") {
@@ -95,7 +100,6 @@ public function getTotalPurchases($search, $Id, $date="") {
         }
     }
     $this->db->where('create_by', $Id);
-    $this->db->where('is_deleted', 0);
  $query1 = $this->db->get_compiled_select();
   $this->db->select('id');
     $this->db->from('service');
@@ -116,10 +120,9 @@ public function getTotalPurchases($search, $Id, $date="") {
     $this->db->where('create_by', $Id);
   $query2 = $this->db->get_compiled_select();
  $total_query = $this->db->query("($query1) UNION ALL ($query2)");
+
     return $total_query->num_rows();
 }
-
-
 
 
 
@@ -632,8 +635,8 @@ $this->db->where('a.supplier_id', $customer_id);
         $this->db->where('created_by' ,$id);
         $this->db->where('sub_menu' ,'expense');
         $query = $this->db->get();
-   
-        if ($query->num_rows() > 0) {
+
+        if ($query->num_rows() > 0) {  
             return $query->result_array();
         }
     }
@@ -2291,7 +2294,7 @@ public function purchase_entry()
                 'description' => 'Scheduled ETA for Invoice ' . $this->input->post('invoice_no', TRUE) . ' EXPENSE',
                 'created_by' => $this->session->userdata('user_id'),
                 'start' => $adjusted_date['adjusted_eta'],
-                'invoice_id' => $purchase_id,
+                'invoice_id' => $purchase_data['purchase_id'],
                 'bell_notification' => ($adjusted_date['adjusted_eta_notification_source'] === 'STOCKEAI') ? 1 : '',
                 'source' => $adjusted_date['adjusted_eta_notification_source'],
                 'schedule_status' => 1,
@@ -2304,7 +2307,7 @@ public function purchase_entry()
                 'unique_id' => $this->session->userdata('unique_id'),
                 'invoice_no' => $this->input->post('invoice_no', TRUE),
                 'title' => 'EXPENSE - NEW EXPENSE - ETD',
-                'invoice_id' => $purchase_id,
+                'invoice_id' => $purchase_data['purchase_id'],
                 'description' => 'Scheduled ETD for Invoice ' . $this->input->post('invoice_no', TRUE) . ' EXPENSE',
                 'created_by' => $this->session->userdata('user_id'),
                 'bell_notification' => ($adjusted_date['adjusted_etd_notification_source'] === 'STOCKEAI') ? 1 : '',
@@ -2320,7 +2323,7 @@ public function purchase_entry()
                 'unique_id' => $this->session->userdata('unique_id'),
                 'invoice_no' => $this->input->post('invoice_no', TRUE),
                 'title' => 'EXPENSE - NEW EXPENSE - PAYMENT DUE DATE',
-                'invoice_id' => $purchase_id,
+                'invoice_id' => $purchase_data['purchase_id'],
                 'description' => 'Scheduled Payment Due date for Invoice ' . $this->input->post('invoice_no', TRUE) . ' EXPENSE',
                 'created_by' => $this->session->userdata('user_id'),
                 'source' => $adjusted_date['adjusted_payment_due_date_notification_source'],
@@ -2352,13 +2355,13 @@ public function purchase_entry()
             $this->db->insert('schedule_list', $data_adjusted_payment_due_date);
         }
 
-        if ($purchase_id != "") {
-            if (!empty($_FILES['files'])) {
-                $fileCount = count($_FILES['files']['name']);
+        if ($purchase_data['purchase_id'] != "") {
+            if (!empty($_FILES['files_expense'])) {
+                $fileCount = count($_FILES['files_expense']['name']);
                 for ($i = 0; $i < $fileCount; $i++) {
-                    $upload_data = multiple_file_upload('files', $i, 'expense', EXPENSE_IMG_PATH);
+                    $upload_data = multiple_file_upload('files_expense', $i, 'expense', EXPENSE_IMG_PATH);
                     if ($upload_data['upload_data']['file_name'] != "") {
-                        insertAttachments($purchase_id, $upload_data['upload_data']['file_name'], EXPENSE_IMG_PATH, 'expense', $this->session->userdata('unique_id'), $createdby);
+                        insertAttachments($purchase_data['purchase_id'], $upload_data['upload_data']['file_name'], EXPENSE_IMG_PATH, 'expense', $this->session->userdata('unique_id'), $createdby);
                     }
                 }
             }
@@ -2367,7 +2370,7 @@ public function purchase_entry()
         $response = [
             'status' => 'success',
             'msg' => 'Expense Created successfully.',
-            'invoice_id' => trim($purchase_id),
+            'invoice_id' => trim($purchase_data['purchase_id']),
             'invoice_no' => trim($chalan_no)
         ];
 
@@ -2420,12 +2423,16 @@ public function service_provider_entry() {
     $this->form_validation->set_rules('bill_num', 'Invoice Number', 'required');
     $this->form_validation->set_rules('pay_terms', 'Payment Terms', 'required');
     $this->form_validation->set_rules('bill_date', 'Bill date', 'required');
+       $this->form_validation->set_rules('product_name[]', 'Product Name', 'required');
+          $this->form_validation->set_rules('description_service[]', 'Description Service', 'required');
+       $this->form_validation->set_rules('quality[]', 'Quantity', 'required');
+       $this->form_validation->set_rules('total_price[]', 'Amount', 'required');
     if ($this->form_validation->run() == FALSE) {
         $response = [
             'status' => 'failure',
             'msg' => validation_errors()
         ];
-        echo json_encode($response);
+        echo json_encode($response);exit;
         return;
     } else {
         $createdby = decodeBase64UrlParameter($this->input->post('admin_company_id'));

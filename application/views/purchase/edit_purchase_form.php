@@ -257,7 +257,7 @@
                                           <label for="attachment">
                                           <a class="btn btnclr text-light" role="button" aria-disabled="false"><i class="fa fa-upload"></i>&nbsp; Choose Files</a>
                                           </label>
-                                          <input type="file" name="files[]" class="upload" id="attachment" style="visibility: hidden; position: absolute;" multiple/>
+                                          <input type="file" name="files_expense[]" class="upload" id="attachment" style="visibility: hidden; position: absolute;" multiple/>
                                        </p>
                                          <?php foreach ($attachments as $key => $attachment) { ?> 
                                        <a href="<?php  echo base_url(); ?>uploads/expense/<?php echo $attachment['files']; ?>" class="file-block" target=_blank><span class="file-delete"><span><i class="fa fa-trash-o"></i></span></span><?php echo $attachment['files']; ?></a>

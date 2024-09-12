@@ -377,7 +377,7 @@ public function insertPayment()
                 'msg' => 'Failed to add payment. Please try again.'
             );
         }
-    echo json_encode($response);die();
+    echo json_encode($response);
 }
     
 public function update_payment_data() {

@@ -103,7 +103,7 @@ $this->load->view('include/bootstrap_model', $modaldata);
                                     </label>
                                     <div class="col-sm-7">
                                        <select name="supplier_id" id="supplier_id" class="form-control vendorNAME"  style="border:2px solid #d7d4d6;width:100%;" required tabindex="1">
-                                          <option value=" "><?php echo display('select_one') ?></option>
+                                          <option value=""><?php echo display('select_one') ?></option>
                                           <?php foreach ($supplier_list as $key => $supplier) { ?>
                                           <option value="<?php echo $supplier['supplier_id']; ?>"><?php echo $supplier['supplier_name']; ?></option>
                                           <?php } ?>
@@ -260,7 +260,7 @@ $this->load->view('include/bootstrap_model', $modaldata);
                                           <label for="attachment">
                                           <a class="btn btnclr text-light" role="button" aria-disabled="false"><i class="fa fa-upload"></i>&nbsp; Choose Files</a>
                                           </label>
-                                          <input type="file" name="files[]" class="upload" id="attachment" style="visibility: hidden; position: absolute;" multiple/>
+                                          <input type="file" name="files_expense[]" class="upload" id="attachment" style="visibility: hidden; position: absolute;" multiple/>
                                        </p>
                                        <p id="files-area">
                                           <span id="filesList">
@@ -389,7 +389,7 @@ $this->load->view('include/bootstrap_model', $modaldata);
                               </div>
                            </div>
                             <div class="table-responsive">
-                              <div id="content">
+                              <div>
                                  <table class="table normalinvoice table-bordered table-hover" id="normalinvoice_1"   style="border:2px solid #d7d4d6;" >
                                     <thead>
                                        <tr class="btnclr">
@@ -708,9 +708,11 @@ foreach ($tax_data as $tx) {?>
                                        <div class="col-sm-8">
                                           <select name="service_provider_name" id="service_supplier_name" class="form-control service_provider_name"    style="border:2px solid #d7d4d6;width:100%;"   required=""  tabindex="1">
                                             <option value="" selected disabled><?php echo display('select_one') ?></option>
-                                          {supplier_list}
+                                        <?php  if($supplier_list) {  ?> 
+                                            {supplier_list}
                                           <option value="{supplier_id}">{supplier_name}</option>
                                           {/supplier_list}
+                                          <?php  }  ?>
                                            </select>
                                        </div>
                                     </div>
@@ -868,7 +870,7 @@ foreach ($tax_data as $tx) {?>
                                        <tr>
                                           <th class="text-center" width="20%"><?php  echo  ('Product Name');?><i class="text-danger">*</i></th>
                                           <th class="text-center" width="30%"><?php  echo  display('description'); ?><i class="text-danger">*</i></th>
-                                          <th class="text-center" width="20%"><?php  echo  ('Quality');?><i class="text-danger">*</i></th>
+                                          <th class="text-center" width="20%"><?php  echo  ('Quantity');?><i class="text-danger">*</i></th>
                                           <th class="text-center" width="20%"><?php echo display('amount'); ?><i class="text-danger">*</i></th>
                                           <th class="text-center" width="20%"><?php echo display('action') ?></th>
                                        </tr>
@@ -1482,25 +1484,50 @@ var rowCount = $(this).closest('tbody').find('tr').length;
    });
 
    $("#serviceprovider").validate({
-      rules: {
-       service_provider_name: "required",
-       bill_date: "required", 
-       payment_terms : "required", 
-       bill_num : "required",
-      },
-      messages: {
-         service_provider_name: "Service Provider Name is required",
-         bill_date: "Bill Date is required",
-         bill_num: "Bill Number is required",
-         payment_terms: "Payment Terms is required",
-      },
-      errorPlacement: function(error, element) {
-         if (element.hasClass("select2-hidden-accessible")) {
-             error.insertAfter(element.next('span.select2')); 
-         } else {
-             error.insertAfter(element);
-         }
-      },
+    rules: {
+        service_provider_name: "required",
+        bill_date: "required", 
+        payment_terms: "required", 
+        bill_num: "required",
+        product_name: "required",
+        'product_name[]': "required",
+        'description_service[]': "required",
+        'quality[]': {
+            required: true,
+            number: true,
+            min: 0
+        },
+        'total_price[]': {
+            required: true,
+            number: true,
+            min: 0
+        }
+    },
+    messages: {
+        service_provider_name: "Service Provider Name is required",
+        bill_date: "Bill Date is required",
+        bill_num: "Bill Number is required",
+        payment_terms: "Payment Terms is required",
+        'product_name[]': "Product Name is required",
+        'description_service[]': "Description is required",
+        'quality[]': {
+            required: "Quantity is required",
+            number: "Please enter a valid number",
+            min: "Quantity cannot be negative"
+        },
+        'total_price[]': {
+            required: "Amount is required",
+            number: "Please enter a valid amount",
+            min: "Amount cannot be negative"
+        }
+    },
+    errorPlacement: function(error, element) {
+        if (element.hasClass("select2-hidden-accessible")) {
+            error.insertAfter(element.next('span.select2'));
+        } else {
+            error.insertAfter(element);
+        }
+    },
       submitHandler: function(form) {
         var formData = new FormData(form);
         formData.append(csrfName, csrfHash);
@@ -1512,7 +1539,7 @@ var rowCount = $(this).closest('tbody').find('tr').length;
           contentType: false,
           processData: false,
           success: function(response) {
-          
+          debugger;
             console.log(response);
           if (response.status == 'success') {
 
