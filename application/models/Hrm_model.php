@@ -3497,7 +3497,7 @@ SUM(a.monthly) as monthly_amount'
          $this->db->select('SUM(unemployement_total) as unempltotal');
         $this->db->from('tax_history_employer');
         $this->db->where('employee_id', $id); 
-        $this->db->where('tax', 'Unemployment'); 
+        // $this->db->where('tax', 'Unemployment'); 
         $this->db->where('created_by', $decodedId); 
         $query = $this->db->get();
         if ($query->num_rows() > 0) {

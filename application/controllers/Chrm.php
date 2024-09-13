@@ -1626,11 +1626,7 @@ class Chrm extends CI_Controller {
                         }
                         $scValue       = $scValue / 100;
                         $scValueAmount = $scValue * $sc_totalAmount1;
-                     
-                     
-
                         if ($st_tax) {
- 
                             foreach ($st_tax as $k => $v) {
                                 $existingRecord = $this->db->select('*')
                                     ->from('tax_history')
@@ -2435,6 +2431,7 @@ class Chrm extends CI_Controller {
                                         'weekly'        => $weekly_tax,
                                         'biweekly'      => $biweekly_tax,
                                         'created_by'    => $this->session->userdata('user_id'),
+                                        'unemployement_total'  => $tax_amt_final,
                                     );
                                     $this->db->insert('tax_history_employer', $data1);
                                 }
