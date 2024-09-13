@@ -175,9 +175,9 @@ class Cpurchase extends CI_Controller {
             $edit   = '<a href="' . base_url('Cpurchase/serviceprovider_update_form?id=' . $encodedId. '&invoice_id=' . $item['purchase_id']) . '" class="btnclr btn btn-sm" style="margin-right: 5px;"><i class="fa fa-pencil" aria-hidden="true"></i></a>';
             }
              if($item['invoice_id'] != ''){
-            $delete = '<a style="margin-right: 5px;" onClick=deleteInvoicedata('.$item["purchase_id"].') class="btnclr btn btn-sm" ><i class="fa fa-trash" aria-hidden="true"></i></a>' ;
+            $delete = '<a style="margin-right: 5px;" onClick=deleteExpensedata('.$item["purchase_id"].') class="btnclr btn btn-sm" ><i class="fa fa-trash" aria-hidden="true"></i></a>' ;
              }else{
-            $delete = '<a style="margin-right: 5px;" onClick=deleteInvoicedata('.$item["purchase_id"].') class="btnclr btn btn-sm" ><i class="fa fa-trash" aria-hidden="true"></i></a>' ;
+            $delete = '<a style="margin-right: 5px;" onClick=deleteExpensedata('.$item["purchase_id"].') class="btnclr btn btn-sm" ><i class="fa fa-trash" aria-hidden="true"></i></a>' ;
             }
             //serviceprovider_update_form $mail = '<a href="' . base_url('Cinvoice/invoice_update_form?id=' . $encodedId. '&invoice_id=' . $item['invoice_id']) . '" class="btn btn-sm btn-danger" ><i class="fa fa-trash" aria-hidden="true"></i></a>';
             $mail = '<a data-toggle="modal" data-target="#sendemailmodal" onClick=sendEmailproforma('.$item["purchase_id"].') class="btnclr btn btn-sm" style="margin-right: 5px;"><i class="fa fa-envelope" aria-hidden="true"></i></a>';
