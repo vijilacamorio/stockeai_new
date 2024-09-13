@@ -294,4 +294,38 @@
         invoicetable.ajax.reload();
     });
             });
+            function deleteExpensedata(id) {
+    var succalert = '<div class="alert alert-success alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>';
+    var failalert = '<div class="alert alert-danger alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>';
+
+    if (id !== "") {
+        var confirmDelete = confirm("Are you sure you want to delete this expense?");
+    
+        if (confirmDelete) {
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "<?php echo base_url(); ?>Cpurchase/deleteExpensedata",
+                data: {[csrfName]: csrfHash, id: id},
+                success: function(response) {
+                    console.log(response, "response");
+                    if (response.status === 'success') {
+                        $('.error_display').html(succalert + response.msg + '</div>');
+                        window.setTimeout(function() {
+                            location.reload();
+                            // quotationDataTable.ajax.reload();
+                            // $('.error_display').html('');
+                        }, 2500);
+                    } else {
+                        $('.error_display').html(failalert + response.msg + '</div>'); 
+                    }
+                },
+                error: function() {
+                    $('.error_display').html(failalert + 'An unexpected error occurred. Please try again.' + '</div>');
+                }
+            });
+        }
+    }
+}
+
  </script>
