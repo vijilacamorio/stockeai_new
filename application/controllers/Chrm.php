@@ -1144,10 +1144,46 @@ class Chrm extends CI_Controller {
                         if (!empty($data['unemployment'])) {
                             $unemployment_employee = $data['unemployment'][0]['employee'];
                             $unemployment_employer = $data['unemployment'][0]['employer'];
+                            $unemployment_details = $data['unemployment'][0]['details'];
+                            $details = preg_replace('/\D/', '', $unemployment_details);
                             $u                     = ($unemployment_employee / 100) * $final;
                             $u                     = round($u, 3);
-                            $uu                    = ($unemployment_employer / 100) * $final;
-                            $uu                    = round($uu, 3);
+                           
+                            $emp_salary_amt = $this->Hrm_model->get_employee_sal($data['timesheet_data'][0]['templ_name'] , $decodedId);
+                            $all_ytd = $emp_salary_amt[0]['totalamout']; 
+                            $this->db->select('h_rate, total_hours, extra_thisrate, SUM(extra_thisrate) as totalamout');
+                            $this->db->from('timesheet_info');
+                            $this->db->where('timesheet_info.month <=', date('Y-m-d'));
+                            $this->db->where("STR_TO_DATE(SUBSTRING_INDEX(timesheet_info.month, ' - ', -1), '%m/%d/%Y') < STR_TO_DATE('$d1', '%m/%d/%Y')", NULL, FALSE);
+                            $this->db->where('templ_name', $data['timesheet_data'][0]['templ_name']);
+                            $this->db->where('create_by', $decodedId);
+                            $query = $this->db->get(); 
+                            $data['emp_salary_amt'] = $query->result_array(); 
+                             if (!empty($data['emp_salary_amt'])) {
+                                $total = $data['emp_salary_amt'][0]['extra_thisrate'];
+                                $ytd = $data['emp_salary_amt'][0]['totalamout'];
+                             }          
+                             $total_unemployment = $this->Hrm_model->total_unemployment($data['timesheet_data'][0]['templ_name'] , $decodedId);        
+                             if($total_unemployment[0]['unempltotal'] < $details ){
+                              if ($all_ytd <= $details) {
+                              $uu = ($unemployment_employer / 100) * $final;
+                              $uu = round($uu, 3);
+                              $tax_amt_final = $final;
+                            }  
+                            elseif ($all_ytd > $details) {
+                                $bal = $details  - $ytd ;
+                                $uu = ($unemployment_employer / 100) * $bal;
+                                $tax_amt_final = $bal;  
+                                $uu = round($uu, 3);
+                               }
+                              else {
+                                $uu = 0.00;
+                            }
+                          }else{
+                            $uu = 0.00;
+                    
+                          }
+                         
                             $ar                    = $this->db->select('u_tax')->from('tax_history')->where('employee_id', $this->input->post('templ_name'))->get()->row()->u_tax;
                             $u_tax                 = $ar + $u;
                         }
@@ -1590,11 +1626,7 @@ class Chrm extends CI_Controller {
                         }
                         $scValue       = $scValue / 100;
                         $scValueAmount = $scValue * $sc_totalAmount1;
-                     
-                     
-
                         if ($st_tax) {
- 
                             foreach ($st_tax as $k => $v) {
                                 $existingRecord = $this->db->select('*')
                                     ->from('tax_history')
@@ -2399,6 +2431,7 @@ class Chrm extends CI_Controller {
                                         'weekly'        => $weekly_tax,
                                         'biweekly'      => $biweekly_tax,
                                         'created_by'    => $this->session->userdata('user_id'),
+                                        'unemployement_total'  => $tax_amt_final,
                                     );
                                     $this->db->insert('tax_history_employer', $data1);
                                 }
