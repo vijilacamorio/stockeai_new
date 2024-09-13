@@ -2121,13 +2121,21 @@ public function purchase_entry()
     $this->form_validation->set_rules('bill_date', 'Bill date', 'required');
     $this->form_validation->set_rules('payment_due_date', 'Payment Due Date', 'required');
     $this->form_validation->set_rules('paytype_drop', 'Payment Type', 'required');
-
+    $this->form_validation->set_rules("prodt[]", "Product Name", "required");
+     $this->form_validation->set_rules("thickness[]", "Thickness", "required|regex_match[/^\s*\d+(\.\d+)?\s*$/]");
+    $this->form_validation->set_rules("supplier_block_no[]", "Supplier Block Number",  "required|regex_match[/^\s*\d+(\.\d+)?\s*$/]");
+    $this->form_validation->set_rules("supplier_slab_no[]", "Supplier Slab No", "required|regex_match[/^\s*\d+(\.\d+)?\s*$/]");
+    $this->form_validation->set_rules("gross_width[]", "Gross Width", "required|regex_match[/^\s*\d+(\.\d+)?\s*$/]");
+    $this->form_validation->set_rules("gross_height[]", "Gross Height", "required|regex_match[/^\s*\d+(\.\d+)?\s*$/]");
+    $this->form_validation->set_rules("bundle_no[]", "Bundle Number",  "required|regex_match[/^\s*\d+(\.\d+)?\s*$/]");
+    $this->form_validation->set_rules("net_width[]", "Net Width",  "required|regex_match[/^\s*\d+(\.\d+)?\s*$/]");
+    $this->form_validation->set_rules("net_height[]", "Net Height",  "required|regex_match[/^\s*\d+(\.\d+)?\s*$/]");
     if ($this->form_validation->run() == FALSE) {
         $response = [
             'status' => 'failure',
             'msg' => validation_errors()
         ];
-        echo json_encode($response);
+        echo json_encode($response);exit;
         return;
     } else {
         $createdby = decodeBase64UrlParameter($this->input->post('admin_company_id'));
@@ -2246,6 +2254,7 @@ public function purchase_entry()
                 'create_by' => $createdby
             ];
             $this->db->insert('product_purchase_details', $purchase_table2);
+          
 
             $product_table = [
                 'create_by' => $createdby,
@@ -2486,7 +2495,7 @@ public function service_provider_entry() {
     $product_name_ser = $this->input->post('product_name', TRUE);
     $description_service = $this->input->post('description_service', TRUE);
     $qua_ser = $this->input->post('quality', TRUE);
-    
+
     $total_price = $this->input->post('total_price', TRUE);
     for ($i = 0, $n = count($qua_ser); $i < $n; $i++) {
       $productname = $product_name_ser[$i];

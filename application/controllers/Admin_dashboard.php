@@ -256,7 +256,7 @@ $chart_label = $chart_data = '';
     'purchase_amount'     => number_format($sales_report[0]['total_supplier_rate'], 2, '.', ','),
     'sales_amount'        => number_format($salesamount[0]['total_amount'], 2, '.', ','),
     'todays_sale_product' => $todays_sale_product,
-    'todays_total_purchase'=> number_format($purchase_report[0]['ttl_purchase_amount'], 2, '.', ','),
+    'todays_total_purchase'=> '',
     'total_profit'        => number_format($total_profit, 2, '.', ','),
     'monthly_sales_report'=> $monthly_sales_report,
     'count_invoices' => $getrowcount_invoices,

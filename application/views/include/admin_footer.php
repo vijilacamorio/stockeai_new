@@ -582,7 +582,7 @@ updateOverallTotals(true);
    });
 // On key add new row
 $(document).on('keyup', '.normalinvoice tbody tr:last', function (e) {
-
+debugger;
 
     var tableId = $(this).closest('table').attr('id');
     var dynamicId = tableId.split('_').pop();
