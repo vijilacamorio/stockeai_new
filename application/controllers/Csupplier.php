@@ -99,7 +99,7 @@ class Csupplier extends CI_Controller {
                        $response = array(
                             'status' =>'success',
                             'msg'    => 'Supplier has been inserted successfully',
-                            'result' => array('name' => $supplier_name, 'id' =>$admin_comp_id),
+                            'result' => array('currency_type' => $this->input->post('ven_currency',TRUE),'supplier_id' => $supplier_id,'name' => $supplier_name, 'id' =>$admin_comp_id,'vendor_type' => $this->input->post('sup_vendor_type',TRUE),'vendor_add' => $this->input->post('ven_address',TRUE)),
                         );
                 }
             }

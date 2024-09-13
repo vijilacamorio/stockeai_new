@@ -313,12 +313,25 @@ $(document).ready(function(){
                         console.log(response);
                         if(response.status =='success'){
                             $('#errormessage_vendor').html(succalert+response.msg+'</div>');
-                        
-                            window.setTimeout(function(){
-                                $('#supplier_id').append('<option selected value="'+response.result.id+'">'+response.result.name+'</option>');
-                                $('#add_vendor').modal('hide');
+                         window.setTimeout(function(){
+                                $('#supplier_id').append('<option selected value="'+response.result.supplier_id+'">'+response.result.name+'</option>');
+                                var custo_currency = response.result.currency_type;
+                                    $(".cus").html(custo_currency);
+                                    $("label[for='custocurrency']").html(custo_currency);
+                                    $.getJSON('https://open.er-api.com/v6/latest/<?php echo $curn_info_default; ?>', function(data) {
+                                                var x = data['rates'][custo_currency];
+                                                var Rate = parseFloat(x).toFixed(2);
+                                                Rate = isNaN(Rate) ? 0 : Rate;
+                                               $('#vendor_type_details').val(response.result.vendor_type);
+                                  $('#vendor_add').val(response.result.vendor_add);
+                                                $('#sp_address').val(response.result.vendor_add);
+                                                $(".custocurrency_rate").val(Rate);
+                                                   $(".custocurrency_rate_provider").val(Rate);
+                                             });
                                 $('#ven_insert_supplier')[0].reset();
+                               $('#add_vendor').modal('hide');
                             },1000);
+                        
                         }else{
                             $('#errormessage_vendor').html(failalert+response.msg+'</div>'); 
 

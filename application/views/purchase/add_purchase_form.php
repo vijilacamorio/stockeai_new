@@ -389,7 +389,7 @@ $this->load->view('include/bootstrap_model', $modaldata);
                               </div>
                            </div>
                             <div class="table-responsive">
-                              <div>
+                              <div id="content">
                                  <table class="table normalinvoice table-bordered table-hover" id="normalinvoice_1"   style="border:2px solid #d7d4d6;" >
                                     <thead>
                                        <tr class="btnclr">
@@ -542,7 +542,7 @@ $this->load->view('include/bootstrap_model', $modaldata);
                               <?php echo display('Live Rate') ?> :
                            </td>
                            <td class="hiden btnclr" style="width:13%;text-align-last: center;padding:5px; border:none;font-weight:bold;color:white;">1 <?php echo $curn_info_default; ?>
-                              = <input style="width: 80px;text-align:center;color:black;padding:5px;" type="text" class="custocurrency_rate"/>&nbsp;<label for="custocurrency"  ></label>
+                              = <input style="width: 80px;text-align:center;color:black;padding:5px;" type="text" class="custocurrency_rate"/>&nbsp;<label for="custocurrency" id="currencyLabel" ></label>
                            </td>
                            <td style="border:none;text-align:right;font-weight:bold;"><?php echo display('Tax') ?> :
                            </td>
@@ -1998,7 +1998,8 @@ function configureDropDownLists(ddl1,ddl2) {
       let dynamic_id=2;
 
    function addbundle(){
-   $(this).closest('table').find('.addbundle').css("display","none");
+      debugger;
+   //$(this).closest('table').find('.addbundle').css("display","none");
    $(this).closest('table').find('.removebundle').css("display","block");
    
    var newdiv = document.createElement('div');
