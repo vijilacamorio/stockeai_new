@@ -1192,11 +1192,13 @@ function getSupplierInfo(supplier_id){
                          }
                       });
                   });
+
+                  
                    $(document).on('click', '.removebundle', function(){
- var remove_id=$(this).closest('table').attr('id');
- $('#'+remove_id).remove();
-updateOverallTotals(true);
- });
+                     var remove_id=$(this).closest('table').attr('id');
+                     $('#'+remove_id).remove();
+                     updateOverallTotals(true);
+                     });
 
  $('#product_tax').on('change', function (e) {
         var total=$('#Over_all_Total').val();
@@ -1995,8 +1997,7 @@ function configureDropDownLists(ddl1,ddl2) {
    ddl.options.add(opt);
    }
 
-      let dynamic_id=2;
-
+   let dynamic_id=2;
    function addbundle(){
       debugger;
    //$(this).closest('table').find('.addbundle').css("display","none");
