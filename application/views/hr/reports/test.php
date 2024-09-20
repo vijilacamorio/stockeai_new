@@ -8,12 +8,12 @@
       </div>
       <div class="header-title">
          <div class="logo-holder logo-9">
-         <h1><?php echo ('Federal Income Tax'); ?></h1>
+         <h1><?php echo ('Federal Overall Summary'); ?></h1>
          </div>
             <ol class="breadcrumb" style=" border: 3px solid #d7d4d6;" >
                <li><a href="<?php echo base_url()?>"><i class="pe-7s-home"></i> <?php echo display('home') ?></a></li>
                <li><a href="#"><?php echo display('report') ?></a></li>
-               <li class="active" style="color:orange"><?php echo 'Federal Income Tax';?></li>
+               <li class="active" style="color:orange"><?php echo 'Federal Overall Summary';?></li>
             <div class="load-wrapp">
                <div class="load-10">
                   <div class="bar"></div>
@@ -70,21 +70,42 @@
                <div class="error_display mb-2"></div>
                <div class="panel panel-bd lobidrag">
                   <div class="panel-body" style="border: 3px solid #D7D4D6;">
-                     <table class="table table-bordered" cellspacing="0" width="100%" id="federalincometax_list">
-                        <thead>
-                           <tr class="btnclr">
-                              <th class="text-center"><?php echo ('S.No') ?></th>
-                              <th class="text-center"><?php echo ('Employee Name') ?></th>
-                              <th class="text-center"><?php echo ('Employee Tax') ?></th>
-                              <th class="text-center"><?php echo ('TimeSheet ID') ?></th>
-                              <th class="text-center"><?php echo ('Pay Period') ?></th>
-                              <th class="text-center"><?php echo ('Cheque Date') ?></th>
-                              <th class="text-center"><?php echo ('Federal Income Tax') ?></th>
-                           </tr>
+                     <table class="table table-bordered" cellspacing="0" width="100%" id="socialsecuritytax_list">
+                        <thead class="sortableTable">
+                            <tr class="sortableTable__header btnclr">
+                                <th rowspan="2" class="1 value" data-col="1" style="height: 45.0114px; text-align:center; "> <?php echo 'S.NO'?> </th>
+                                <th rowspan="2" class="2 value" data-col="2" style="text-align:center; width: 300px;"> <?php echo 'Employee Name'?> </th>
+                                <th rowspan="2" class="3 value" data-col="3" style="text-align:center;width: 150px; "> <?php echo 'Employee Tax'?> </th>
+
+                                 <th rowspan="2" class="3 value" data-col="3" style="text-align:center;width: 150px; "> <?php echo 'Cheque Date'?> </th>
+                               
+                                <th colspan="2" class="4 value" data-col="4" style="text-align:center;width: 200px;"> <?php echo ('Federal Income Tax')?> </th>
+                                <th colspan="2" class="4 value" data-col="4" style="text-align:center;width: 200px;"> <?php echo ('Social Security Tax')?> </th>
+                                <th colspan="2" class="4 value" data-col="4" style="text-align:center;width: 200px;"> <?php echo ('Medicare Tax')?> </th>
+                                <th colspan="2" class="4 value" data-col="4" style="text-align:center;width: 200px;"> <?php echo ('Unemployment Tax')?> </th>
+                          
+                            </tr>
+                            <tr class="btnclr" >
+                                <th class="4 value" data-col="4" style="text-align:center;width: 200px;"> <?php echo ('Employee Contribution')?> </th>
+                                <th class="4 value" data-col="4" style="text-align:center;width: 200px;"> <?php echo ('Employer Contribution')?> </th>
+                                <th class="4 value" data-col="4" style="text-align:center;width: 200px;"> <?php echo ('Employee Contribution')?> </th>
+                                <th class="4 value" data-col="4" style="text-align:center;width: 200px;"> <?php echo ('Employer Contribution')?> </th>
+                                <th class="4 value" data-col="4" style="text-align:center;width: 200px;"> <?php echo ('Employee Contribution')?> </th>
+                                <th class="4 value" data-col="4" style="text-align:center;width: 200px;"> <?php echo ('Employer Contribution')?> </th>
+                                <th class="4 value" data-col="4" style="text-align:center;width: 200px;"> <?php echo ('Employee Contribution')?> </th>
+                                <th class="4 value" data-col="4" style="text-align:center;width: 200px;"> <?php echo ('Employer Contribution')?> </th>
+                            </tr>
                         </thead>
                         <tfoot>
                             <tr class="btnclr">
-                                <th colspan="6" style="text-align:right">Total:</th>
+                                <th colspan="4" style="text-align: end;">Total</th>
+                                <th class="text-center"></th>
+                                <th class="text-center"></th>
+                                <th class="text-center"></th>
+                                <th class="text-center"></th>
+                                <th class="text-center"></th>
+                                <th class="text-center"></th>
+                                <th class="text-center"></th>
                                 <th class="text-center"></th>
                             </tr>
                         </tfoot>
@@ -108,12 +129,12 @@
 var federalincomeDataTable;
 $(document).ready(function() {
 $(".sidebar-mini").addClass('sidebar-collapse') ;
-    if ($.fn.DataTable.isDataTable('#federalincometax_list')) {
-        $('#federalincometax_list').DataTable().clear().destroy();
+    if ($.fn.DataTable.isDataTable('#socialsecuritytax_list')) {
+        $('#socialsecuritytax_list').DataTable().clear().destroy();
     }
     var csrfName = '<?php echo $this->security->get_csrf_token_name(); ?>';
     var csrfHash = '<?php echo $this->security->get_csrf_hash(); ?>';
-    federalincomeDataTable = $('#federalincometax_list').DataTable({
+    federalincomeDataTable = $('#socialsecuritytax_list').DataTable({
         "processing": true,
         "serverSide": true,
         "lengthMenu": [
@@ -121,7 +142,7 @@ $(".sidebar-mini").addClass('sidebar-collapse') ;
             [10, 25, 50, 100]
         ],
         "ajax": {
-            "url": "<?php echo base_url('Chrm/federaIndexData?id='); ?>" +
+            "url": "<?php echo base_url('Chrm/overallSocialtaxIndexData?id='); ?>" +
                 encodeURIComponent('<?php echo $_GET['id']; ?>'),
             "type": "POST",
             "data": function(d) {
@@ -140,14 +161,19 @@ $(".sidebar-mini").addClass('sidebar-collapse') ;
          { "data": "table_id" },
          { "data": "first_name" },
          { "data": "employee_tax" },
-         { "data": "timesheet_id" },
-         { "data": "month" },
          { "data": "cheque_date" },
-         { "data": "f_ftax" },
+         { "data": "f_employee" },
+         { "data": "f_employer" },
+         { "data": "socialsecurity_employee" },
+         { "data": "socialsecurity_employer" },
+         { "data": "medicare_employee" },
+         { "data": "medicare_employer" },
+         { "data": "unemployment_employee" },
+         { "data": "unemployment_employer" },
          ],
         "columnDefs": [{
             "orderable": false,
-            "targets": [0, 6],
+            "targets": [0, 11],
             searchBuilder: {
                 defaultCondition: '='
             },
@@ -173,16 +199,43 @@ $(".sidebar-mini").addClass('sidebar-collapse') ;
                 });
             },
         }],
-        "pageLength": 10,
+        "pageLength": 50,
         "colReorder": true,
         "stateSave": true,
         "footerCallback": function(row, data, start, end, display) {
             var api = this.api();
-            var total = 0;
-            api.column(6, { page: 'current' }).data().each(function(value, index) {
-                total += parseFloat(value.replace(/,/g, '')) || 0;
-            });
-            $(api.column(6).footer()).html('$' + total.toFixed(2));
+            function calculateTotal(columnIndex) {
+                var total = 0;
+                api.column(columnIndex, { page: 'current' }).data().each(function(value) {
+                    if (value && typeof value === 'string') {
+                        total += parseFloat(value.replace(/[^0-9.-]/g, '')) || 0; 
+                    }
+                });
+                return total;
+            }
+            var federalemployeeContributionTotal = calculateTotal(4);
+            var federalemployerContributionTotal = calculateTotal(5);
+            
+            var socialemployeeContributionTotal = calculateTotal(6);
+            var socialemployerContributionTotal = calculateTotal(7);
+
+            var medicareemployeeContributionTotal = calculateTotal(8);
+            var medicareemployerContributionTotal = calculateTotal(9);
+
+            var unemploymentemployeeContributionTotal = calculateTotal(10);
+            var unemploymentemployerContributionTotal = calculateTotal(11);
+
+            $(api.column(4).footer()).html('$' + federalemployeeContributionTotal.toFixed(2));
+            $(api.column(5).footer()).html('$' + federalemployerContributionTotal.toFixed(2));
+
+            $(api.column(6).footer()).html('$' + socialemployeeContributionTotal.toFixed(2));
+            $(api.column(7).footer()).html('$' + socialemployerContributionTotal.toFixed(2));
+
+            $(api.column(8).footer()).html('$' + medicareemployeeContributionTotal.toFixed(2));
+            $(api.column(9).footer()).html('$' + medicareemployerContributionTotal.toFixed(2));
+
+            $(api.column(10).footer()).html('$' + unemploymentemployeeContributionTotal.toFixed(2));
+            $(api.column(11).footer()).html('$' + unemploymentemployerContributionTotal.toFixed(2));
         },
         "stateSaveCallback": function(settings, data) {
             localStorage.setItem('quotation', JSON.stringify(data));
@@ -226,7 +279,7 @@ $(".sidebar-mini").addClass('sidebar-collapse') ;
                     $(win.document.body)
                         .css('font-size', '10pt')
                         .prepend(
-                            '<div style="text-align:center;"><h3>Manage Quotation</h3></div>'
+                            '<div style="text-align:center;"><h3>Federal Overall Summary</h3></div>'
                         )
                         .append(
                             '<div style="text-align:center;"><h4>amoriotech.com</h4></div>'
@@ -331,14 +384,4 @@ tbody{
 .error-border {
     border: 2px solid red;
 }
-
-/*.selectemployee{
-   width: 260px;
-  height: 34px;
-  background: #fff;
-  border: 1px solid #fff;
-  border-radius: 5px;
-  box-shadow: 0 0 3px #ccc, 0 10px 15px #fff inset;
-  color: #000; 
-}*/
 </style>

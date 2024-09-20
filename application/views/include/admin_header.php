@@ -979,19 +979,19 @@ $(document).ready(function() {
 										</a>
 										<ul class="treeview-menu">
 											<li class="treeview  "><a
-													href="<?php echo base_url(); ?>Chrm/federal_tax_report"><?php echo ('Income Tax'); ?></a>
+													href="<?php echo base_url(); ?>Chrm/federal_tax_report?id=<?php echo $encode_com_id; ?>"><?php echo ('Income Tax'); ?></a>
 											</li>
 											<li class="treeview  "><a
-													href="<?php echo base_url(); ?>Chrm/social_tax_report"><?php echo ('Social Security'); ?>
+													href="<?php echo base_url(); ?>Chrm/social_tax_report?id=<?php echo $encode_com_id; ?>"><?php echo ('Social Security'); ?>
 												</a></li>
 											<li class="treeview  "><a
-													href="<?php echo base_url(); ?>Chrm/medicare_tax_report"><?php echo ('Medicare'); ?></a>
+													href="<?php echo base_url(); ?>Chrm/medicare_tax_report?id=<?php echo $encode_com_id; ?>"><?php echo ('Medicare'); ?></a>
 											</li>
 											<li class="treeview  "><a
-													href="<?php echo base_url(); ?>Chrm/unemployment_tax_report"><?php echo ('Unemployment'); ?></a>
+													href="<?php echo base_url(); ?>Chrm/unemployment_tax_report?id=<?php echo $encode_com_id; ?>"><?php echo ('Unemployment'); ?></a>
 											</li>
 											<li class="treeview  "><a
-													href="<?php echo base_url(); ?>Chrm/federal_summary"><?php echo ('Overall Summary'); ?></a>
+													href="<?php echo base_url(); ?>Chrm/federal_summary?id=<?php echo $encode_com_id; ?>"><?php echo ('Overall Summary'); ?></a>
 											</li>
 										</ul>
 									</li>
