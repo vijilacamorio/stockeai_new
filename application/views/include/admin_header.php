@@ -1007,7 +1007,7 @@ $(document).ready(function() {
 											<?php foreach ($state_tax_list as $st) : ?>
 											<li class="treeview">
 												<a
-													href="<?php echo base_url('Chrm/report/' . $st['tax']); ?>"><?php echo $st['tax']; ?></a>
+													href="<?php echo base_url('Chrm/report/' . $st['tax']) . '?id=' . $encode_com_id; ?>"><?php echo $st['tax']; ?></a>
 											</li>
 											<?php endforeach; ?>
 											<?php else : ?>
