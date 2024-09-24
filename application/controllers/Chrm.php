@@ -631,19 +631,72 @@ $final_amount = $row['total_amount'];
         print_r($mergedArray);
         echo json_encode($mergedArray);
     }
-    public function social_taxsearch() {
-        $CI =  & get_instance();
-        $CI->load->model('Web_settings');
-        $this->load->model('Hrm_model');
-        $emp_name               = trim($this->input->post('employee_name'));
-        $date                   = $this->input->post('daterangepicker-field');
-        $setting_detail         = $CI->Web_settings->retrieve_setting_editdata();
-        $data['setting_detail'] = $setting_detail;
-        $data['employe']        = $this->Hrm_model->so_tax_report_employee($emp_name, $date, $status);
-        $data['employer']       = $this->Hrm_model->so_tax_report_employer($emp_name, $date, $status);
-        $data['employee_data']  = $this->Hrm_model->employee_data_get();
-        echo json_encode($data);
+ public function social_taxsearch(){
+      $CI = & get_instance();
+      $CI->load->model('Web_settings');
+      $this->load->model('Hrm_model');
+      $emp_name = trim($this->input->post('employee_name'));
+      $date = $this->input->post('daterangepicker-field');
+      $setting_detail = $CI->Web_settings->retrieve_setting_editdata();
+      $data['setting_detail']            = $setting_detail;
+      $data['employe'] = $this->Hrm_model->so_tax_report_employee($emp_name,$date,$status);
+      $data['employer'] = $this->Hrm_model->so_tax_report_employer($emp_name, $date, $status);
+      if ($data['employe']) {
+        $aggregated = [];
+        $aggregated_employe = [];
+        foreach ($data['employe'] as $row) {
+            $key = $row['first_name'] . '|' . $row['middle_name'] . '|' . $row['last_name'] . '|' . $row['employee_tax'];
+            if (!isset($aggregated_employe[$key])) {
+                $aggregated_employe[$key] = [
+                    'first_name' => $row['first_name'],
+                    'middle_name' => $row['middle_name'],
+                    'last_name' => $row['last_name'],
+                    'employee_tax' => $row['employee_tax'],
+                    'fftax' => 0,
+                    'mmtax' => 0,
+                    'sstax' => 0,
+                    'uutax' => 0,
+                ];
+            }
+            $aggregated_employe[$key]['fftax'] += $row['fftax'];
+            $aggregated_employe[$key]['mmtax'] += $row['mmtax'];
+            $aggregated_employe[$key]['sstax'] += $row['sstax'];
+            $aggregated_employe[$key]['uutax'] += $row['uutax'];
+        }
+        // Convert aggregated data to array format
+        $data['aggregated_employe'] = array_values($aggregated_employe);
+    } else {
+        $data['aggregated_employe'] = [];
     }
+      if ($data['employer']) {
+          $aggregated = [];
+          foreach ($data['employer'] as $row) {
+              $key = $row['first_name'] . '|' . $row['middle_name'] . '|' . $row['last_name'] . '|' . $row['employee_tax'];
+              if (!isset($aggregated[$key])) {
+                  $aggregated[$key] = [
+                      'first_name' => $row['first_name'],
+                      'middle_name' => $row['middle_name'],
+                      'last_name' => $row['last_name'],
+                      'employee_tax' => $row['employee_tax'],
+                      'fftax' => 0,
+                      'mmtax' => 0,
+                      'sstax' => 0,
+                      'uutax' => 0,
+                  ];
+              }
+              $aggregated[$key]['fftax'] += $row['fftax'];
+              $aggregated[$key]['mmtax'] += $row['mmtax'];
+              $aggregated[$key]['sstax'] += $row['sstax'];
+              $aggregated[$key]['uutax'] += $row['uutax'];
+          }
+          // Convert aggregated data to array format
+          $data['aggregated_employer'] = array_values($aggregated);
+      } else {
+          $data['aggregated_employer'] = [];
+      }//print_r( $data['aggregated_employer']);die();
+      $data['employee_data'] =$this->Hrm_model->employee_data_get();
+      echo json_encode($data);
+   }
     public function medicare_tax_report() {
         $CI =  & get_instance();
         $CI->load->model('Web_settings');

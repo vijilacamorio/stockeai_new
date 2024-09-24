@@ -177,7 +177,7 @@
                   <form id="fetch_tax">
                      <table class="table" align="center" style="overflow-x: unset;position: relative;">
                         <tr style='text-align:center;font-weight:bold;' class="filters">
-                           <td style='visibility:hidden' class="search_dropdown" style="color: black;">
+                           <td style='width:2px;visibility:hidden' class="search_dropdown" style="color: black;">
                               <span>Tax Choice </span>
                               <select id="tax_Choice" name='tax_choice' class="tax_choice form-control" >
                                <option value="All">All</option>
@@ -186,7 +186,7 @@
                               </select>
                             </td>
 
-                           <td style='visibility:hidden' class="search_dropdown" style="color: black;">
+                           <td style='width:2px;visibility:hidden' class="search_dropdown" style="color: black;">
                               <span>State <span class="text-danger">*</span></span>
                               <select id="tax_Choice" name='selectState' class="selectState form-control" >
                                  <option value="">Select Your State</option>
@@ -198,7 +198,7 @@
                               </select>
                            </td>
 
-                            <td style='visibility:hidden' class="search_dropdown" style="color: black;">
+                            <td style='width:2px;visibility:hidden' class="search_dropdown" style="color: black;">
                               <span>Tax Type </span>
                               <select id="tax_Choice" name='taxType' class="taxType form-control" >
                                  <option value="">Select Your Tax Type</option>
@@ -518,7 +518,7 @@ $(document).ready(function () {
             data: formData,
        success: function (response) {
                 $('#tablesContainer').css('display','block');
-                populateTables(response);
+                populateTable(response);
   federal_summary();
                 if(taxtpe == 'federal'){
                     $('.federal').show();
@@ -638,147 +638,163 @@ function federal_summary(){
         }
     });
 }
-function populateTables(response) {
-    // Assuming you have jQuery objects for the tables
-    var stateTaxTable = $("#StateTaxTable");
-    var livingStateTaxTable = $("#LivingStateTaxTable");
+function populateTable(response) {
+    // Clear existing tables
+    const stateTaxTable = $("#StateTaxTable");
+    const livingStateTaxTable = $("#LivingStateTaxTable");
+    stateTaxTable.find("thead, tbody, tfoot").empty();
+    livingStateTaxTable.find("thead, tbody, tfoot").empty();
 
-    // Populate the State Tax Table
-    var stateTaxData = {
-        state_tax: response.employer_contribution.state_tax.concat(response.employee_contribution.state_tax)
-    };
-    populateTable(stateTaxTable, stateTaxData, "STATE TAX");
+    const hasEmployerContributions = Object.keys(response.employer_contribution).length > 0;
+    const hasEmployeeContributions = Object.keys(response.employee_contribution).length > 0;
 
-    // Populate the Living State Tax Table
-    var livingStateTaxData = {
-        living_state_tax: response.employer_contribution.living_state_tax.concat(response.employee_contribution.living_state_tax)
-    };
-    populateTable(livingStateTaxTable, livingStateTaxData, "LIVING STATE TAX");
-}
-function populateTable(table, data, taxTypeLabel) {
-    if (!table || !table.find) {
-        console.error('Table parameter is not a jQuery object');
-        return;
+    if (!hasEmployerContributions && !hasEmployeeContributions) {
+        stateTaxTable.find("tbody").append("<tr><td colspan='100%' style='text-align:center;'>No data found</td></tr>");
+        livingStateTaxTable.find("tbody").append("<tr><td colspan='100%' style='text-align:center;'>No data found</td></tr>");
+        return;  // Stop execution here as there's no data
     }
 
-    // Clear existing content
-    table.find("thead, tbody, tfoot").empty();
-
-    // Create table headers dynamically
-    var taxHeaders = "<tr class='btnclr'><th rowspan='2' style='border-bottom:none;text-align:center'>S.No</th><th rowspan='2' style='border-bottom:none;text-align:center'>Employee Name</th>";
-
-    // Create headers for tax types
-    var taxTypeMap = {}; // Initialize or update this as needed
-    var taxTypeKeys = Object.keys(data);
-    taxTypeKeys.forEach(function (taxType) {
-        var taxes = data[taxType].map(item => item.tax.trim() + (item.code ? "-" + item.code.trim() : ""));
-        taxes.forEach(function (taxKey) {
-            if (!taxTypeMap[taxType]) taxTypeMap[taxType] = [];
-            if (!taxTypeMap[taxType].includes(taxKey)) taxTypeMap[taxType].push(taxKey);
+    // Function to generate the tax table for a given tax type
+    function generateTaxTable(taxType, employerContributions, employeeContributions, table) {
+        const allTaxTypes = {};
+        const taxTypeCounts = {};
+        
+        // Collect unique tax codes
+        employerContributions.forEach(item => {
+            const taxKey = item.tax.trim() + "-" + (item.code ? item.code.trim() : "");
+            allTaxTypes[taxKey] = item.taxType || '';  
+            taxTypeCounts[taxKey] = (taxTypeCounts[taxKey] || 0) + 1;
         });
-    });
 
-    Object.keys(taxTypeMap).forEach(function (taxType) {
-        var taxes = taxTypeMap[taxType];
-        taxHeaders += "<th colspan='" + (2 * taxes.length) + "' style='text-align:center'>" + taxTypeLabel + "</th>";
-    });
-
-    taxHeaders += "</tr><tr class='btnclr'>";
-
-    // Tax names and codes
-    Object.keys(taxTypeMap).forEach(function (taxType) {
-        var taxes = taxTypeMap[taxType];
-        taxes.forEach(function (taxKey) {
-            var taxName = taxKey.split('-')[0];
-            var code = taxKey.split('-')[1];
-            taxHeaders += "<th colspan='2' style='text-align:center'>" + taxName + (code ? "-" + code : "") + "</th>";
+        employeeContributions.forEach(item => {
+            const taxKey = item.tax.trim() + "-" + (item.code ? item.code.trim() : "");
+            allTaxTypes[taxKey] = item.taxType || '';
+            taxTypeCounts[taxKey] = (taxTypeCounts[taxKey] || 0) + 1;
         });
-    });
 
-    taxHeaders += "</tr><tr class='btnclr'><th></th><th></th>";
-
-    // Employee and Employer Contribution headers
-    Object.keys(taxTypeMap).forEach(function (taxType) {
-        var taxes = taxTypeMap[taxType];
-        taxes.forEach(function () {
-            taxHeaders += "<th style='text-align:center'>Employee Contribution</th><th style='text-align:center'>Employer Contribution</th>";
-        });
-    });
-
-    taxHeaders += "</tr>";
-    table.find("thead").append(taxHeaders);
-
-    // Consolidate contributions by employee and tax
-    var consolidatedContributions = {};
-    Object.keys(data).forEach(function (taxType) {
-        data[taxType].forEach(function (item) {
-            var employeeName = item.employee_name;
-            var taxKey = item.tax.trim() + (item.code ? "-" + item.code.trim() : "");
-            if (!consolidatedContributions[employeeName]) {
-                consolidatedContributions[employeeName] = {};
+        const taxTypeMap = {};
+        Object.keys(allTaxTypes).forEach(taxKey => {
+            const taxType = allTaxTypes[taxKey];
+            if (!taxTypeMap[taxType]) {
+                taxTypeMap[taxType] = [];
             }
-            if (!consolidatedContributions[employeeName][taxKey]) {
-                consolidatedContributions[employeeName][taxKey] = { employee: "0.000", employer: "0.000" };
-            }
-            if (taxType === 'state_tax') {
-                consolidatedContributions[employeeName][taxKey].employee = parseFloat(item.total_amount || 0).toFixed(3) || "0.000";
-            } else if (taxType === 'living_state_tax') {
-                consolidatedContributions[employeeName][taxKey].employer = parseFloat(item.total_amount || 0).toFixed(3) || "0.000";
-            }
+            taxTypeMap[taxType].push(taxKey);
         });
-    });
 
-    // Populate rows for each employee with S.No
-    var tbody = table.find("tbody");
-    var serialNumber = 1;
-    Object.keys(consolidatedContributions).forEach(function (employeeName) {
-        var contributions = consolidatedContributions[employeeName];
-        var row = $("<tr>");
-        row.append("<td>" + serialNumber++ + "</td>");  // Add serial number column
-        row.append("<td>" + employeeName + "</td>");
-
-        Object.keys(taxTypeMap).forEach(function (taxType) {
-            var taxes = taxTypeMap[taxType];
-            taxes.forEach(function (taxKey) {
-                var taxData = contributions[taxKey] || { employee: "0.000", employer: "0.000" };
-                row.append("<td>$" + taxData.employee + "</td>");
-                row.append("<td>$" + taxData.employer + "</td>");
+        // Create table headers dynamically
+        if (Object.keys(taxTypeMap).length > 0) {
+            let taxHeaders = "<tr class='btnclr'><th rowspan='2' style='border-bottom:none;text-align:center'>S.No</th><th rowspan='2' style='border-bottom:none;text-align:center'>Employee Name</th>";
+            Object.keys(taxTypeMap).forEach(taxType => {
+                const taxes = taxTypeMap[taxType];
+                const displayTaxType = (taxType === "living_state_tax") ? "LIVING STATE TAX" : "WORKING STATE TAX";
+                taxHeaders += "<th colspan='" + (2 * taxes.length) + "' style='text-align:center'>" + displayTaxType + "</th>";
             });
-        });
+            taxHeaders += "</tr><tr class='btnclr'>";
 
-        tbody.append(row);
-    });
+            Object.keys(taxTypeMap).forEach(taxType => {
+                const taxes = taxTypeMap[taxType];
+                taxes.forEach(taxKey => {
+                    const taxName = taxKey.split('-')[0];
+                    const code = taxKey.split('-')[1];
+                    taxHeaders += "<th colspan='2' style='text-align:center'>" + taxName + "-" + code + "</th>";
+                });
+            });
 
-    // Populate footer with total contributions
-    var tfoot = table.find("tfoot");
-    var footerRow = $("<tr class='btnclr'>").append("<td>Total</td><td></td>");
-    
-    Object.keys(taxTypeMap).forEach(function (taxType) {
-        var taxes = taxTypeMap[taxType];
-        taxes.forEach(function (taxKey) {
-            var totalEmployeeContribution = 0;
-            var totalEmployerContribution = 0;
-            Object.keys(consolidatedContributions).forEach(function (employeeName) {
-                var contribution = consolidatedContributions[employeeName][taxKey];
-                if (contribution) {
-                    totalEmployeeContribution += parseFloat(contribution.employee || 0);
-                    totalEmployerContribution += parseFloat(contribution.employer || 0);
+            taxHeaders += "</tr><tr class='btnclr'><th></th><th></th>"; // Add empty cell for S.No
+            Object.keys(taxTypeMap).forEach(taxType => {
+                const taxes = taxTypeMap[taxType];
+                taxes.forEach(() => {
+                    taxHeaders += "<th style='text-align:center'>Employee Contribution</th><th style='text-align:center'>Employer Contribution</th>";
+                });
+            });
+            taxHeaders += "</tr>";
+            table.find("thead").append(taxHeaders);
+
+            // Consolidate contributions
+            const consolidatedContributions = {};
+            employerContributions.forEach(item => {
+                const employeeName = item.employee_name;
+                const taxKey = item.tax.trim() + "-" + (item.code ? item.code.trim() : "");
+                if (!consolidatedContributions[employeeName]) {
+                    consolidatedContributions[employeeName] = {};
                 }
+                if (!consolidatedContributions[employeeName][taxKey]) {
+                    consolidatedContributions[employeeName][taxKey] = { employee: "0.000", employer: "0.000" };
+                }
+                consolidatedContributions[employeeName][taxKey].employer = parseFloat(item.total_amount).toFixed(3) || "0.000";
             });
-            footerRow.append("<td>$" + totalEmployeeContribution.toFixed(3) + "</td>");
-            footerRow.append("<td>$" + totalEmployerContribution.toFixed(3) + "</td>");
-        });
-    });
-    tfoot.append(footerRow);
+
+            employeeContributions.forEach(item => {
+                const employeeName = item.employee_name;
+                const taxKey = item.tax.trim() + "-" + (item.code ? item.code.trim() : "");
+                if (!consolidatedContributions[employeeName]) {
+                    consolidatedContributions[employeeName] = {};
+                }
+                if (!consolidatedContributions[employeeName][taxKey]) {
+                    consolidatedContributions[employeeName][taxKey] = { employee: "0.000", employer: "0.000" };
+                }
+                consolidatedContributions[employeeName][taxKey].employee = parseFloat(item.total_amount).toFixed(3) || "0.000";
+            });
+
+            // Populate rows for each employee
+            const tbody = table.find("tbody");
+            let serialNumber = 1; // Initialize serial number
+            Object.keys(consolidatedContributions).forEach(employeeName => {
+                const contributions = consolidatedContributions[employeeName];
+                const row = $("<tr>");
+                row.append("<td>" + serialNumber++ + "</td>"); // Add serial number
+                row.append("<td>" + employeeName + "</td>");
+
+                Object.keys(taxTypeMap).forEach(taxType => {
+                    const taxes = taxTypeMap[taxType];
+                    taxes.forEach(taxKey => {
+                        const taxData = contributions[taxKey] || { employee: "0.000", employer: "0.000" };
+                        row.append("<td>$" + taxData.employee + "</td>");
+                        row.append("<td>$" + taxData.employer + "</td>");
+                    });
+                });
+
+                tbody.append(row);
+            });
+
+            // Populate footer with total contributions
+            const tfoot = table.find("tfoot");
+            const footerRow = $("<tr class='btnclr'>").append("<td colspan='2'>Total</td>");
+
+            Object.keys(taxTypeMap).forEach(taxType => {
+                const taxes = taxTypeMap[taxType];
+                taxes.forEach(taxKey => {
+                    let totalEmployeeContribution = 0;
+                    let totalEmployerContribution = 0;
+                    Object.keys(consolidatedContributions).forEach(employeeName => {
+                        const contribution = consolidatedContributions[employeeName][taxKey];
+                        if (contribution) {
+                            totalEmployeeContribution += parseFloat(contribution.employee);
+                            totalEmployerContribution += parseFloat(contribution.employer);
+                        }
+                    });
+                    footerRow.append("<td>$" + totalEmployeeContribution.toFixed(3) + "</td>");
+                    footerRow.append("<td>$" + totalEmployerContribution.toFixed(3) + "</td>");
+                });
+            });
+
+            tfoot.append(footerRow);
+        } else {
+            const columnCount = table.find("thead th").length;
+            table.find("tbody").append(
+                "<tr style='border:none;'>" +
+                "<td colspan='" + columnCount + "' style='width:2%;padding:20px;text-align:center;'>" +
+                "<p style='text-align:center; margin:0; font-weight:bold;'>No data found</p>" +
+                "</td>" +
+                "</tr>"
+            );
+        }
+    }
+
+    // Generate tables for state_tax and living_state_tax
+    generateTaxTable("state_tax", response.employer_contribution.state_tax, response.employee_contribution.state_tax, stateTaxTable);
+    generateTaxTable("living_state_tax", response.employer_contribution.living_state_tax, response.employee_contribution.living_state_tax, livingStateTaxTable);
 }
-
-
-// document.getElementById("btn").addEventListener("click", () => {
-//   let table2excel = new Table2Excel();
-//   table2excel.export(document.querySelector("#ProfarmaInvList"));
-// });
-
-
 function generateExcel(el) {
     var clon = el.clone();
     var html = clon.wrap('<div>').parent().html();
