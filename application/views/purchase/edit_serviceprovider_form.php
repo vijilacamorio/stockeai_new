@@ -265,7 +265,7 @@
                               <tr>
                                  <th class="text-center" width="20%">Product Name<i class="text-danger">*</i></th>
                                  <th class="text-center" width="20%">Description<i class="text-danger">*</i></th>
-                                 <th class="text-center" width="20%">Quality<i class="text-danger">*</i></th>
+                                 <th class="text-center" width="20%">Quantity<i class="text-danger">*</i></th>
                                  <th class="text-center" width="20%">Amount<i class="text-danger">*</i></th>
                                  <th class="text-center" width="20%"><?php echo display('action') ?></th>
                               </tr>
@@ -285,7 +285,7 @@
                                        <?php    }?>
                                     </select>
                                  </td>
-                                 <td class="text-right"> <input type="text" name="description_service[]" id="description_<?php echo $cnt.$n; ?>"  min="0" class="form-control text-right store_cal_1" placeholder="" value="<?php  echo $di ['description'];  ?>" tabindex="6" /> </td>
+                                 <td class="text-right"> <input type="text" name="description_service[]" id="description_<?php echo $cnt.$n; ?>" class="form-control text-right store_cal_1" placeholder="" value="<?php  echo $di ['description'];  ?>" tabindex="6" /> </td>
                                  <td class="wt"> <input type="text" name="quality[]" id="quality_<?php echo $cnt.$n; ?>" min="0" class="form-control text-right store_cal_1" value="<?php  echo $di['quality'];  ?>" placeholder="" value="" tabindex="6" /> </td>
                                  <td> <span class="input-symbol-euro"><input  style="width: 100%;" class="total_price form-control" type="text" name="total_price[]" id="total_price_<?php echo $cnt.$n; ?>" value="<?php  echo $di['total_price'];  ?>" /> </td>
                                  <td style="text-align:center;"> <button class='delete btn btn-danger' type='button' value='Delete'><i class="fa fa-trash"></i></button> </td>

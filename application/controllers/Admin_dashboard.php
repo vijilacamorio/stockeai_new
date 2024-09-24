@@ -254,7 +254,7 @@ $chart_label = $chart_data = '';
     'todays_total_sales_report' => $todays_total_sales_amount,
     'chart_data'          => $chart_data,
     'purchase_amount'     => number_format($sales_report[0]['total_supplier_rate'], 2, '.', ','),
-    'sales_amount'        => number_format($salesamount[0]['total_amount'], 2, '.', ','),
+    'sales_amount'        => '',
     'todays_sale_product' => $todays_sale_product,
     'todays_total_purchase'=> '',
     'total_profit'        => number_format($total_profit, 2, '.', ','),
