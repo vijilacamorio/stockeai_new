@@ -171,6 +171,7 @@ th,td{
     font-size: 12px;
   }
 </style>
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.14.0/themes/base/jquery-ui.css">
 <div class="content-wrapper">
     <section class="content-header" style="height:70px;">
         <div class="header-icon">
@@ -623,7 +624,7 @@ th,td{
         <label for="aadhar">Cheque Date<i class="text-danger">*</i></label> 
         </div> 
             <div class="col-sm-6"> 
-        <input type="date" id="cheque_date" name="cheque_date" style="width: 141%;" value="<?php  echo $time_sheet_data[0]['cheque_date']; ?>"  class="form-control"  requried/><br />
+        <input type="text" id="datepicker_cheque" name="cheque_date" style="width: 141%;" value="<?php  echo $time_sheet_data[0]['cheque_date']; ?>"  class="form-control"  requried/><br />
                 </div></div>
         </div> 
         <div id="pc" > 
@@ -647,13 +648,25 @@ th,td{
             <div class="col-sm-6">
             <label for="pass">Cash<i class="text-danger">*</i></label> 
         </div>
-                            <div class="col-sm-4">
-                            <input type="text" id="cash" name="cash"  class="form-control"  value="Cash" readonly /><br />
-                            </div>
-                        </div>
-                     </div>
-                 </div>
+            <div class="col-sm-4">
+            <input type="text" id="cash" name="cash"  class="form-control"  value="Cash" readonly /><br />
             </div>
+        </div>
+        </div>
+        <!--Cash Method -->
+        <div id="Cashmethod">
+            <br/>
+            <div class="col-sm-12" style="padding-top:20px;">
+            <div class="col-sm-6">
+                <label for="aadhar">Date<i class="text-danger">*</i></label> 
+            </div>
+               <div class="col-sm-6"> 
+                    <input type="text" id="datepicker" name="cash_date" value="<?php echo $time_sheet_data[0]['cheque_date']; ?>"  class="form-control" requried /><br />
+                </div>
+            </div>
+        </div>
+        </div>
+        </div>
  <br>
  <br>
  <br>
@@ -743,21 +756,25 @@ $("#administration_approval").validate({
         {
             document.getElementById("adc").style.display = "block";
             document.getElementById("pc").style.display = "none";
+            document.getElementById("Cashmethod").style.display = "none";
         }
         else   if (that.value == "Bank")
         {
             document.getElementById("adc").style.display = "none";
             document.getElementById("pc").style.display = "block";      
+            document.getElementById("Cashmethod").style.display = "none";
         }
         else if (that.value == "Cash")
         {
             document.getElementById("adc").style.display = "none";
             document.getElementById("pc").style.display = "none";
+            document.getElementById("Cashmethod").style.display = "block";
         }
         else
         {
             document.getElementById("adc").style.display = "none";
             document.getElementById("pc").style.display = "none";
+            document.getElementById("Cashmethod").style.display = "none";
         }
     }
     $(document).ready(function(){
@@ -766,19 +783,23 @@ $("#administration_approval").validate({
         {
             $('#adc').show();
             $('#pc').hide();
+            $('#Cashmethod').hide();
         }
         else   if (that == "Bank")
         {
         $('#adc').hide();
         $('#pc').show();
+        $('#Cashmethod').hide();
         }
         else if (that == "Cash")
         {
             $('#adc').hide();
             $('#pc').hide(); 
+            $('#Cashmethod').show();
         }else{
             $('#adc').hide();
             $('#pc').hide();
+            $('#Cashmethod').hide();
         }
     })
     </script>
@@ -1074,5 +1095,16 @@ $('#total_net').val(total_net.toFixed(2)).trigger('change');
     var firstDateMDY = convertDateFormat(firstDate);
     var lastDateMDY = convertDateFormat(lastDate);
   $('#reportrange').val(firstDateMDY + ' - ' + lastDateMDY);
+});
+
+
+$(function() {
+    $("#datepicker").datepicker({
+        dateFormat: 'mm-dd-yy'  
+    });
+
+    $("#datepicker_cheque").datepicker({
+        dateFormat: 'mm-dd-yy'  
+    });
 });
 </script>  

@@ -447,46 +447,190 @@ $final_amount = $row['total_amount'];
         }
         return $merged_array;
     }
-    public function report($tax_name = '') {
-        $CI =  & get_instance();
+
+
+    // Old State Income Tax - Madhu
+    public function report($tax_name = '') 
+    {
+        $CI = & get_instance();
         $CI->load->model('Web_settings');
         $this->load->model('Hrm_model');
-        $tax_name               = urldecode($tax_name);
-        $data['employee_data']  = $this->Hrm_model->employee_data_get();
-        $setting_detail         = $CI->Web_settings->retrieve_setting_editdata();
+        $tax_name = urldecode($tax_name);
+        $data['employee_data'] = $this->Hrm_model->employee_data_get();
+        $setting_detail = $CI->Web_settings->retrieve_setting_editdata();
         $data['setting_detail'] = $setting_detail;
-        $date                   = $this->input->post('daterangepicker-field');
-        $employee_name          = $this->input->post('employee_name');
-        $data['tax_n']          = $tax_name;
+        $date = $this->input->post('daterangepicker-field');
+        $employee_name = $this->input->post('employee_name');
+        $data['tax_n'] = $tax_name;
+
         if (!empty($tax_name)) {
-            $data['state_tax_report']        = $this->Hrm_model->state_tax_report($employee_name, $tax_name, $date);
+            $data['state_tax_report'] = $this->Hrm_model->statetaxreport($employee_name, $tax_name, $date);
+            //print_r($data['state_tax_report']); exit;
             $data['living_state_tax_report'] = $this->Hrm_model->living_state_tax_report($employee_name, $tax_name, $date);
-            $merged_array                    = [];
+            $merged_array = [];
             foreach ($data['state_tax_report'] as $state_tax) {
-                $time_sheet_id                               = $state_tax['time_sheet_id'];
+                $time_sheet_id = $state_tax['time_sheet_id'];
                 $merged_array[$time_sheet_id]['state_tax'][] = $state_tax;
             }
             foreach ($data['living_state_tax_report'] as $living_state_tax) {
-                $time_sheet_id                                      = $living_state_tax['time_sheet_id'];
+                $time_sheet_id = $living_state_tax['time_sheet_id'];
                 $merged_array[$time_sheet_id]['living_state_tax'][] = $living_state_tax;
             }
-            $data['merged_reports']                   = $merged_array;
-            $data['employer_state_tax_report']        = $this->Hrm_model->employer_state_tax_report($employee_name, $tax_name, $date);
+            $data['merged_reports'] = $merged_array;
+            $data['employer_state_tax_report'] = $this->Hrm_model->employer_state_tax_report($employee_name, $tax_name, $date);
             $data['employer_living_state_tax_report'] = $this->Hrm_model->employer_living_state_tax_report($employee_name, $tax_name, $date);
-            $merged_array_employer                    = [];
+
+            if (empty($data['employer_state_tax_report'])) {
+                $data['employer_state_tax_report'] = $data['employer_living_state_tax_report'];
+            }
+
+            if (empty($data['employer_living_state_tax_report'])) {
+                $data['employer_living_state_tax_report'] = $data['employer_state_tax_report'];
+            }
+
+
+            $merged_array_employer = [];
             foreach ($data['employer_state_tax_report'] as $state_tax) {
-                $time_sheet_id                                        = $state_tax['time_sheet_id'];
+                $time_sheet_id = $state_tax['time_sheet_id'];
                 $merged_array_employer[$time_sheet_id]['state_tax'][] = $state_tax;
             }
             foreach ($data['employer_living_state_tax_report'] as $living_state_tax) {
-                $time_sheet_id                                               = $living_state_tax['time_sheet_id'];
+                $time_sheet_id = $living_state_tax['time_sheet_id'];
                 $merged_array_employer[$time_sheet_id]['living_state_tax'][] = $living_state_tax;
             }
+
             $data['merged_reports_employer'] = $merged_array_employer;
-            $content                         = $this->parser->parse('hr/reports/state_report', $data, true);
+            $content = $this->parser->parse('hr/reports/state_report', $data, true);
             $this->template->full_admin_html_view($content);
         }
     }
+
+
+    // Fetch data in State Income Tax Index - Madhu
+    public function stateIncomeReportData()
+    {   
+        $encodedId     = isset($_GET["id"]) ? $_GET["id"] : null;
+        $decodedId     = decodeBase64UrlParameter($encodedId);
+
+        $limit          = $this->input->post("length");
+        $start          = $this->input->post("start");
+        $search         = $this->input->post("search")["value"];
+        $orderField     = $this->input->post("columns")[$this->input->post("order")[0]["column"]]["data"];
+        $orderDirection = $this->input->post("order")[0]["dir"];
+        $date           = $this->input->post("federal_date_search");
+        $employee_name  = $this->input->post('employee_name');
+        $taxname = $this->input->post('taxname');
+
+        $orderDirection = strtolower($orderDirection);
+        if (!in_array($orderDirection, ['asc', 'desc'])) {
+            $orderDirection = 'asc';
+        }
+
+        $stateTaxReport = $this->Hrm_model->state_tax_report($limit, $start, $orderField, $orderDirection, $search, $taxname, $date, $employee_name,$decodedId);
+
+        $totalItems  = $this->Hrm_model->getTotalIncomeTax($search,$date,$emp_name,$decodedId,$taxname);
+        $livingStateTaxReport = $this->Hrm_model->living_state_tax_report($employee_name, $taxname, $date);
+        $employerStateTaxReport = $this->Hrm_model->employer_state_tax_report($employee_name, $taxname, $date);
+        $employerLivingStateTaxReport = $this->Hrm_model->employer_living_state_tax_report($employee_name,$taxname, $date);
+
+        $mergedArray = [];
+
+        foreach ($stateTaxReport as $stateTax) {
+            $timeSheetId = $stateTax['time_sheet_id'];
+            if (!isset($mergedArray[$timeSheetId])) {
+                $mergedArray[$timeSheetId] = [];
+            }
+            $mergedArray[$timeSheetId]['state_tax'][] = $stateTax;
+        }
+
+        foreach ($livingStateTaxReport as $livingStateTax) {
+            $timeSheetId = $livingStateTax['time_sheet_id'];
+            if (!isset($mergedArray[$timeSheetId])) {
+                $mergedArray[$timeSheetId] = [];
+            }
+            $mergedArray[$timeSheetId]['living_state_tax'][] = $livingStateTax;
+        }
+
+        foreach ($employerStateTaxReport as $stateTax) {
+            $timeSheetId = $stateTax['time_sheet_id'];
+            if (!isset($mergedArray[$timeSheetId])) {
+                $mergedArray[$timeSheetId] = [];
+            }
+            $mergedArray[$timeSheetId]['employer_state_tax'][] = $stateTax;
+        }
+
+        foreach ($employerLivingStateTaxReport as $livingStateTax) {
+            $timeSheetId = $livingStateTax['time_sheet_id'];
+            if (!isset($mergedArray[$timeSheetId])) {
+                $mergedArray[$timeSheetId] = [];
+            }
+            $mergedArray[$timeSheetId]['employer_living_state_tax'][] = $livingStateTax;
+        }
+
+        $data = [];
+        $i = $start + 1;
+        $final_amount = '';
+        foreach ($mergedArray as $timeSheetId => $report) { 
+            $stateTax = $report['state_tax'][0] ?? [];
+            $livingStateTax = $report['living_state_tax'][0] ?? [];
+            // $employerStateTax = $report['employer_state_tax'][0] ?? [];
+            // $employerLivingStateTax = $report['employer_living_state_tax'][0] ?? [];
+
+            if ($report['weekly'] > 0) {
+                $final_amount = $report['weekly'];
+            } elseif ($report['biweekly'] > 0) {
+                $final_amount = $report['biweekly'];
+            } elseif ($report['monthly'] > 0) {
+                $final_amount = $report['monthly'];
+            } else {
+                $final_amount = $report['amount'];
+            }
+
+            $found_employer_state_tax = $report['employer_state_tax'] ?? [];
+            $found_employer_living_state_tax = $report['living_state_tax'] ?? [];
+
+            $employer_state_tax_amount = 0;
+            $employer_living_state_tax_amount = 0;
+
+            foreach ($found_employer_state_tax as $employer_state_tax) {
+                $employer_state_tax_amount += isset($employer_state_tax['amount']) ? $employer_state_tax['amount'] : 0;
+            }
+          
+            foreach ($found_employer_living_state_tax as $employer_living_state_tax) {
+                $employer_living_state_tax_amount += isset($employer_living_state_tax['amount']) ? $employer_living_state_tax['amount'] : 0;
+            }
+
+            $row = [
+                'table_id'      => $i,
+                "first_name"    => ($stateTax['first_name'] ?? '') . ' ' . ($stateTax['middle_name'] ?? '') . ' ' . ($stateTax['last_name'] ?? ''),
+                "employee_tax"  => $stateTax['employee_tax'] ?? '',
+                'state_tx'      => $stateTax['state_tx'] ?? '',
+                'living_state_tax' => $stateTax['living_state_tax'] ?? '',
+                'time_sheet_id' => $timeSheetId,
+                "month"         => $stateTax['month'] ?? '',
+                "cheque_date"   => $stateTax['cheque_date'] ?? '',
+                "amount"        => $stateTax['amount'] ?? 0,
+                "weekly"        => $livingStateTax['amount'] ?? 0,
+                "employer_tax"   => number_format($employer_state_tax_amount ?? 0, 3),  
+                "employer_weekly" => number_format($employer_state_tax_amount ?? 0, 3),
+            ];
+
+            if (trim($row['first_name']) !== '' && trim($row['employee_tax']) !== '') {
+                $data[] = $row;
+                $i++;
+            }
+        }
+
+        $response = [
+            "draw"            => $this->input->post("draw"),
+            "recordsTotal"    => $totalItems,
+            "recordsFiltered" => $totalItems,
+            "data"            => $data,
+        ];
+
+        echo json_encode($response);
+    }
+
     public function report_state_search($tax_name = '') {
         $CI =  & get_instance();
         $CI->load->model('Web_settings');
@@ -572,6 +716,8 @@ $final_amount = $row['total_amount'];
         $data['merged_reports'] = $merged_array;
         echo json_encode($data['merged_reports']);
     }
+
+    // Old Federal Tax - Madhu
     public function federal_tax_report() {
         $CI =  & get_instance();
         $CI->load->model('Web_settings');
@@ -589,17 +735,53 @@ $final_amount = $row['total_amount'];
         $content                = $this->parser->parse('hr/reports/fed_income_tax_report', $data, true);
         $this->template->full_admin_html_view($content);
     }
-    public function federal_tax_report_search() {
-        $CI =  & get_instance();
-        $CI->load->model('Web_settings');
-        $this->load->model('Hrm_model');
-        $emp_name    = $this->input->post('employee_name');
-        $date        = $this->input->post('daterangepicker-field');
-        $status      = $this->input->post('status');
-        $data['tax'] = $this->Hrm_model->federal_tax_report($emp_name, $date, $status);
-        echo json_encode($data['tax']);
+
+    // Fetch data in Income Tax Index - Madhu
+    public function federaIndexData()
+    {   
+        $encodedId     = isset($_GET["id"]) ? $_GET["id"] : null;
+        $decodedId     = decodeBase64UrlParameter($encodedId);
+
+        $limit          = $this->input->post("length");
+        $start          = $this->input->post("start");
+        $search         = $this->input->post("search")["value"];
+        $orderField     = $this->input->post("columns")[$this->input->post("order")[0]["column"]]["data"];
+        $orderDirection = $this->input->post("order")[0]["dir"];
+        $date           = $this->input->post("federal_date_search");
+        $emp_name       = $this->input->post('employee_name');
+        $items          = $this->Hrm_model->getPaginatedfederalincometax($limit,$start,$orderField,$orderDirection,$search,$date,$emp_name, $decodedId);
+        $totalItems     = $this->Hrm_model->getTotalfederalincometax($search,$date,$emp_name,$decodedId);
+        $fed_tax_emplr  = $this->Hrm_model->employr($emp_name,$date);
+        $data           = [];
+        $i              = $start + 1;
+        $edit           = "";
+        $delete         = "";
+        foreach ($items as $item) {
+            $s_stax_emplr = isset($fed_tax_emplr[$i]['f_ftax']) ? $fed_tax_emplr[$i]['f_ftax'] : 0;
+            $row = [
+                'table_id'      => $i,
+                "first_name"    => $item["first_name"] .' '. $item["middle_name"].' '. $item["last_name"],
+                "employee_tax"  => $item["employee_tax"],
+                "timesheet_id"  => $item["timesheet_id"],
+                "month"         => $item["month"],
+                "cheque_date"   => $item["cheque_date"],
+                "f_ftax" => !empty($item['f_ftax']) ? number_format($item['f_ftax'], 2) : '0.00',
+            ];
+            $data[] = $row;
+            $i++;
+        }
+        $response = [
+            "draw"            => $this->input->post("draw"),
+            "recordsTotal"    => $totalItems,
+            "recordsFiltered" => $totalItems,
+            "data"            => $data,
+        ];
+        echo json_encode($response);
     }
-    public function social_tax_report() {
+
+    // Old Social Security - Madhu
+    public function social_tax_report() 
+    {
         $CI =  & get_instance();
         $CI->load->model('Web_settings');
         $this->load->model('Hrm_model');
@@ -616,88 +798,74 @@ $final_amount = $row['total_amount'];
         $content                = $this->parser->parse('hr/reports/social_security_tax', $data, true);
         $this->template->full_admin_html_view($content);
     }
-    public function social_tax_report_search() {
-        $CI =  & get_instance();
-        $CI->load->model('Web_settings');
-        $this->load->model('Hrm_model');
-        $emp_name          = $this->input->post('employee_name');
-        $tax_choice        = $this->input->post('tax_choice');
-        $selectState       = $this->input->post('selectState');
-        $taxType           = $this->input->post('taxType');
-        $date              = $this->input->post('daterangepicker-field');
-        $data['emplr_tax'] = $this->Hrm_model->social_tax_report($emp_name, $tax_choice, $selectState, $taxType, $date);
-        $data['emple_tax'] = $this->Hrm_model->social_tax_employee_report($emp_name, $tax_choice, $selectState, $taxType, $date);
-        $mergedArray       = array_merge($data['emplr_tax'], $data['emple_tax']);
-        print_r($mergedArray);
-        echo json_encode($mergedArray);
-    }
- public function social_taxsearch(){
-      $CI = & get_instance();
-      $CI->load->model('Web_settings');
-      $this->load->model('Hrm_model');
-      $emp_name = trim($this->input->post('employee_name'));
-      $date = $this->input->post('daterangepicker-field');
-      $setting_detail = $CI->Web_settings->retrieve_setting_editdata();
-      $data['setting_detail']            = $setting_detail;
-      $data['employe'] = $this->Hrm_model->so_tax_report_employee($emp_name,$date,$status);
-      $data['employer'] = $this->Hrm_model->so_tax_report_employer($emp_name, $date, $status);
-      if ($data['employe']) {
-        $aggregated = [];
-        $aggregated_employe = [];
-        foreach ($data['employe'] as $row) {
-            $key = $row['first_name'] . '|' . $row['middle_name'] . '|' . $row['last_name'] . '|' . $row['employee_tax'];
-            if (!isset($aggregated_employe[$key])) {
-                $aggregated_employe[$key] = [
-                    'first_name' => $row['first_name'],
-                    'middle_name' => $row['middle_name'],
-                    'last_name' => $row['last_name'],
-                    'employee_tax' => $row['employee_tax'],
-                    'fftax' => 0,
-                    'mmtax' => 0,
-                    'sstax' => 0,
-                    'uutax' => 0,
-                ];
-            }
-            $aggregated_employe[$key]['fftax'] += $row['fftax'];
-            $aggregated_employe[$key]['mmtax'] += $row['mmtax'];
-            $aggregated_employe[$key]['sstax'] += $row['sstax'];
-            $aggregated_employe[$key]['uutax'] += $row['uutax'];
+
+
+    // Fetch data in Security Income Tax - Madhu
+    public function securitytaxIndexData()
+    {   
+        $encodedId     = isset($_GET["id"]) ? $_GET["id"] : null;
+        $decodedId     = decodeBase64UrlParameter($encodedId);
+
+        $limit          = $this->input->post("length");
+        $start          = $this->input->post("start");
+        $search         = $this->input->post("search")["value"];
+        $orderField     = $this->input->post("columns")[$this->input->post("order")[0]["column"]]["data"];
+        $orderDirection = $this->input->post("order")[0]["dir"];
+        $date           = $this->input->post("federal_date_search");
+        $emp_name       = $this->input->post('employee_name');
+        $items          = $this->Hrm_model->getPaginatedfederalincometax($limit,$start,$orderField,$orderDirection,$search,$date,$emp_name,$decodedId);
+        $totalItems     = $this->Hrm_model->getTotalfederalincometax($search,$date,$emp_name,$decodedId);
+        $fed_tax_emplr  = $this->Hrm_model->employr($emp_name,$date);
+        $data           = [];
+        $i              = $start + 1;
+        $edit           = "";
+        $delete         = "";
+        $merged_results = [];
+        $tax_map = [];
+        foreach ($fed_tax_emplr as $tax_entry) {
+            $tax_map[$tax_entry['timesheet']] = $tax_entry; 
         }
-        // Convert aggregated data to array format
-        $data['aggregated_employe'] = array_values($aggregated_employe);
-    } else {
-        $data['aggregated_employe'] = [];
+
+        foreach ($items as $item) {
+            $timesheet_id = $item['timesheet'];
+            
+            if (isset($tax_map[$timesheet_id])) {
+                $merged_results[] = array_merge($item, $tax_map[$timesheet_id]);
+            } else {
+                $merged_results[] = $item; 
+            }
+        }
+
+        foreach ($merged_results as $key => $item) { 
+
+
+            $row = [
+                'table_id'      => $i,
+                "first_name"    => $item["first_name"] .' '. $item["middle_name"].' '. $item["last_name"],
+                "employee_tax"  => $item["employee_tax"],
+                "timesheet_id"  => $item["timesheet"],
+                "month"         => $item["month"],
+                "cheque_date"   => $item["cheque_date"],
+                "s_stax"        => number_format($item['s_tax'], 2),
+                "ts_stax"       => number_format($item['s_stax'], 2),
+            ];
+            $data[] = $row;
+            $i++;
+            $index++;
+        }
+
+        $response = [
+            "draw"            => $this->input->post("draw"),
+            "recordsTotal"    => $totalItems,
+            "recordsFiltered" => $totalItems,
+            "data"            => $data,
+        ];
+        echo json_encode($response);
     }
-      if ($data['employer']) {
-          $aggregated = [];
-          foreach ($data['employer'] as $row) {
-              $key = $row['first_name'] . '|' . $row['middle_name'] . '|' . $row['last_name'] . '|' . $row['employee_tax'];
-              if (!isset($aggregated[$key])) {
-                  $aggregated[$key] = [
-                      'first_name' => $row['first_name'],
-                      'middle_name' => $row['middle_name'],
-                      'last_name' => $row['last_name'],
-                      'employee_tax' => $row['employee_tax'],
-                      'fftax' => 0,
-                      'mmtax' => 0,
-                      'sstax' => 0,
-                      'uutax' => 0,
-                  ];
-              }
-              $aggregated[$key]['fftax'] += $row['fftax'];
-              $aggregated[$key]['mmtax'] += $row['mmtax'];
-              $aggregated[$key]['sstax'] += $row['sstax'];
-              $aggregated[$key]['uutax'] += $row['uutax'];
-          }
-          // Convert aggregated data to array format
-          $data['aggregated_employer'] = array_values($aggregated);
-      } else {
-          $data['aggregated_employer'] = [];
-      }//print_r( $data['aggregated_employer']);die();
-      $data['employee_data'] =$this->Hrm_model->employee_data_get();
-      echo json_encode($data);
-   }
-    public function medicare_tax_report() {
+    
+    // Old Medicare Tax - Madhu
+    public function medicare_tax_report() 
+    {
         $CI =  & get_instance();
         $CI->load->model('Web_settings');
         $this->load->model('Hrm_model');
@@ -714,17 +882,72 @@ $final_amount = $row['total_amount'];
         $content                = $this->parser->parse('hr/reports/medicare_tax', $data, true);
         $this->template->full_admin_html_view($content);
     }
-    public function medicare_tax_report_search() {
-        $CI =  & get_instance();
-        $CI->load->model('Web_settings');
-        $this->load->model('Hrm_model');
-        $emp_name    = $this->input->post('employee_name');
-        $date        = $this->input->post('daterangepicker-field');
-        $status      = $this->input->post('status');
-        $data['tax'] = $this->Hrm_model->social_tax_report($emp_name, $date, $status);
-        echo json_encode($data['tax']);
+
+    // Fetch data in Medicare Tax - Madhu
+    public function medicaretaxIndexData()
+    {   
+        $encodedId     = isset($_GET["id"]) ? $_GET["id"] : null;
+        $decodedId     = decodeBase64UrlParameter($encodedId);
+
+        $limit          = $this->input->post("length");
+        $start          = $this->input->post("start");
+        $search         = $this->input->post("search")["value"];
+        $orderField     = $this->input->post("columns")[$this->input->post("order")[0]["column"]]["data"];
+        $orderDirection = $this->input->post("order")[0]["dir"];
+        $date           = $this->input->post("federal_date_search");
+        $emp_name       = $this->input->post('employee_name');
+        $items          = $this->Hrm_model->getPaginatedfederalincometax($limit,$start,$orderField,$orderDirection,$search,$date,$emp_name,$decodedId);
+        $totalItems     = $this->Hrm_model->getTotalfederalincometax($search,$date,$emp_name,$decodedId);
+        $fed_tax_emplr  = $this->Hrm_model->employr($emp_name,$date);
+        $data           = [];
+        $i              = $start + 1;
+        $edit           = "";
+        $delete         = "";
+        $merged_results = [];
+
+        $tax_map = [];
+        foreach ($fed_tax_emplr as $tax_entry) {
+            $tax_map[$tax_entry['timesheet']] = $tax_entry; 
+        }
+
+        foreach ($items as $item) {
+            $timesheet_id = $item['timesheet'];
+            
+            if (isset($tax_map[$timesheet_id])) {
+                $merged_results[] = array_merge($item, $tax_map[$timesheet_id]);
+            } else {
+                $merged_results[] = $item; 
+            }
+        }
+
+        foreach ($merged_results as $key => $item) { 
+
+            $row = [
+                'table_id'      => $i,
+                "first_name"    => $item["first_name"] .' '. $item["middle_name"].' '. $item["last_name"],
+                "employee_tax"  => $item["employee_tax"],
+                "timesheet_id"  => $item["timesheet"],
+                "month"         => $item["month"],
+                "cheque_date"   => $item["cheque_date"],
+                "m_mtax"        => number_format($item['m_tax'], 2),
+                "tm_mtax"       => number_format($item['m_mtax'], 2),
+            ];
+            $data[] = $row;
+            $i++;
+            $index++;
+        }
+        $response = [
+            "draw"            => $this->input->post("draw"),
+            "recordsTotal"    => $totalItems,
+            "recordsFiltered" => $totalItems,
+            "data"            => $data,
+        ];
+        echo json_encode($response);
     }
-    public function unemployment_tax_report() {
+
+    // Old Unemployment Tax - Madhu
+    public function unemployment_tax_report() 
+    {
         $CI =  & get_instance();
         $CI->load->model('Web_settings');
         $this->load->model('Hrm_model');
@@ -740,17 +963,53 @@ $final_amount = $row['total_amount'];
         $data['employee_data']  = $this->Hrm_model->employee_data_get();
         $content                = $this->parser->parse('hr/reports/unemployment_tax', $data, true);
         $this->template->full_admin_html_view($content);
+    } 
+
+    // Fetch data in Medicare Tax - Madhu
+    public function unemploymenttaxIndexData()
+    {   
+        $encodedId     = isset($_GET["id"]) ? $_GET["id"] : null;
+        $decodedId     = decodeBase64UrlParameter($encodedId);
+
+        $limit          = $this->input->post("length");
+        $start          = $this->input->post("start");
+        $search         = $this->input->post("search")["value"];
+        $orderField     = $this->input->post("columns")[$this->input->post("order")[0]["column"]]["data"];
+        $orderDirection = $this->input->post("order")[0]["dir"];
+        $date           = $this->input->post("federal_date_search");
+        $emp_name       = $this->input->post('employee_name');
+        $items          = $this->Hrm_model->getPaginatedfederalincometax($limit,$start,$orderField,$orderDirection,$search,$date,$emp_name,$decodedId);
+        $totalItems     = $this->Hrm_model->getTotalfederalincometax($search,$date,$emp_name,$decodedId);
+        $fed_tax_emplr  = $this->Hrm_model->employr($emp_name,$date);
+        $data           = [];
+        $i              = $start + 1;
+        $edit           = "";
+        $delete         = "";
+        foreach ($items as $item) {
+            $s_stax_emplr = isset($fed_tax_emplr[$i]['u_utax']) ? $fed_tax_emplr[$i]['u_utax'] : 0;
+            $row = [
+                'table_id'      => $i,
+                "first_name"    => $item["first_name"] .' '. $item["middle_name"].' '. $item["last_name"],
+                "employee_tax"  => $item["employee_tax"],
+                "timesheet_id"  => $item["timesheet_id"],
+                "month"         => $item["month"],
+                "cheque_date"   => $item["cheque_date"],
+                "u_utax"        => number_format($item['u_utax'], 2),
+                "tu_utax"        => number_format($s_stax_emplr, 2),
+            ];
+            $data[] = $row;
+            $i++;
+        }
+        $response = [
+            "draw"            => $this->input->post("draw"),
+            "recordsTotal"    => $totalItems,
+            "recordsFiltered" => $totalItems,
+            "data"            => $data,
+        ];
+        echo json_encode($response);
     }
-    public function unemployment_tax_report_search() {
-        $CI =  & get_instance();
-        $CI->load->model('Web_settings');
-        $this->load->model('Hrm_model');
-        $emp_name    = $this->input->post('employee_name');
-        $date        = $this->input->post('daterangepicker-field');
-        $status      = $this->input->post('status');
-        $data['tax'] = $this->Hrm_model->social_tax_report($emp_name, $date, $status);
-        echo json_encode($data['tax']);
-    }
+
+    // Old Federal Overall Summary - Madhu
     public function federal_summary() {
         $CI =  & get_instance();
         $CI->load->model('Web_settings');
@@ -778,10 +1037,184 @@ $final_amount = $row['total_amount'];
             }
         }
         $data['mergedArray']   = $mergedArray;
+         // print_r($data['mergedArray']);
         $data['employee_data'] = $this->Hrm_model->employee_data_get();
         $content               = $this->parser->parse('hr/reports/federal_summary', $data, true);
         $this->template->full_admin_html_view($content);
     }
+
+     // New Federal Overall Summary - Madhu
+    public function federalsummary() {
+        $CI =  & get_instance();
+        $CI->load->model('Web_settings');
+        $this->load->model('Hrm_model');
+        $setting_detail                 = $CI->Web_settings->retrieve_setting_editdata();
+        $data['setting_detail']         = $setting_detail;
+        $data['fed_tax']                = $this->Hrm_model->social_tax_sumary();
+        $data['fed_tax_emplr']          = $this->Hrm_model->social_tax_employer();
+        $data['state_tax_list']         = $CI->Hrm_model->stateTaxlist();
+        $data['state_summary_employee'] = $this->Hrm_model->state_summary_employee();
+        $data['state_list']             = $this->db->select('*')->from('state_and_tax')->order_by('state', 'ASC')->where('created_by', $this->session->userdata('user_id'))->where('Status', 2)->group_by('id')->get()->result_array();
+        $mergedArray                    = array();
+        foreach ($data['fed_tax'] as $item1) {
+            $mergedItem = $item1;
+            foreach ($data['fed_tax_emplr'] as $item2) {
+                if ($item1['templ_name'] == $item2['employee_id']) {
+                    foreach ($item2 as $key => $value) {
+                        if (!isset($mergedItem[$key])) {
+                            $mergedItem[$key] = $value;
+                        }
+                    }
+                    $mergedArray[] = $mergedItem;
+                    break;
+                }
+            }
+        }
+        $data['mergedArray']   = $mergedArray;
+         // print_r($data['mergedArray']);
+        $data['employee_data'] = $this->Hrm_model->employee_data_get();
+        $content               = $this->parser->parse('hr/reports/test', $data, true);
+        $this->template->full_admin_html_view($content);
+    }
+    
+
+    // Fetch data in Overall Social Tax - Madhu
+    public function overallSocialtaxIndexData()
+    {   
+        $encodedId     = isset($_GET["id"]) ? $_GET["id"] : null;
+        $decodedId     = decodeBase64UrlParameter($encodedId);
+
+        $limit          = $this->input->post("length");
+        $start          = $this->input->post("start");
+        $search         = $this->input->post("search")["value"];
+        $orderField     = $this->input->post("columns")[$this->input->post("order")[0]["column"]]["data"];
+        $orderDirection = $this->input->post("order")[0]["dir"];
+        $date           = $this->input->post("federal_date_search");
+        $emp_name       = $this->input->post('employee_name');
+        
+        $items          = $this->Hrm_model->getPaginatedSocialTaxSummary($limit, $start, $orderField, $orderDirection, $search, $date, $emp_name,$decodedId);
+        $totalItems     = $this->Hrm_model->getSocialOveralltax($search, $date, $emp_name,$decodedId);
+        
+        $fed_tax        = $this->Hrm_model->social_tax_sumary($date, $emp_name);
+        $fed_tax_emplr  = $this->Hrm_model->social_tax_employer($date, $emp_name);
+
+        $mergedArray = [];
+        foreach ($fed_tax as $item1) {
+            $mergedArray[$item1['employee_id']] = $item1; 
+        }
+
+        foreach ($fed_tax_emplr as $item2) {
+            if (isset($mergedArray[$item2['employee_id']])) {
+                foreach ($item2 as $key => $value) {
+                    if (!isset($mergedArray[$item2['employee_id']][$key])) {
+                        $mergedArray[$item2['employee_id']][$key] = $value;
+                    }
+                }
+            }
+        }
+
+        $data = [];
+        $i    = $start + 1;
+
+        foreach ($items as $item) {
+            $employeeId = $item["employee_id"];
+            $mergedItem = $mergedArray[$employeeId] ?? [];
+
+            $row = [
+                'table_id'      => $i,
+                "first_name"    => $item["first_name"] .' '. $item["middle_name"].' '. $item["last_name"],
+                "employee_tax"  => $item["employee_tax"],
+                "cheque_date"   => $item["cheque_date"],
+
+                'f_employee'    => number_format($mergedItem['f_ftax_sum'] ?? 0, 2),
+                'f_employer'    => number_format($mergedItem['f_ftax_sum_er'] ?? 0, 2),
+
+                'socialsecurity_employee' => number_format($mergedItem['s_stax_sum'] ?? 0, 2),
+                'socialsecurity_employer' => number_format($mergedItem['s_stax_sum_er'] ?? 0, 2),
+
+                'medicare_employee' => number_format($mergedItem['m_mtax_sum'] ?? 0, 2),
+                'medicare_employer' => number_format($mergedItem['m_mtax_sum_er'] ?? 0, 2),
+
+                'unemployment_employee' => number_format($mergedItem['u_utax_sum'] ?? 0, 2),
+                'unemployment_employer' => number_format($mergedItem['u_utax_sum_er'] ?? 0, 2),
+            ];
+
+            $data[] = $row;
+            $i++;
+        }
+
+        $response = [
+            "draw"            => $this->input->post("draw"),
+            "recordsTotal"    => $totalItems,
+            "recordsFiltered" => $totalItems,
+            "data"            => $data,
+        ];
+        echo json_encode($response);
+    }
+
+
+    public function federal_tax_report_search() {
+        $CI =  & get_instance();
+        $CI->load->model('Web_settings');
+        $this->load->model('Hrm_model');
+        $emp_name    = $this->input->post('employee_name');
+        $date        = $this->input->post('daterangepicker-field');
+        $status      = $this->input->post('status');
+        $data['tax'] = $this->Hrm_model->federal_tax_report($emp_name, $date, $status);
+        echo json_encode($data['tax']);
+    }
+    
+    public function social_tax_report_search() {
+        $CI =  & get_instance();
+        $CI->load->model('Web_settings');
+        $this->load->model('Hrm_model');
+        $emp_name          = $this->input->post('employee_name');
+        $tax_choice        = $this->input->post('tax_choice');
+        $selectState       = $this->input->post('selectState');
+        $taxType           = $this->input->post('taxType');
+        $date              = $this->input->post('daterangepicker-field');
+        $data['emplr_tax'] = $this->Hrm_model->social_tax_report($emp_name, $tax_choice, $selectState, $taxType, $date);
+        $data['emple_tax'] = $this->Hrm_model->social_tax_employee_report($emp_name, $tax_choice, $selectState, $taxType, $date);
+        $mergedArray       = array_merge($data['emplr_tax'], $data['emple_tax']);
+        print_r($mergedArray);
+        echo json_encode($mergedArray);
+    }
+    public function social_taxsearch() {
+        $CI =  & get_instance();
+        $CI->load->model('Web_settings');
+        $this->load->model('Hrm_model');
+        $emp_name               = trim($this->input->post('employee_name'));
+        $date                   = $this->input->post('daterangepicker-field');
+        $setting_detail         = $CI->Web_settings->retrieve_setting_editdata();
+        $data['setting_detail'] = $setting_detail;
+        $data['employe']        = $this->Hrm_model->so_tax_report_employee($emp_name, $date, $status);
+        $data['employer']       = $this->Hrm_model->so_tax_report_employer($emp_name, $date, $status);
+        $data['employee_data']  = $this->Hrm_model->employee_data_get();
+        echo json_encode($data);
+    }
+    
+    public function medicare_tax_report_search() {
+        $CI =  & get_instance();
+        $CI->load->model('Web_settings');
+        $this->load->model('Hrm_model');
+        $emp_name    = $this->input->post('employee_name');
+        $date        = $this->input->post('daterangepicker-field');
+        $status      = $this->input->post('status');
+        $data['tax'] = $this->Hrm_model->social_tax_report($emp_name, $date, $status);
+        echo json_encode($data['tax']);
+    }
+    
+    public function unemployment_tax_report_search() {
+        $CI =  & get_instance();
+        $CI->load->model('Web_settings');
+        $this->load->model('Hrm_model');
+        $emp_name    = $this->input->post('employee_name');
+        $date        = $this->input->post('daterangepicker-field');
+        $status      = $this->input->post('status');
+        $data['tax'] = $this->Hrm_model->social_tax_report($emp_name, $date, $status);
+        echo json_encode($data['tax']);
+    }
+    
     public function federal_summary_search() {
         $CI =  & get_instance();
         $CI->load->model('Web_settings');
@@ -929,6 +1362,14 @@ $final_amount = $row['total_amount'];
             $date_split                                = explode(' - ', $this->input->post('date_range'));
             $data_timesheet['start']                   = $date_split[0];
             $data_timesheet['end']                     = $date_split[1];
+
+            if ($this->input->post('payment_method') == 'Cash') {
+            $data_timesheet['cheque_date'] =(!empty($this->input->post('cash_date',TRUE))?$this->input->post('cash_date',TRUE):'');
+            } 
+            else if ($this->input->post('payment_method') == 'Cheque') {
+                $data_timesheet['cheque_date'] =(!empty($this->input->post('cheque_date',TRUE))?$this->input->post('cheque_date',TRUE):'');
+            }
+
             $start_date                                = $data_timesheet['start'];
             $month                                     = intval(substr($start_date, 0, 2));
             if ($month >= 1 && $month <= 3) {
@@ -948,7 +1389,7 @@ $final_amount = $row['total_amount'];
             $data_timesheet['admin_name']     = (!empty($this->input->post('administrator_person', TRUE)) ? $this->input->post('administrator_person', TRUE) : '');
             $data_timesheet['payment_method'] = (!empty($this->input->post('payment_method', TRUE)) ? $this->input->post('payment_method', TRUE) : '');
             $data_timesheet['cheque_no']      = (!empty($this->input->post('cheque_no', TRUE)) ? $this->input->post('cheque_no', TRUE) : '');
-            $data_timesheet['cheque_date']    = (!empty($this->input->post('cheque_date', TRUE)) ? $this->input->post('cheque_date', TRUE) : '');
+           
             $data_timesheet['bank_name']      = (!empty($this->input->post('bank_name', TRUE)) ? $this->input->post('bank_name', TRUE) : '');
             $data_timesheet['payment_ref_no'] = (!empty($this->input->post('payment_refno', TRUE)) ? $this->input->post('payment_refno', TRUE) : '');
             $timesheet_id                     = $this->input->post('tsheet_id');
