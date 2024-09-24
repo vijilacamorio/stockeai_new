@@ -408,10 +408,7 @@
                             $count = substr($inv['tableid'], 0, 1);
                          $items[] =$count   ;                            
                                                       
-                        
-                        
-                        
-                        
+                         
                         }
                         
                         
@@ -595,8 +592,8 @@
                      </table>
                      <?php   } ?>
                   
-                  <i id="buddle_1" class="btnclr addbundle fa fa-plus" style=" padding: 10px 12px 10px 12px;margin-right: 18px;float:right; "   onclick="addbundle(); "aria-hidden="true"></i>
-                
+                   <i id="buddle_1" class="btnclr addbundle fa fa-plus" style=" padding: 10px 12px 10px 12px;margin-right: 18px;float:right;"   onclick="addbundle(); "aria-hidden="true"></i>
+
                     </div>
                </div>
               <table class="taxtab table table-bordered table-hover" style="border:2px solid #d7d4d6;" >
@@ -849,15 +846,17 @@ foreach ($tax_data as $tx) {?>
 
                               
 
-                        $('.normalinvoice tbody tr').each(function() {
-
-
+    $('.normalinvoice tbody tr').each(function() {
         var tableId = $(this).closest('table').attr('id');
-    updateTableTotals(tableId);
-  updateOverallTotals(true);
+ 
+        updateTableTotals(tableId);
+        updateOverallTotals(true);
                     });
    $(".sidebar-mini").addClass('sidebar-collapse') ;
    });
+
+
+
   $(document).ready(function(){
               var data = {
                  value: $('#supplier_id').val()
@@ -1147,7 +1146,9 @@ if(num <= 0){
         var salesSlabAmt = salesAmtSqFt * netSqFt;
         $('#sales_slab_amt_' + rowId).val(salesSlabAmt.toFixed(2));
         $('#total_amt_' + rowId).val(salesSlabAmt.toFixed(2));
-         var tableId = $row.closest('table').attr('id');
+         // var tableId = $row.closest('table').attr('id');
+         var tableId = $(this).closest('table').attr('id');
+
     updateTableTotals(tableId);
   updateOverallTotals(true);
 }
@@ -1164,63 +1165,14 @@ function updateGrossCalculations() {
     var grossHeight = parseFloat($row.find('#' + grossHeightId).val()) || 0;
     var grossSqFt = (grossWidth * grossHeight) / 144;
  $row.find('#' + grossSqFtId).val(grossSqFt.toFixed(2));
- var tableId = $row.closest('table').attr('id');
+//  var tableId = $row.closest('table').attr('id');
+ var tableId = $(this).closest('table').attr('id');
+
     updateTableTotals(tableId);
   updateOverallTotals(true);
 }
 
-// $(document).on('keyup', '.normalinvoice tbody tr:last', function (e) {
-// var tid = $(this).closest('table').attr('id');
-// const indexLast = tid.lastIndexOf('_');
-// var id = tid.slice(indexLast + 1);
-// var $lastRow = $('#addPurchaseItem_' + id + ' tr:last');
-
-
-// $(document).on('keyup', '.normalinvoice tbody tr:last', function (e) {
-//    debugger;
-// var tid = $(this).closest('table').attr('id');
-// const indexLast = tid.lastIndexOf('_');
-// var id = tid.slice(indexLast + 1);
-// var $lastRow = $('#addPurchaseItem_' + id + ' tr:last');
-// var num = id + ($lastRow.index() + 1);
-// $('#addPurchaseItem_' + id + ' select').each(function() {
-//     if ($(this).data('select2')) {
-//         $(this).select2('destroy');
-//     }
-// });
-// var $newRow = $('<tr></tr>');
-// $lastRow.find('td').each(function() {
-//     var $td = $(this);
-//     var $clonedTd = $td.clone();    
-//     $clonedTd.find('select, input').each(function() {
-//         var $element = $(this).clone(); 
-//         var newId = $element.attr('id') ? $element.attr('id').replace(/\d+$/, num) : null;
-//         if (newId) {
-//             $element.attr('id', newId); 
-//         }
-//         $(this).replaceWith($element);
-//     });
-//     $newRow.append($clonedTd);
-// });
-
-// $newRow.appendTo('#addPurchaseItem_' + id);
-
-
-// $newRow.find('select').each(function() {
-//     var $select = $(this);
-    
-    
-//     if ($select.data('select2')) {
-//         $select.select2('destroy');
-//     }
-    
-//     $select.select2();
-// });
-
-
-   
-//    });
-
+ 
 
 
 $(document).on('click', '.delete', function(){
@@ -1229,6 +1181,8 @@ $(document).on('click', '.delete', function(){
   if (rowCount > 1) {
         $(this).closest('tr').remove();
   updateTableTotals($tableBody.closest('table').attr('id'));
+//   updateTableTotals($tableBody.closest('table').attr('id'));
+
         updateOverallTotals(true);
     } else {
         $('#errormessage_expense').html('<div class="alert alert-danger alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>' + 'You cannot delete the last row. At least one row must remain..' + '</div>');
@@ -2303,17 +2257,22 @@ $(this).find('.editable-amount-paid input').val(paymentAmount);
    opt.text = text;
    ddl.options.add(opt);
    }
-                      $(document).on('click', '.removebundle', function(){
- var remove_id=$(this).closest('table').attr('id');
- $('#'+remove_id).remove();
-updateOverallTotals(true);
- });
+ 
 
-      let dynamic_id=2;
 
-   function addbundle(){
+ $(document).on('click', '.removebundle', function(){
+                     var remove_id=$(this).closest('table').attr('id');
+                     $('#'+remove_id).remove();
+                     updateOverallTotals(true);
+                     });
+
+
+
+
+   let dynamic_id=2;
+    function addbundle(){
       debugger;
-   $(this).closest('table').find('.addbundle').css("display","none");
+   //$(this).closest('table').find('.addbundle').css("display","none");
    $(this).closest('table').find('.removebundle').css("display","block");
    
    var newdiv = document.createElement('div');
@@ -2335,15 +2294,7 @@ updateOverallTotals(true);
    }
 </script>
 
-
-
-   
-  
-
-
-
-
-
+ 
 
 
 

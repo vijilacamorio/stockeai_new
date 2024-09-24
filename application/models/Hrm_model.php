@@ -1247,6 +1247,7 @@ b.f_tax AS f_ftax, b.m_tax AS m_mtax, b.s_tax AS s_stax, b.u_tax AS u_utax');
         $this->db->select('employee,employer,details');
         $this->db->from('state_localtax');
         $this->db->where($employee_status, $local_tax_range);
+        $this->db->not_like('tax', 'Unemployment');
         $query = $this->db->get();
         if ($query->num_rows() > 0) {
             return $query->result_array();
@@ -3478,4 +3479,35 @@ SUM(a.monthly) as monthly_amount'
         $query = $this->db->get();
         return $query->result_array();
     }
+
+
+    public function get_employee_sal($id , $decodedId){
+         $this->db->select('h_rate,total_hours,extra_thisrate, SUM(extra_thisrate) as totalamout');
+        $this->db->from('timesheet_info');
+        $this->db->where('templ_name', $id); 
+        $this->db->where('create_by', $decodedId); 
+        $query = $this->db->get();
+         if ($query->num_rows() > 0) {
+            return $query->result_array();
+         }
+        return true;
+    }
+
+ 
+
+    public function total_unemployment($id ,$decodedId){
+         $this->db->select('SUM(unemployement_total) as unempltotal');
+        $this->db->from('tax_history_employer');
+        $this->db->where('employee_id', $id); 
+        // $this->db->where('tax', 'Unemployment'); 
+        $this->db->where('created_by', $decodedId); 
+        $query = $this->db->get();
+        if ($query->num_rows() > 0) {
+            return $query->result_array();
+         }
+        return true;
+    }
+
+
+
 }
