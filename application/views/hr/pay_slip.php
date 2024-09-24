@@ -146,7 +146,7 @@
                                  $fs=strtoupper($infoemployee[0]['first_name']);
                                  ?>
                               <div class="r">
-                                 <p style="padding-left:430px;margin-top: 50px;"><?php echo date("m-d-Y") ?></p>
+                                 <p style="padding-left:430px;margin-top: 50px;"><?php echo $infotime[0]['cheque_date']; ?></p>
                               </div>
                               <div class="r" style="height:23px;">
                                  <p style="width: 385px;margin-top: 53px;  display: block;"><?php echo $fs .' '.strtoupper($infoemployee[0]['middle_name']).' '.  strtoupper($infoemployee[0]['last_name']); ?></p>
