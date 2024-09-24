@@ -1448,7 +1448,7 @@ $(document).on('keyup','.normalinvoice tbody tr:last',function (e) {
                 var tax= $('#product_tax_provider').val();
                 var percent='';
                  var hypen='-';
-               if(tax.indexOf(hypen) != -1){
+               if(tax.indexOf(hypen) != -1){  
                 var field = tax.split('-');
                
                 var percent = field[1];
