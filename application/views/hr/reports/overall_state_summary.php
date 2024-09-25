@@ -6,7 +6,6 @@
 <script type="text/javascript" src="<?php echo base_url()?>assets/js/html2canvas.js"></script>
 <script type="text/javascript" src="<?php echo base_url()?>assets/js/jspdf.plugin.autotable"></script>
 <script type="text/javascript" src="<?php echo base_url()?>assets/js/jspdf.umd.js"></script>
-<script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
 <script type="text/javascript" src="<?php echo base_url()?>my-assets/js/invoice_tableManager.js"></script>
 <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap/3/css/bootstrap.css" />
 <script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
@@ -38,13 +37,12 @@
  <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css" />
 <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap/3/css/bootstrap.css" />
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css"/>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js" integrity="sha512-CryKbMe7sjSCDPl18jtJI5DR5jtkUWxPXWaLCst6QjH8wxDexfRJic2WRmRXmstr2Y8SxDDWuBO6CQC6IE4KTA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-<script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
-<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 <link href="<?php echo base_url() ?>assets/css/daterangepicker.css" rel="stylesheet">
 <link href="<?php echo base_url() ?>assets/css/style.css" rel="stylesheet">
+<link rel="stylesheet" href="<?php echo base_url() ?>assets/css/calanderstyle.css">
+
 
 
 <style>
@@ -234,7 +232,7 @@
                            </td>
                            <td class="search_dropdown" style="color: black; position: relative; top: 4px;">
                               <div id="datepicker-container">
-                                 <input type="text" class="form-control daterangepicker-field getdate_reults" id="daterangepicker-field" name="daterangepicker-field" style="margin-top: 15px;padding: 5px; width: 200px; border-radius: 8px; height: 35px;" />
+                                 <input type="text" class="form-control daterangepicker_field getdate_reults" id="daterangepicker-field" name="daterangepicker-field" style="margin-top: 15px;padding: 5px; width: 200px; border-radius: 8px; height: 35px;" />
                               </div>
                            </td>
                            <input type="hidden" class="getcurrency" value="<?php echo $currency; ?>">
@@ -398,7 +396,6 @@
    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.5/jspdf.min.js"></script>
    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.0.0-alpha.1/jspdf.plugin.autotable.js"></script>
    <!--<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>-->
-   <script src='https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/moment.js'></script>
    <script src='https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.0/knockout-debug.js'></script>
    <!--<script src="https://code.jquery.com/jquery-3.1.1.slim.min.js"></script>-->
    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js"></script>
@@ -416,6 +413,9 @@
    <!--<script type="text/javascript" src="<?php echo base_url()?>my-assets/js/profarma.js"></script>-->
    
     <script src="https://cdn.jsdelivr.net/npm/table2excel@1.0.4/dist/table2excel.min.js"></script>
+    <script src='<?php echo base_url();?>assets/js/moment.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.0/knockout-debug.js'></script>
+<script  src="<?php echo base_url() ?>assets/js/scripts.js"></script>
    <!-- The Modal Column Switch -->
    <div id="myModal_colSwitch" class="modal_colSwitch" >
    <div class="modal-content_colSwitch" style="width:10%;height:25%;">
@@ -440,35 +440,35 @@
 <!-- Manage Invoice End -->
 <script type="text/javascript" src="<?php echo base_url()?>my-assets/js/profarma.js"></script>
 <script>
-$( function() {
-    $('#tablesContainer').css('display','none');
-      $( ".daterangepicker-field" ).daterangepicker({
-        dateFormat: 'mm/dd/yy' // Setting the desired date format
-      });
-    });
-    var csrfName = '<?php echo $this->security->get_csrf_token_name();?>';
-    var csrfHash = '<?php echo $this->security->get_csrf_hash();?>';
-    $(function() {
-    var start = moment().startOf('isoWeek'); // Start of the current week
-    var end = moment().endOf('isoWeek'); // End of the current week
-    var startOfLastWeek = moment().subtract(1, 'week').startOf('week');
-    var endOfLastWeek = moment().subtract(1, 'week').endOf('week').add(1, 'day');
-    // Add one extra day
-    function cb(start, end) {
-    $('#daterangepicker-field').val(start.format('DD/MM/YYYY') + ' - ' + end.format('DD/MM/YYYY'));
-    }
-    $('#daterangepicker-field').daterangepicker({
-    startDate: start,
-    endDate: end,
-    ranges: {
-       'Last Week Before': [moment().subtract(2,  'week').startOf('week') , moment().subtract(2, 'week').endOf('week')],
-       'Last Week': [startOfLastWeek, endOfLastWeek],
-       'This Week': [moment().startOf('week'), moment().endOf('week')],
-       'This Month': [moment().startOf('month'), moment().endOf('month')],
-       'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
-    }
-    }, cb);
-});
+// $( function() {
+//     $('#tablesContainer').css('display','none');
+//       $( ".daterangepicker-field" ).daterangepicker({
+//         dateFormat: 'mm/dd/yy' // Setting the desired date format
+//       });
+//     });
+//     var csrfName = '<?php echo $this->security->get_csrf_token_name();?>';
+//     var csrfHash = '<?php echo $this->security->get_csrf_hash();?>';
+//     $(function() {
+//     var start = moment().startOf('isoWeek'); // Start of the current week
+//     var end = moment().endOf('isoWeek'); // End of the current week
+//     var startOfLastWeek = moment().subtract(1, 'week').startOf('week');
+//     var endOfLastWeek = moment().subtract(1, 'week').endOf('week').add(1, 'day');
+//     // Add one extra day
+//     function cb(start, end) {
+//     $('#daterangepicker-field').val(start.format('DD/MM/YYYY') + ' - ' + end.format('DD/MM/YYYY'));
+//     }
+//     $('#daterangepicker-field').daterangepicker({
+//     startDate: start,
+//     endDate: end,
+//     ranges: {
+//        'Last Week Before': [moment().subtract(2,  'week').startOf('week') , moment().subtract(2, 'week').endOf('week')],
+//        'Last Week': [startOfLastWeek, endOfLastWeek],
+//        'This Week': [moment().startOf('week'), moment().endOf('week')],
+//        'This Month': [moment().startOf('month'), moment().endOf('month')],
+//        'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+//     }
+//     }, cb);
+// });
 
 
 $(document).ready(function(){
