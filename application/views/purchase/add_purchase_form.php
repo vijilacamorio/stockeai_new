@@ -83,15 +83,24 @@ $this->load->view('include/bootstrap_model', $modaldata);
                <div class="panel-heading">
                   <div class="panel-body">
                      <div class="with_po">
+<<<<<<< HEAD
                        
+=======
+                        <div id="errormessage_expense" class="errormessage_expense"></div><br>
+>>>>>>> c62a3f145f931ad3d2489e774692ece74fda8cf6
                         <form id="insert_purchase" method="post">
                            <div class="text-center" style="display: none; font-size: 20px;" id="purchaseLoading">Loading...</div>
                         </form>
                      </div>
                      <div class="without_po">
+<<<<<<< HEAD
                       
                         <form id="insert_expense"  method="post">
                              <div id="errormessage_expense" class="errormessage_expense"></div><br>
+=======
+                        <div id="errormessage_expense" class="errormessage_expense"></div><br>
+                        <form id="insert_expense" class="commonInsert" method="post">
+>>>>>>> c62a3f145f931ad3d2489e774692ece74fda8cf6
                            <div class="row">
                            <div class="col-sm-6">  
                           <input type="hidden" id="admin_company_id" name="admin_company_id" value="<?php  echo $_GET['id']; ?>">
@@ -1248,7 +1257,11 @@ $.validator.addMethod('isfNoRequired', function(value, element, param) {
     return isfField != '2' || $.trim(value).length > 0;
 }, 'ISF No is required when ISF Field is YES.');
 
+<<<<<<< HEAD
 $("#insert_expense").validate({
+=======
+$(".commonInsert").validate({
+>>>>>>> c62a3f145f931ad3d2489e774692ece74fda8cf6
    rules: {
     supplier_id: "required",
     invoice_no: "required", 
@@ -1271,7 +1284,11 @@ $("#insert_expense").validate({
  },
     errorPlacement: function(error, element) {
             if (element.hasClass("select2-hidden-accessible")) {
+<<<<<<< HEAD
                 error.insertAfter(element.next('span.select2')); // Place error message after the Select2 element
+=======
+                error.insertAfter(element.next('span.select2')); 
+>>>>>>> c62a3f145f931ad3d2489e774692ece74fda8cf6
             } else {
                 error.insertAfter(element);
             }
@@ -1307,6 +1324,7 @@ submitHandler: function(form) {
   })
 }
 });
+<<<<<<< HEAD
 $("#insert_purchase").validate({
    rules: {
     supplier_id: "required",
@@ -1366,6 +1384,10 @@ submitHandler: function(form) {
   })
 }
 });
+=======
+
+
+>>>>>>> c62a3f145f931ad3d2489e774692ece74fda8cf6
 // // Purchase Section Insert 
 // $("#insert_purchase").validate({
 //    rules: {
@@ -1668,7 +1690,11 @@ $('#amount_to_pay').val($('#balance_provider').val());
    });
 
      $('#final_submit').on('click', function (e) {
+<<<<<<< HEAD
       $('.errormessage_expense').html('<div class="alert alert-success">' + "<?php echo  ('Invoice Number')." :";?>"+$('#Final_invoice_number').val()+"<?php echo  " ".display('has been saved Successfully');?>"+ '</div>');
+=======
+      $('#errormessage_expense').html('<div class="alert alert-success">' + "<?php echo  ('Invoice Number')." :";?>"+$('#Final_invoice_number').val()+"<?php echo  " ".display('has been saved Successfully');?>"+ '</div>');
+>>>>>>> c62a3f145f931ad3d2489e774692ece74fda8cf6
      window.setTimeout(function(){
     window.location = "<?php  echo base_url(); ?>Cpurchase/manage_purchase?id=<?php echo $_GET['id']; ?>";
    }, 2500);
@@ -1912,7 +1938,11 @@ $(document).on('click', '.delete', function(){
   updateTableTotals($tableBody.closest('table').attr('id'));
         updateOverallTotals(true);
     } else {
+<<<<<<< HEAD
         $('.errormessage_expense').html('<div class="alert alert-danger alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>' + 'You cannot delete the last row. At least one row must remain..' + '</div>');
+=======
+        $('#errormessage_expense').html('<div class="alert alert-danger alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>' + 'You cannot delete the last row. At least one row must remain..' + '</div>');
+>>>>>>> c62a3f145f931ad3d2489e774692ece74fda8cf6
     }
 });
 function configureDropDownLists(ddl1,ddl2) {
