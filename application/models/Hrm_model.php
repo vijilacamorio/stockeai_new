@@ -799,16 +799,12 @@ COUNT(DISTINCT CASE WHEN a.month >= '12/01/$currentYear' AND a.month <= '12/31/$
         $this->db->from('timesheet_info ti');
         $this->db->join('info_payslip b', 'b.timesheet_id = ti.timesheet_id', 'left');
         $this->db->join('employee_history c', 'c.id = b.templ_name', 'inner');
-        if ($date) {
-            $dates      = explode(' - ', $date);
-            $start_date = date('m/d/Y', strtotime($dates[0]));
-            $end_date   = date('m/d/Y', strtotime($dates[1]));
-            $this->db->group_start();
-            $this->db->where("STR_TO_DATE(ti.start, '%m/%d/%Y') BETWEEN STR_TO_DATE('$start_date', '%m/%d/%Y') AND STR_TO_DATE('$end_date', '%m/%d/%Y')");
-            $this->db->or_where("STR_TO_DATE(ti.end, '%m/%d/%Y') BETWEEN STR_TO_DATE('$start_date', '%m/%d/%Y') AND STR_TO_DATE('$end_date', '%m/%d/%Y')");
-            $this->db->or_where("STR_TO_DATE(ti.start, '%m/%d/%Y') <= STR_TO_DATE('$start_date', '%m/%d/%Y') AND STR_TO_DATE(ti.end, '%m/%d/%Y') >= STR_TO_DATE('$end_date', '%m/%d/%Y')");
-            $this->db->group_end();
-        }
+     if ($date) {
+        $dates = explode(' to ', $date); 
+       $this->db->where('ti.cheque_date >=', $dates[0]);
+            $this->db->where('ti.cheque_date <=', $dates[1]);
+        
+    }
         if ($employee_name !== 'All') {
             $trimmed_emp_name = trim($employee_name);
             $this->db->like("CONCAT(TRIM(c.first_name), ' ', TRIM(c.middle_name), ' ', TRIM(c.last_name))", $trimmed_emp_name, 'both', false);
@@ -831,16 +827,12 @@ COUNT(DISTINCT CASE WHEN a.month >= '12/01/$currentYear' AND a.month <= '12/31/$
         $this->db->from('timesheet_info ti');
         $this->db->join('tax_history_employer b', 'b.time_sheet_id = ti.timesheet_id', 'left');
         $this->db->join('employee_history c', 'c.id = b.employee_id', 'inner');
-        if ($date) {
-            $dates      = explode(' - ', $date);
-            $start_date = date('m/d/Y', strtotime($dates[0]));
-            $end_date   = date('m/d/Y', strtotime($dates[1]));
-            $this->db->group_start();
-            $this->db->where("STR_TO_DATE(ti.start, '%m/%d/%Y') BETWEEN STR_TO_DATE('$start_date', '%m/%d/%Y') AND STR_TO_DATE('$end_date', '%m/%d/%Y')");
-            $this->db->or_where("STR_TO_DATE(ti.end, '%m/%d/%Y') BETWEEN STR_TO_DATE('$start_date', '%m/%d/%Y') AND STR_TO_DATE('$end_date', '%m/%d/%Y')");
-            $this->db->or_where("STR_TO_DATE(ti.start, '%m/%d/%Y') <= STR_TO_DATE('$start_date', '%m/%d/%Y') AND STR_TO_DATE(ti.end, '%m/%d/%Y') >= STR_TO_DATE('$end_date', '%m/%d/%Y')");
-            $this->db->group_end();
-        }
+      if ($date) {
+        $dates = explode(' to ', $date); 
+       $this->db->where('ti.cheque_date >=', $dates[0]);
+            $this->db->where('ti.cheque_date <=', $dates[1]);
+        
+    }
         if ($emp_name !== 'All') {
             $trimmed_emp_name = trim($emp_name);
             $this->db->like("CONCAT(TRIM(c.first_name), ' ', TRIM(c.middle_name), ' ', TRIM(c.last_name))", $trimmed_emp_name, 'both', false);
