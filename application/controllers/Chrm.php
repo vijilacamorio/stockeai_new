@@ -1179,7 +1179,7 @@ $final_amount = $row['total_amount'];
         print_r($mergedArray);
         echo json_encode($mergedArray);
     }
-    public function social_taxsearch(){
+  public function social_taxsearch(){
       $CI = & get_instance();
       $CI->load->model('Web_settings');
       $this->load->model('Hrm_model');
