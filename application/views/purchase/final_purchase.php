@@ -7,11 +7,14 @@ $this->load->view('include/bootstrap_model', $modaldata ,$data);
 ?>
  <div class="panel-body">
 <div class="with_po">  
-   <div id="errormessage_expense" class="errormessage_expense"></div><br>
-           <form id="insert_purchase" class="insert_purchase commonInsert" method="post">
+
+ 
+           <form id="insert_purchase"  method="post">
+             <div id="errormessage_expense" class="errormessage_expense"></div><br>
                <div class="row">
                            <div class="col-sm-6">  
-                          <input type="hidden" id="admin_company_id" name="admin_company_id" value="<?php  echo $_GET['id']; ?>">
+                          <input type="hidden" id="admin_company_id" name="admin_company_id" value="<?php  echo $company_id; ?>">
+
                           <input type="hidden" id="makepaymentId" name="makepaymentId" value="<?php  echo $purchase_info[0]['payment_id']; ?>">
                           <input type="hidden" name="paid_customer_currency" id="paid_customer_currency"/>
                           <input type="hidden" name="balance_customer_currency" id="balance_customer_currency"/>
@@ -586,11 +589,13 @@ $this->load->view('include/bootstrap_model', $modaldata ,$data);
 </table>
 
                <script>
-                  $('.paypls').on('click', function() {
+
+                  $('.paypls').on('click', function() {debugger;
                      var balance = $('#balance').val();
                      $('#amount_to_pay').val(balance);
 
-                     var paymentid = $purchase_info[0]['payment_id'];
+                     var paymentid = "<?php echo  $purchase_info[0]['payment_id']; ?>";
+
                      $('#payment_id').val(paymentid);
 
                   });
@@ -711,7 +716,9 @@ $this->load->view('include/bootstrap_model', $modaldata ,$data);
    }).trigger("change");
     $('.final_submit').on('click', function (e) {
     var input_hdn='Your Invoice No : "'+ $('#Final_invoice_number').val()+" has been Updated Successfully";
- $('#errormessage_expense').html('<div class="alert alert-success alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>' + input_hdn + '</div>');
+
+ $('.errormessage_expense').html('<div class="alert alert-success alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>' + input_hdn + '</div>');
+
    window.setTimeout(function(){
       window.location = "<?php  echo base_url(); ?>Cpurchase/manage_purchase?id=<?php echo $_GET['id']; ?>";
      }, 2000);
@@ -756,7 +763,9 @@ $this->load->view('include/bootstrap_model', $modaldata ,$data);
   updateTableTotals($tableBody.closest('table').attr('id'));
         updateOverallTotals(true);
     } else {
-        $('#errormessage_expense').html('<div class="alert alert-danger alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>' + 'You cannot delete the last row. At least one row must remain..' + '</div>');
+
+        $('.errormessage_expense').html('<div class="alert alert-danger alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>' + 'You cannot delete the last row. At least one row must remain..' + '</div>');
+
     }
 });
 

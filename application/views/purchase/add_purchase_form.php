@@ -83,14 +83,19 @@ $this->load->view('include/bootstrap_model', $modaldata);
                <div class="panel-heading">
                   <div class="panel-body">
                      <div class="with_po">
-                        <div id="errormessage_expense" class="errormessage_expense"></div><br>
+
+                       
+
                         <form id="insert_purchase" method="post">
                            <div class="text-center" style="display: none; font-size: 20px;" id="purchaseLoading">Loading...</div>
                         </form>
                      </div>
                      <div class="without_po">
-                        <div id="errormessage_expense" class="errormessage_expense"></div><br>
-                        <form id="insert_expense" class="commonInsert" method="post">
+
+                      
+                        <form id="insert_expense"  method="post">
+                             <div id="errormessage_expense" class="errormessage_expense"></div><br>
+
                            <div class="row">
                            <div class="col-sm-6">  
                           <input type="hidden" id="admin_company_id" name="admin_company_id" value="<?php  echo $_GET['id']; ?>">
@@ -1247,7 +1252,9 @@ $.validator.addMethod('isfNoRequired', function(value, element, param) {
     return isfField != '2' || $.trim(value).length > 0;
 }, 'ISF No is required when ISF Field is YES.');
 
-$(".commonInsert").validate({
+
+$("#insert_expense").validate({
+
    rules: {
     supplier_id: "required",
     invoice_no: "required", 
@@ -1270,7 +1277,9 @@ $(".commonInsert").validate({
  },
     errorPlacement: function(error, element) {
             if (element.hasClass("select2-hidden-accessible")) {
-                error.insertAfter(element.next('span.select2')); 
+
+                error.insertAfter(element.next('span.select2')); // Place error message after the Select2 element
+
             } else {
                 error.insertAfter(element);
             }
@@ -1307,6 +1316,65 @@ submitHandler: function(form) {
 }
 });
 
+$("#insert_purchase").validate({
+   rules: {
+    supplier_id: "required",
+    invoice_no: "required", 
+    payment_due_date : "required", 
+    bill_date : "required",
+    payment_terms: "required",  
+    paytype_drop : "required",
+     isf_no: {
+            isfNoRequired: true
+        }
+ },
+ messages: {
+     supplier_id: "Supplier Name is required",
+    invoice_no: "Invoice Number is required",
+    payment_terms: "Payment Term is required",
+    paytype_drop: "Payment Type is required",
+      payment_due_date: "Payment Due Date is required",
+      bill_date: "Bill Date is required",
+       isf_no: "ISF No is required when ISF Field is YES.",
+ },
+    errorPlacement: function(error, element) {
+            if (element.hasClass("select2-hidden-accessible")) {
+                error.insertAfter(element.next('span.select2')); // Place error message after the Select2 element
+            } else {
+                error.insertAfter(element);
+            }
+        },
+submitHandler: function(form) {
+  var formData = new FormData(form);
+  formData.append(csrfName, csrfHash);
+  $.ajax({
+    type: "POST",
+    dataType: "json",
+    url:"<?php echo base_url(); ?>Cpurchase/insert_purchase",
+    data: formData,
+    contentType: false,
+    processData: false,
+    success: function(response) {
+   
+      console.log(response);
+    if (response.status == 'success') {
+
+   $('.errormessage_expense').html('<div class="alert alert-success">' + response.msg + '</div>');
+     $('#Final_invoice_number').val(response.invoice_no);
+          $('#Final_invoice_id').val(response.invoice_id);
+         
+                  }else{
+
+          $('.errormessage_expense').html(failalert+response.msg+'</div>'); 
+          console.log(response.msg, "Error");
+       }                  
+    },
+        error: function(xhr, status, error) {
+        alert('An error occurred: ' + error);
+    }
+  })
+}
+});
 
 // // Purchase Section Insert 
 // $("#insert_purchase").validate({
@@ -1610,7 +1678,9 @@ $('#amount_to_pay').val($('#balance_provider').val());
    });
 
      $('#final_submit').on('click', function (e) {
-      $('#errormessage_expense').html('<div class="alert alert-success">' + "<?php echo  ('Invoice Number')." :";?>"+$('#Final_invoice_number').val()+"<?php echo  " ".display('has been saved Successfully');?>"+ '</div>');
+
+      $('.errormessage_expense').html('<div class="alert alert-success">' + "<?php echo  ('Invoice Number')." :";?>"+$('#Final_invoice_number').val()+"<?php echo  " ".display('has been saved Successfully');?>"+ '</div>');
+
      window.setTimeout(function(){
     window.location = "<?php  echo base_url(); ?>Cpurchase/manage_purchase?id=<?php echo $_GET['id']; ?>";
    }, 2500);
@@ -1854,7 +1924,9 @@ $(document).on('click', '.delete', function(){
   updateTableTotals($tableBody.closest('table').attr('id'));
         updateOverallTotals(true);
     } else {
-        $('#errormessage_expense').html('<div class="alert alert-danger alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>' + 'You cannot delete the last row. At least one row must remain..' + '</div>');
+
+        $('.errormessage_expense').html('<div class="alert alert-danger alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>' + 'You cannot delete the last row. At least one row must remain..' + '</div>');
+
     }
 });
 function configureDropDownLists(ddl1,ddl2) {

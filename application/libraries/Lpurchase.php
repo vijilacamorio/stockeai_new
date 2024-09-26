@@ -1236,9 +1236,7 @@ public function servprovider_edit_data($serviceprovider_id) {
     return $chapterList;
 }
 
-
-
-public function po_details($admin_company_id, $purchase_id)
+public function po_details($admin_company_id, $purchase_id,$adminid)
 {  
 
    $CI = & get_instance();
@@ -1257,6 +1255,9 @@ public function po_details($admin_company_id, $purchase_id)
    // print_r($purchase_detail); die;
     $data = array(
         'attachments'   => $expense_attachment,
+
+        'company_id'  => $adminid,
+
         'curn_info_default' =>$curn_info_default[0]['currency_name'],
         'currency' => $setting_detail[0]['currency'],
         'tax' =>$expense_tax,
